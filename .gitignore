@@ -1,0 +1,58 @@
+composer.json
+composer.lock
+node_modules
+backend/runtime/*
+partners/runtime/*
+frontend/runtime/*
+frontend/assets/*
+nbproject
+nbproject/*
+uploads/*
+backend/uploads/*
+assets/*
+backend/assets/*
+common/config/main-local.php
+common/config/params-local.php
+common/config/main.php
+images/medium
+.idea/*
+
+/index.php
+.sass-cache/*
+default.pack
+
+# Numerous always-ignore extensions
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+
+# OS or Editor folders
+.DS_Store
+.cache
+.project
+.settings
+.tmproj
+.idea
+nbproject
+Thumbs.db
+
+# Folders to ignore
+.hg
+.svn
+.CVS
+cgi-bin
+
+# Sublime Text:
+*.sublime-project
+*.sublime-workspace
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

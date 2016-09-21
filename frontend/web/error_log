@@ -1,0 +1,127 @@
+[16-Jun-2016 03:46:11 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:46:15 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:46:19 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:46:23 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:46:27 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:46:33 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:46:43 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:47:55 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:47:59 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:48:02 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:50:12 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:51:08 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:52:51 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:55:04 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:56:27 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:56:48 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 03:56:53 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:02:38 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:04:42 America/Denver] PHP Fatal error:  Class 'Url' not found in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:05:06 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:05:08 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:05:09 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:06:37 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:07:52 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:11:00 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[16-Jun-2016 04:11:05 America/Denver] PHP Parse error:  syntax error, unexpected 'yii' (T_STRING) in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 1
+[26-Jun-2016 03:46:28 America/Denver] PHP Fatal error:  Class 'frontend\models\SubscribeForm' not found in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 66
+[12-Jul-2016 04:31:24 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/facebookPage.php on line 41
+[12-Jul-2016 04:32:00 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/facebookPage.php on line 41
+[12-Jul-2016 04:32:41 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/facebookPage.php on line 41
+[12-Jul-2016 04:33:40 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/facebookPage.php on line 41
+[12-Jul-2016 04:33:48 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/facebookPage.php on line 41
+[12-Jul-2016 04:34:39 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/facebookPage.php on line 41
+[14-Jul-2016 10:00:26 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 325
+[14-Jul-2016 10:02:55 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 325
+[17-Jul-2016 04:29:15 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/youtube/_channelData.php on line 57
+[17-Jul-2016 05:13:05 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/youtube/_channelAnalytics.php on line 26
+[17-Jul-2016 05:13:16 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/youtube/_channelAnalytics.php on line 26
+[17-Jul-2016 05:14:31 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/youtube/_channelAnalytics.php on line 26
+[17-Jul-2016 05:15:28 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/youtube/_channelAnalytics.php on line 26
+[17-Jul-2016 05:16:16 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/youtube/_topTenViewedVideos.php on line 19
+[17-Jul-2016 09:48:38 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/google-plus/_topPostsByEngagementRate.php on line 6
+[17-Jul-2016 09:49:01 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/google-plus/_topPostsByEngagementRate.php on line 6
+[17-Jul-2016 09:49:28 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/google-plus/_topPostsByEngagementRate.php on line 6
+[17-Jul-2016 09:49:36 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/google-plus/_topPostsByEngagementRate.php on line 6
+[17-Jul-2016 09:50:03 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/google-plus/_topPostsByEngagementRate.php on line 6
+[17-Jul-2016 09:50:11 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/google-plus/_topPostsByEngagementRate.php on line 6
+[18-Jul-2016 07:25:45 America/Denver] PHP Parse error:  syntax error, unexpected '?' in /home2/digitree/public_html/hype/frontend/views/instagram/instagram.php on line 44
+[19-Jul-2016 06:48:36 America/Denver] PHP Fatal error:  Call to undefined method frontend\models\SubscribeForm::find() in /home2/digitree/public_html/hype/vendor/yiisoft/yii2/validators/UniqueValidator.php on line 100
+[19-Jul-2016 07:05:31 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/models/SubscribeForm.php on line 28
+[19-Jul-2016 07:13:27 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/models/SubscribeForm.php on line 28
+[19-Jul-2016 10:06:03 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[19-Jul-2016 10:08:15 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[19-Jul-2016 10:08:42 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[19-Jul-2016 10:08:54 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[19-Jul-2016 10:09:04 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[19-Jul-2016 10:09:10 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[31-Jul-2016 05:28:46 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/views/twitter/twitter.php on line 109
+[31-Jul-2016 05:29:05 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/views/twitter/twitter.php on line 109
+[31-Jul-2016 05:29:11 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/views/twitter/twitter.php on line 109
+[31-Jul-2016 05:29:19 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/views/twitter/twitter.php on line 109
+[08-Aug-2016 04:46:18 America/Denver] PHP Parse error:  syntax error, unexpected ';' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 316
+[08-Aug-2016 04:55:18 America/Denver] PHP Fatal error:  Class 'digi\authclient\clients\Model' not found in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Youtube.php on line 389
+[08-Aug-2016 04:57:11 America/Denver] PHP Fatal error:  Undefined class constant 'ACCOUNT' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Youtube.php on line 393
+[08-Aug-2016 04:58:16 America/Denver] PHP Fatal error:  Class 'digi\authclient\clients\Insights' not found in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Youtube.php on line 399
+[08-Aug-2016 05:44:10 America/Denver] PHP Parse error:  syntax error, unexpected '->' (T_OBJECT_OPERATOR), expecting ']' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1089
+[08-Aug-2016 05:44:46 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 490
+[08-Aug-2016 05:45:49 America/Denver] PHP Fatal error:  Call to undefined function digi\authclient\clients\getAllPagePosts() in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1086
+[08-Aug-2016 05:47:31 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1049
+[08-Aug-2016 06:22:42 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 152
+[08-Aug-2016 06:23:17 America/Denver] PHP Parse error:  syntax error, unexpected end of file, expecting ']' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Instagram.php on line 532
+[08-Aug-2016 07:04:59 America/Denver] PHP Parse error:  syntax error, unexpected ')' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Twitter.php on line 203
+[08-Aug-2016 07:09:26 America/Denver] PHP Fatal error:  Class 'frontend\controllers\Dashboard' not found in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 120
+[08-Aug-2016 07:50:12 America/Denver] PHP Warning:  Uncaught exception 'yii\base\ErrorException' with message 'Undefined variable: client' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php:304
+Stack trace:
+#0 /home2/digitree/public_html/hype/frontend/controllers/SiteController.php(304): yii\base\ErrorHandler->handleError(8, 'Undefined varia...', '/home2/digitree...', 304, Array)
+#1 [internal function]: frontend\controllers\SiteController->actionFacebook()
+#2 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/base/InlineAction.php(55): call_user_func_array(Array, Array)
+#3 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/base/Controller.php(151): yii\base\InlineAction->runWithParams(Array)
+#4 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/base/Module.php(455): yii\base\Controller->runAction('facebook', Array)
+#5 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/web/Application.php(84): yii\base\Module->runAction('site/facebook', Array)
+#6 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/base/Application.php(375): yii in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 304
+[08-Aug-2016 07:50:12 America/Denver] PHP Fatal error:  Call to a member function api() on a non-object in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 304
+[09-Aug-2016 10:37:36 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Youtube.php on line 441
+[10-Aug-2016 04:18:43 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/twitter/twitter.php on line 37
+[10-Aug-2016 04:30:34 America/Denver] PHP Fatal error:  Unsupported operand types in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1159
+[10-Aug-2016 04:31:35 America/Denver] PHP Warning:  Uncaught exception 'yii\base\ErrorException' with message 'Undefined variable: array_key_exists' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php:1160
+Stack trace:
+#0 /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php(1160): yii\base\ErrorHandler->handleError(8, 'Undefined varia...', '/home2/digitree...', 1160, Array)
+#1 /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php(1170): digi\authclient\clients\Facebook->getPageReachByCountry('136805923037665', '2016-08-01', '2016-08-12')
+#2 /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php(1117): digi\authclient\clients\Facebook->getInsightsJson('136805923037665', '2016-08-01', '2016-08-12')
+#3 /home2/digitree/public_html/hype/frontend/controllers/SiteController.php(304): digi\authclient\clients\Facebook->saveAccountInsights(Object(common\models\custom\Model), 8278575)
+#4 [internal function]: frontend\controllers\SiteControl in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1160
+[10-Aug-2016 04:31:35 America/Denver] PHP Fatal error:  Function name must be a string in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1160
+[14-Aug-2016 05:27:04 America/Denver] PHP Parse error:  syntax error, unexpected ',' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Twitter.php on line 797
+[14-Aug-2016 05:27:39 America/Denver] PHP Parse error:  syntax error, unexpected ',' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Twitter.php on line 797
+[14-Aug-2016 05:29:32 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Twitter.php on line 144
+[14-Aug-2016 05:30:33 America/Denver] PHP Parse error:  syntax error, unexpected ';' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Twitter.php on line 316
+[14-Aug-2016 06:14:29 America/Denver] PHP Fatal error:  Call to undefined method digi\authclient\clients\Facebook::getDeviceTypeJsonTable() in /home2/digitree/public_html/hype/frontend/views/dashboard/_fb_device_type.php on line 4
+[14-Aug-2016 10:28:37 America/Denver] PHP Parse error:  syntax error, unexpected '<' in /home2/digitree/public_html/hype/frontend/views/dashboard/dashboard.php on line 148
+[25-Aug-2016 05:50:05 America/Denver] PHP Parse error:  syntax error, unexpected '}' in /home2/digitree/public_html/hype/frontend/views/layouts/main.php on line 61
+[25-Aug-2016 06:34:56 America/Denver] PHP Fatal error:  Class 'frontend\controllers\Url' not found in /home2/digitree/public_html/hype/frontend/controllers/UserController.php on line 64
+[25-Aug-2016 09:57:26 America/Denver] PHP Parse error:  syntax error, unexpected ':' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 225
+[25-Aug-2016 09:57:29 America/Denver] PHP Parse error:  syntax error, unexpected ':' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 225
+[25-Aug-2016 09:58:06 America/Denver] PHP Parse error:  syntax error, unexpected ':' in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 225
+[25-Aug-2016 09:58:49 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 366
+[25-Aug-2016 10:06:08 America/Denver] PHP Parse error:  syntax error, unexpected end of file, expecting function (T_FUNCTION) in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 89
+[04-Sep-2016 07:14:34 America/Denver] PHP Parse error:  syntax error, unexpected '{' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Youtube.php on line 182
+[04-Sep-2016 08:49:32 America/Denver] PHP Parse error:  syntax error, unexpected '$page' (T_VARIABLE) in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 324
+[04-Sep-2016 08:55:03 America/Denver] PHP Warning:  Uncaught exception 'yii\base\ErrorException' with message 'Undefined variable: client' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php:1193
+Stack trace:
+#0 /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php(1193): yii\base\ErrorHandler->handleError(8, 'Undefined varia...', '/home2/digitree...', 1193, Array)
+#1 /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php(1200): digi\authclient\clients\Facebook->getPost('136805923037665...')
+#2 /home2/digitree/public_html/hype/frontend/controllers/SiteController.php(323): digi\authclient\clients\Facebook->getImageActualSize(326)
+#3 [internal function]: frontend\controllers\SiteController->actionFacebook()
+#4 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/base/InlineAction.php(55): call_user_func_array(Array, Array)
+#5 /home2/digitree/public_html/hype/vendor/yiisoft/yii2/base/Controller.php(151): yii\base\InlineAction->runWithParams(Array)
+#6 /home2/digitre in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1193
+[04-Sep-2016 08:55:03 America/Denver] PHP Fatal error:  Call to a member function api() on a non-object in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 1193
+[06-Sep-2016 07:29:25 America/Denver] PHP Parse error:  syntax error, unexpected '}' in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/Facebook.php on line 222
+[07-Sep-2016 10:00:04 America/Denver] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ',' or ';' in /home2/digitree/public_html/hype/frontend/views/facebook/_postTypes.php on line 8
+[18-Sep-2016 08:26:33 America/Denver] PHP Parse error:  syntax error, unexpected 'if' (T_IF) in /home2/digitree/public_html/hype/frontend/controllers/SiteController.php on line 218
+[19-Sep-2016 03:24:30 America/Denver] PHP Parse error:  syntax error, unexpected 'public' (T_PUBLIC) in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/GooglePlus.php on line 125
+[19-Sep-2016 03:25:24 America/Denver] PHP Parse error:  syntax error, unexpected 'public' (T_PUBLIC) in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/GooglePlus.php on line 125
+[19-Sep-2016 03:26:36 America/Denver] PHP Fatal error:  Cannot redeclare digi\authclient\clients\GooglePlus::getAccountDetailsById() in /home2/digitree/public_html/hype/common/digisoft/digi-authclient/clients/GooglePlus.php on line 155
+[19-Sep-2016 10:31:58 America/Denver] PHP Parse error:  syntax error, unexpected end of file, expecting variable (T_VARIABLE) or '$' in /home2/digitree/public_html/hype/frontend/views/dashboard/dashboard.php on line 139
+[19-Sep-2016 10:52:11 America/Denver] PHP Parse error:  syntax error, unexpected end of file in /home2/digitree/public_html/hype/frontend/views/dashboard/dashboard.php on line 181
