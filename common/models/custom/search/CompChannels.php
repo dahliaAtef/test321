@@ -19,7 +19,7 @@ class CompChannels extends CompChannelsModel
     {
         return [
             [['id', 'comp_id', 'comp_channel_followers'], 'integer'],
-            [['comp_channel', 'comp_channel_id'], 'safe'],
+            [['comp_channel', 'comp_channel_id', 'comp_channel_name', 'created', 'updated'], 'safe'],
         ];
     }
 
@@ -59,10 +59,13 @@ class CompChannels extends CompChannelsModel
             'id' => $this->id,
             'comp_id' => $this->comp_id,
             'comp_channel_followers' => $this->comp_channel_followers,
+            'created' => $this->created,
+            'updated' => $this->updated,
         ]);
 
         $query->andFilterWhere(['like', 'comp_channel', $this->comp_channel])
-            ->andFilterWhere(['like', 'comp_channel_id', $this->comp_channel_id]);
+            ->andFilterWhere(['like', 'comp_channel_id', $this->comp_channel_id])
+			->andFilterWhere(['like', 'comp_channel_name', $this->comp_channel_name]);
 
         return $dataProvider;
     }

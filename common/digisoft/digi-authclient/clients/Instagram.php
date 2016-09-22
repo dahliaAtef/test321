@@ -780,10 +780,12 @@ class Instagram extends OAuth2
 		return $user_data;
 	}
 	
-	public function getCompatatorFollowers($url = "https://www.instagram.com/samsungegypt/"){
+	public function getCompetitorNameAndFollowers($url){
 		$user_data = $this->getUserByUrl($url);
-		$followers = $user_data['counts']['followed_by'];
-		return $followers;
+		$page['followers'] = $user_data['counts']['followed_by'];
+		$page['name'] = $user_data['username'];
+		$page['id'] = $user_data['id'];
+		return $page;
 	}
 	
 }

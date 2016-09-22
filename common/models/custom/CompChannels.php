@@ -12,8 +12,10 @@ use Yii;
  * @property string $comp_channel
  * @property string $comp_channel_id
  * @property integer $comp_channel_followers
+ * @property string $created
+ * @property string $updated
  *
- * @property Compatators $comp
+ * @property Competitors $comp
  */
 class CompChannels extends \common\models\base\Base
 {
@@ -31,10 +33,11 @@ class CompChannels extends \common\models\base\Base
     public function rules()
     {
         return [
-            [['comp_id', 'comp_channel', 'comp_channel_id', 'comp_channel_followers'], 'required'],
+            [['comp_id', 'comp_channel', 'comp_channel_id', 'comp_channel_name', 'comp_channel_followers'], 'required'],
             [['comp_id', 'comp_channel_followers'], 'integer'],
             [['comp_channel'], 'string', 'max' => 10],
-            [['comp_channel_id'], 'string', 'max' => 250]
+            [['comp_channel_id', 'comp_channel_name'], 'string', 'max' => 250],
+			[['created', 'updated'], 'safe']
         ];
     }
 
@@ -48,7 +51,10 @@ class CompChannels extends \common\models\base\Base
             'comp_id' => Yii::t('app', 'Comp ID'),
             'comp_channel' => Yii::t('app', 'Comp Channel'),
             'comp_channel_id' => Yii::t('app', 'Comp Channel ID'),
+			'comp_channel_name' => Yii::t('app', 'Comp Channel Name'),
             'comp_channel_followers' => Yii::t('app', 'Comp Channel Followers'),
+            'created' => Yii::t('app', 'Created'),
+            'updated' => Yii::t('app', 'Updated')
         ];
     }
 
@@ -57,6 +63,6 @@ class CompChannels extends \common\models\base\Base
      */
     public function getComp()
     {
-        return $this->hasOne(Compatators::className(), ['id' => 'comp_id']);
+        return $this->hasOne(Competitors::className(), ['id' => 'comp_id']);
     }
 }

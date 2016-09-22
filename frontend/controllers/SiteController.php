@@ -22,7 +22,7 @@ use frontend\models\ContactForm;
 use frontend\models\SubscribeForm;
 use frontend\models\UserPagesForm;
 use frontend\models\SupportForm;
-use frontend\models\CompatatorsForm;
+use frontend\models\CompetitorsForm;
 
 /**
  * Site controller
@@ -51,7 +51,6 @@ class SiteController extends \frontend\components\BaseController {
         ];
     }
 
-    
     /**
      * Home page
      */
@@ -79,8 +78,7 @@ class SiteController extends \frontend\components\BaseController {
         }
         return $this->render('subscribe', ['oUserForm' => $oSubscribeForm]);
     }
-    
-	    
+      
     /**
      * Login from Mobile
      */
@@ -88,7 +86,6 @@ class SiteController extends \frontend\components\BaseController {
         return $this->render('mobile_login');
     }
     
-	
     /**
      * Support page
      */
@@ -128,12 +125,14 @@ class SiteController extends \frontend\components\BaseController {
     public function actionDashboard() {
 		$session= Yii::$app->session;
         $dashboard = new Dashboard();
-		$oCompatatorsForm = new CompatatorsForm();
-		if($oCompatatorsForm->load(Yii::$app->request->post()) && $oCompatatorsForm->validate()){
-			if($dashboard->saveCompatators){
-				
+		$oCompetitorsForm = new CompetitorsForm();
+		if($oCompetitorsForm->load(Yii::$app->request->post()) && $oCompetitorsForm->validate()){
+			//echo '<pre>'; var_dump($oCompetitorsForm); echo '</pre>'; die;
+			if($dashboard->saveCompetitors($oCompetitorsForm)){
+				//die('success');
 			}else{
-				
+				//echo '<pre>'; var_dump($oCompetitorsForm); echo '</pre>'; 
+				//die('error');
 			}
 		}
         if(!$session->has('dashboard_accounts')){
@@ -149,7 +148,7 @@ class SiteController extends \frontend\components\BaseController {
         }
         $insights = $dashboard->getDashboardAccountsInsights();
         $dashboard->getGrowthPerMonth($insights);
-        return $this->render('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard]);
+        return $this->render('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm]);
     }
     
     /**
@@ -201,7 +200,7 @@ class SiteController extends \frontend\components\BaseController {
         $session = Yii::$app->session;
         $gPlus = new GooglePlus ();
         if($session->has('google_plus')){
-			//echo '<pre>'; var_dump($gPlus->getCompatatorCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
+			//echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
             $account = $gPlus->getAccountDetails();
             $gPlus->getTimeBasedAccountInsights();
             return $this->render('/google-plus/google-plus', [
@@ -220,11 +219,59 @@ class SiteController extends \frontend\components\BaseController {
         return $this->render('/google-plus/activities', ['public_activities' => $googleP->getPublicActivities()]);
     }
 
+    public function actionYoutube($p = null, $v = null){
+        ini_set('max_execution_time', 300000);
+        $session = Yii::$app->session;
+        $youtube = new Youtube ();
+        if($p){
+            $playlist_videos = $youtube->getPlaylistVideos($p);
+            return $this->render('/youtube/channel-videos', ['videos' => $playlist_videos]);
+        }else if($v){
+            $video_data = $youtube->getVideoData($v);
+            return $this->render('/youtube/video-analytics', [
+                'video_analytics' => $youtube->getVideoAnalytics($v),
+                'title' => $video_data["items"][0]["snippet"]["title"],
+                'img' => $video_data["items"][0]["snippet"]["thumbnails"]["default"]["url"].'" alt="'.$video_data["items"][0]["snippet"]["title"]
+                ]);
+        }else if($session['youtube']){
+            $channels = $youtube->getChannelData();
+            $channel_analytics = $youtube->getChannelAnalytics();
+            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']); 
+            if(!$oAuthclient){
+                $oAuthclient = $youtube->createNewAuthclient();
+            }else{
+                if($oAuthclient->source_id != $channels['items'][0]['id']){
+                    Yii::$app->getSession()->setFlash('error', 'Please select the youtube channel you registered with in the First time.');
+                    return $this->render('/youtube/youtubeAuth');
+                }
+            }
+			$models = $oAuthclient->model;
+			if(!$models){
+				$youtube->firstTimeToLog($oAuthclient->id);
+			}else{
+				//echo '<pre>'; var_dump($youtube->getCompetitorNameAndSubscribers("https://www.youtube.com/channel/UC89jxlRgoiqAnO_0pm-Ug0g")); echo '</pre>'; die;
+				//$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
+				$youtube->saveAccountInsights($oAuthclient->model[0]->id, $channels, $channel_analytics);
+			}
+            $subscribers = $youtube->getChannelSubscribers();
+            return $this->render('/youtube/youtube', [
+                'channels' => $channels,
+                'channel_analytics' => $channel_analytics,
+                'subscribers' => $subscribers,
+                'youtube' => $youtube
+            ]);
+            
+        }else{
+            return $this->render('/youtube/youtubeAuth');
+        }
+
+    }
+    
     public function actionInstagram(){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
         $insta = new Instagram ();
-		//$insta->getCompatatorFollowers();
+		//echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
 			if(Yii::$app->request->post() && isset($_POST['since'])){
 				$since = $_POST['since'];
 			}else{
@@ -276,7 +323,7 @@ class SiteController extends \frontend\components\BaseController {
         //ini_set('max_execution_time', 900000);
         $twitter = new Twitter();
         $session = Yii::$app->session;
-		//echo '<pre>'; var_dump($twitter->getCompatatorsFollowers("https://twitter.com/GoldDerby")); echo '</pre>'; die;
+		//echo '<pre>'; var_dump($twitter->getCompetitorsNamesAndFollowers("https://twitter.com/GoldDerby")); echo '</pre>'; die;
         if($session->has('twitter')){
             $client = $twitter->getClient();
             //echo '<pre>'; var_dump($client->api('application/rate_limit_status.json', 'GET', ['resources' => 'statuses'])); echo '</pre>'; die;
@@ -319,7 +366,7 @@ class SiteController extends \frontend\components\BaseController {
         ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();$oUserPagesForm = new UserPagesForm();
-		//echo '<pre>'; var_dump($fb->getCompatatorFollowersFromUrl("https://www.facebook.com/collectivenouncomedy/?hc_ref=NEWSFEED")); echo '</pre>'; die;
+		//echo '<pre>'; var_dump($fb->getCompetitorNameAndFollowersFromUrl("https://www.facebook.com/collectivenouncomedy/?hc_ref=NEWSFEED")); echo '</pre>'; die;
         if($session->has('facebook')){
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $fb->getClient();
@@ -348,55 +395,7 @@ class SiteController extends \frontend\components\BaseController {
             return $this->render('/facebook/facebookAuth');
         }
     }
-    
-    public function actionYoutube($p = null, $v = null){
-        ini_set('max_execution_time', 300000);
-        $session = Yii::$app->session;
-        $youtube = new Youtube ();
-        if($p){
-            $playlist_videos = $youtube->getPlaylistVideos($p);
-            return $this->render('/youtube/channel-videos', ['videos' => $playlist_videos]);
-        }else if($v){
-            $video_data = $youtube->getVideoData($v);
-            return $this->render('/youtube/video-analytics', [
-                'video_analytics' => $youtube->getVideoAnalytics($v),
-                'title' => $video_data["items"][0]["snippet"]["title"],
-                'img' => $video_data["items"][0]["snippet"]["thumbnails"]["default"]["url"].'" alt="'.$video_data["items"][0]["snippet"]["title"]
-                ]);
-        }else if($session['youtube']){
-            $channels = $youtube->getChannelData();
-            $channel_analytics = $youtube->getChannelAnalytics();
-            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']); 
-            if(!$oAuthclient){
-                $oAuthclient = $youtube->createNewAuthclient();
-            }else{
-                if($oAuthclient->source_id != $channels['items'][0]['id']){
-                    Yii::$app->getSession()->setFlash('error', 'Please select the youtube channel you registered with in the First time.');
-                    return $this->render('/youtube/youtubeAuth');
-                }
-            }
-			$models = $oAuthclient->model;
-			if(!$models){
-				$youtube->firstTimeToLog($oAuthclient->id);
-			}else{
-				//echo '<pre>'; var_dump($youtube->getCompatatorSubscribers("https://www.youtube.com/user/DoingITeasyChannel")); echo '</pre>'; die;
-				//$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
-				$youtube->saveAccountInsights($oAuthclient->model[0]->id, $channels, $channel_analytics);
-			}
-            $subscribers = $youtube->getChannelSubscribers();
-            return $this->render('/youtube/youtube', [
-                'channels' => $channels,
-                'channel_analytics' => $channel_analytics,
-                'subscribers' => $subscribers,
-                'youtube' => $youtube
-            ]);
-            
-        }else{
-            return $this->render('/youtube/youtubeAuth');
-        }
-
-    }
-    
+	
     /**
      * This function will be triggered when user is successfuly authenticated using some oAuth client.
      * @todo enhancements
@@ -404,6 +403,7 @@ class SiteController extends \frontend\components\BaseController {
      * @param yii\authclient\ClientInterface $client
      * @return boolean|yii\web\Response
      */
+	 
     public function onAuthSuccess($client) {
         if($client->name == 'facebook'){
             Facebook::setClient($client);
@@ -440,7 +440,8 @@ class SiteController extends \frontend\components\BaseController {
             Foursquare::setClient($client);
             return $this->action->redirect( Url::to(['foursquare'],true) );
         }else{
-            echo '<pre>'; var_dump($client); echo '</pre>'; die;
+			
+            echo '<pre>'; var_dump($client->api('/v1/people/~')); echo '</pre>'; die;
         }
     }
 

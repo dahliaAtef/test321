@@ -1267,20 +1267,17 @@ class Facebook extends \yii\authclient\clients\Facebook
 		return $page_name_id;
 	}
 	
-	public function getCompatatorData($url){
+	public function getCompetitorData($url){
 		$page_name_id = $this->getPageNameAndIdUsingPageUrl($url);
 		$page_data = $this->getPageData($page_name_id["id"]);
 		return $page_data;
 	}
 	
-	public function getCompatatorFollowers($page_data){
-		$page_followers = $page_data["likes"];
-		return $page_followers;
-	}
-	
-	public function getCompatatorFollowersFromUrl($url){
-		$page_data = $this->getCompatatorData($url);
-		$followers = $this->getCompatatorFollowers($page_data);
-		return $followers;
+	public function getCompetitorNameAndFollowersFromUrl($url){
+		$page_data = $this->getCompetitorData($url);
+		$page['name'] = $page_data["name"];
+		$page['followers'] = $page_data["likes"];
+		$page['id'] = $page_data['id'];
+		return $page;
 	}
 }
