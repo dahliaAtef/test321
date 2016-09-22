@@ -13,7 +13,7 @@ use common\models\custom\Dashboard;
                         <?php
                         foreach($sx as $key => $value){
                         ?>
-                            <li class="col-md-4"><span class="small-title"><?= $key ?> : </span><?= $value ?> follwers&nbsp;&nbsp;<span class="rounded <?= $key ?>"><?= round(((($value)/($total))*100)) ?>%</span></li>
+                            <li class="col-md-4"><span class="small-title"><?= $key ?> : </span><?= $value ?> followers&nbsp;&nbsp;<span class="rounded <?= $key ?>"><?= round(((($value)/($total))*100)) ?>%</span></li>
                         <?php } ?>
                         </div>
                     </ul>
