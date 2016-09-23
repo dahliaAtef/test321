@@ -86,9 +86,13 @@ header {display:block;position:relative;padding: 20px 0 0;text-align:center;tran
 
 			header .nav-menu li a{text-decoration: none;color: #fff;line-height: 32px}
 
-      header .nav-menu li a.active {position:relative;/*text-shadow:3px 1px 3px #DE1271*/; background-color:rgba(245, 245, 245, 0.09);color: #d0d0d0}
+      header .nav-menu li a.active {position:relative;color: #8e8e8e}
+      
+
+
+      header.inside .nav-menu li a.active , header.outSide .nav-menu li a.active {position:relative;/*text-shadow:3px 1px 3px #DE1271*/; background-color:rgba(245, 245, 245, 0.09);color: #d0d0d0}
 			
-      header .nav-menu li a.active:before {content:'';position: absolute;width: 100%;height: 5px;background: #d0d0d0;top: 0;left: 0}
+      header.inside .nav-menu li a.active:before , header.outSide .nav-menu li a.active:before{content:'';position: absolute;width: 100%;height: 5px;background: #d0d0d0;top: 0;left: 0}
       /*header .nav-menu li a.active:after {content:'';position: absolute;width: 100%;border-radius:6px;height: 5px;background: #fff;bottom: 0;left: 0}*/
 
       header .nav-menu li a:hover{color: #d0d0d0}
@@ -915,7 +919,7 @@ table.dashboard td:nth-child(odd) ,table.dashboard td:nth-child(even) {border-ri
   * li {list-style: none;}
   .adaptMarginSM {margin-top: 28px}
   .adaptMargin34 {margin-top: 34px}
-  .small-title {font-weight: bold}
+  .small-title {font-weight: bold;text-transform: capitalize;}
   .internal-content {padding: 0 14px;margin-bottom: 40px;}
     .internal-content li{line-height: 26px}
 table {width:94%;margin:auto;text-align: center;;margin-bottom: 40px}
@@ -963,7 +967,8 @@ h3.internal-title {display: inline-block;
   }
 h3.internal-title.short {min-width:initial;}
 
-h3.internal-title.noneBG {color:#6d6e71;font-size: 20px}
+h3.internal-title.noneBG {color:#6d6e71;font-size: 20px;}
+h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: center;display: block;}
 .internal-title.sec-title {font-size: 24px;font-weight: bolder}
   .page-content.inside.dashboard .internal-title.sec-title {color: #1c0f3a}
 	.page-content.inside.facebook .internal-title.sec-title {color: #4066ab}
@@ -1070,7 +1075,7 @@ h3.internal-title.noneBG {color:#6d6e71;font-size: 20px}
             }*/
 
             .bold-title{font-size: 16px;font-weight: bold;}
-            .rounded {font-size: 18px;font-weight: bold;padding: 20px 12px;border-radius: 50%;color: #fff;}
+            .rounded {font-size: 18px;font-weight: bold;padding: 20px 12px;border-radius: 50%;color: #fff;display: inline-block;text-align: center;width: 60px;    margin: 10px 0;}
             .rounded.facebook{background:#4066ab } 
             .rounded.twitter {background:#25aae1 } 
             .rounded.instagram{background:#125688 } 
@@ -1125,6 +1130,23 @@ h3.internal-title.noneBG {color:#6d6e71;font-size: 20px}
     font-size: 70px;}
 .compNum{
   text-align: center;
+    font-size: 22px;
+    color: #6d6e71;
+    font-weight: bold;
+    line-height: 26px;    
+    max-width: 180px;
+    height: auto;
+    padding: 10px;
+    display: block;
+    margin: 10px auto;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 20px;
+}
+.comptitors {padding: 0 80px}
+.compSocial li{text-align: left}
+.compSocial label {text-align: left;color:#6d6e71;display: block;font-size: 13px}
+.compSocial input {height: 30px;color: #000}
+.modal-title{text-align: center;
   color: #fff!important;
     font-size: 24px;
     font-weight: bold;
@@ -1135,13 +1157,26 @@ h3.internal-title.noneBG {color:#6d6e71;font-size: 20px}
     display: block;
     margin: 10px auto;
     background-color: #de1271;
-    border-radius: 4px;
-}
-.comptitors {padding: 0 80px}
-.compSocial li{text-align: left}
-.compSocial label {text-align: left;color:#6d6e71;display: block;font-size: 13px}
-.compSocial input {height: 30px;color: #000}
-
+    border-radius: 4px;}
 .modal-dialog {width: 100%!important;margin: 0}
-button.close {width: 50px;background: none;font-size: 70px}
+.modal-open .modal {width: 100%!important;padding: 0!important;height: 100%!important}
+.close {width: 50px;background: none;font-size: 62px;font-weight:100;float: none;position: absolute;right: 20px}
 .modal-header {border-bottom: 0px}
+.subsc-modal-title{text-align: center;
+    font-size: 24px;
+    color: #de1271;
+    margin: 40px 0 18px;
+    font-weight: bold;}
+.modal-footer{text-align: center;}
+.btn-primary{max-width: 248px;
+    margin: auto;
+    font-size: 21px;
+    border: none;}
+.dummyChart {width: 400px;height: 400px;text-align: center;margin: auto;}
+.dummy-img {width: 80%;margin: auto;}
+.dummy-img img{width: 100%}
+.addCompatitors {position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    text-align: center;} 

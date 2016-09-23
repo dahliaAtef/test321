@@ -65,7 +65,8 @@ GoogleCharts.drawCircle = function (jsonTable, title, divId) {
         google.visualization.events.addListener(chart, 'ready', selectHandler);
         chart.draw(data, options);
         function selectHandler() {
-            $('.internal-content > div > div > div').css("margin","auto")
+            $('.internal-content > div > div > div').css("margin","auto");
+            $('.circleChart').prev().addClass("circleChart-title")
           }
     });
 };

@@ -9,7 +9,7 @@ use digi\authclient\clients\Instagram;
 use digi\authclient\clients\Youtube;
 use digi\authclient\clients\GooglePlus;
 use common\models\custom\Model;
-use common\models\custom\Compatators;
+use common\models\custom\Competitors;
 use common\models\custom\CompChannels;
 use common\helpers\GoogleChartHelper;
 use common\helpers\InstagramGoogleChartHelper;
@@ -25,6 +25,7 @@ class Dashboard extends \common\models\base\Base
         $since = strtotime(date('Y-06-01', time()));
         $until = time();
         $session = Yii::$app->session;
+		$accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
         if(!$session['dashboard_accounts']){
             $dashboard_accounts = [];
             $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
@@ -33,7 +34,7 @@ class Dashboard extends \common\models\base\Base
                     $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
                     $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
                 }
-            } 
+            }
             $session->set('dashboard_accounts', $dashboard_accounts);
         }
         if(array_key_exists('facebook', $session['dashboard_accounts'])){
@@ -205,8 +206,166 @@ class Dashboard extends \common\models\base\Base
         return $interaction_per_channel_json_table;
     }
 	
-	public function saveCompatators($oCompatatorsForm){
-		
+	public function saveCompetitors($oCompetitorsForm){
+		$this->checkAndSaveCompetitorOne($oCompetitorsForm);
+		$this->checkAndSaveCompetitorTwo($oCompetitorsForm);
+		$this->checkAndSaveCompetitorThree($oCompetitorsForm);
+	}
+	
+	public function checkAndSaveCompetitorOne($oCompetitorsForm){
+		if($oCompetitorsForm->comp1fb || $oCompetitorsForm->comp1tw || $oCompetitorsForm->comp1insta || $oCompetitorsForm->comp1yt || $oCompetitorsForm->comp1gp || $oCompetitorsForm->comp1in){
+			$oCompetitor = new Competitors();
+			$oCompetitor->comp_no = 1;
+			$oCompetitor->user_id = Yii::$app->user->getId();
+			if($oCompetitor->save()){
+				$comp = [$oCompetitorsForm->comp1fb, $oCompetitorsForm->comp1tw, $oCompetitorsForm->comp1insta, $oCompetitorsForm->comp1yt, $oCompetitorsForm->comp1gp, $oCompetitorsForm->comp1in];
+				$this->checkChannnels($oCompetitor->id, $comp);
+			}
+		}
+	}
+	
+	public function checkAndSaveCompetitorTwo($oCompetitorsForm){
+		if($oCompetitorsForm->comp2fb || $oCompetitorsForm->comp2tw || $oCompetitorsForm->comp2insta || $oCompetitorsForm->comp2yt || $oCompetitorsForm->comp2gp || $oCompetitorsForm->comp2in){
+			$oCompetitor = new Competitors();
+			$oCompetitor->comp_no = 2;
+			$oCompetitor->user_id = Yii::$app->user->getId();
+			if($oCompetitor->save()){
+				$comp = [$oCompetitorsForm->comp2fb, $oCompetitorsForm->comp2tw, $oCompetitorsForm->comp2insta, $oCompetitorsForm->comp2yt, $oCompetitorsForm->comp2gp, $oCompetitorsForm->comp2in];
+				$this->checkChannnels($oCompetitor->id, $comp);
+			}
+		}
 	}
     
+	public function checkAndSaveCompetitorThree($oCompetitorsForm){
+		if($oCompetitorsForm->comp2fb || $oCompetitorsForm->comp2tw || $oCompetitorsForm->comp2insta || $oCompetitorsForm->comp2yt || $oCompetitorsForm->comp2gp || $oCompetitorsForm->comp2in){
+			$oCompetitor = new Competitors();
+			$oCompetitor->comp_no = 3;
+			$oCompetitor->user_id = Yii::$app->user->getId();
+			if($oCompetitor->save()){
+				$comp = [$oCompetitorsForm->comp3fb, $oCompetitorsForm->comp3tw, $oCompetitorsForm->comp3insta, $oCompetitorsForm->comp3yt, $oCompetitorsForm->comp3gp, $oCompetitorsForm->comp3in];
+				$this->checkChannnels($oCompetitor->id, $comp);
+			}
+		}
+	}
+    
+	public function checkChannnels($comp_id, $comp){
+		$this->checkAndSaveFacebook($comp_id, $comp[0]);
+		$this->checkAndSaveTwitter($comp_id, $comp[1]);
+		$this->checkAndSaveInstagram($comp_id, $comp[2]);
+		$this->checkAndSaveYoutube($comp_id, $comp[3]);
+		$this->checkAndSaveGooglePlus($comp_id, $comp[4]);
+		$this->checkAndSaveLinkedin($comp_id, $comp[5]);
+	}
+	
+	public function checkAndSaveFacebook($comp_id, $fb_comp){
+		if($fb_comp){
+			$fb = new Facebook();
+			$page = $fb->getCompetitorNameAndFollowersFromUrl($fb_comp);
+			$oCompDetails = new CompChannels();
+			$oCompDetails->comp_id = $comp_id;
+			$oCompDetails->comp_channel = 'facebook';
+			$oCompDetails->comp_channel_id = $page["id"];
+			$oCompDetails->comp_channel_name = $page["name"];
+			$oCompDetails->comp_channel_followers = $page["followers"];
+			$oCompDetails->save();
+		}
+	}
+    
+	public function checkAndSaveTwitter($comp_id, $tw_comp){
+		if($tw_comp){
+			$tw = new Twitter();
+			$page = $tw->getCompetitorNamesAndFollowers($tw_comp);
+			$oCompDetails = new CompChannels();
+			$oCompDetails->comp_id = $comp_id;
+			$oCompDetails->comp_channel = 'twitter';
+			$oCompDetails->comp_channel_id = $page["id"];
+			$oCompDetails->comp_channel_name = $page["name"];
+			$oCompDetails->comp_channel_followers = $page["followers"];
+			$oCompDetails->save();
+		}
+	}
+    
+	public function checkAndSaveInstagram($comp_id, $insta_comp){
+		if($insta_comp){
+			$insta = new Instagram();
+			$page = $insta->getCompetitorNameAndFollowers($insta_comp);
+			$oCompDetails = new CompChannels();
+			$oCompDetails->comp_id = $comp_id;
+			$oCompDetails->comp_channel = 'instagram';
+			$oCompDetails->comp_channel_id = $page["id"];
+			$oCompDetails->comp_channel_name = $page["name"];
+			$oCompDetails->comp_channel_followers = $page["followers"];
+			$oCompDetails->save();
+		}
+	}
+    
+	public function checkAndSaveYoutube($comp_id, $yt_comp){
+		if($yt_comp){
+			$yt = new Youtube();
+			$page = $yt->getCompetitorNameAndSubscribers($yt_comp);
+			$oCompDetails = new CompChannels();
+			$oCompDetails->comp_id = $comp_id;
+			$oCompDetails->comp_channel = 'youtube';
+			$oCompDetails->comp_channel_id = $page["id"];
+			$oCompDetails->comp_channel_name = $page["name"];
+			$oCompDetails->comp_channel_followers = $page["followers"];
+			$oCompDetails->save();
+		}
+	}
+    
+	public function checkAndSaveGooglePlus($comp_id, $gp_comp){
+		if($gp_comp){
+			$gp = new GooglePlus();
+			$page = $gp->getCompetitorNameAndCircledBy($gp_comp);
+			$oCompDetails = new CompChannels();
+			$oCompDetails->comp_id = $comp_id;
+			$oCompDetails->comp_channel = 'google_plus';
+			$oCompDetails->comp_channel_id = $page["id"];
+			$oCompDetails->comp_channel_name = $page["name"];
+			$oCompDetails->comp_channel_followers = $page["followers"];
+			$oCompDetails->save();
+		}
+	}
+    
+	public function checkAndSaveLinkedin($comp_id, $in_comp){
+		if($in_comp){
+			$page = GooglePlus::getCompetitorNameAndCircledBy($in_comp);
+			$oCompDetails = new CompChannels();
+			$oCompDetails->comp_id = $comp_id;
+			$oCompDetails->comp_channel = 'linkedin';
+			$oCompDetails->comp_channel_id = $page["id"];
+			$oCompDetails->comp_channel_name = $page["name"];
+			$oCompDetails->comp_channel_followers = $page["followers"];
+			$oCompDetails->save();
+		}
+	}
+    
+	public function getUserCompetitors($user_followers, $name){
+		$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+		if($oCompetitors){
+			foreach($oCompetitors as $oCompetitor){
+				$competitor_followers = 0;
+				foreach($oCompetitor->compChannels as $oChannel){
+					$competitor_followers += $oChannel->comp_channel_followers;
+				}
+				$competitors_array[$oCompetitor->compChannels[0]->comp_channel_name] = $competitor_followers;
+			}
+			$competitors_array[$name] = $user_followers;
+			$sum = array_sum($competitors_array);
+			foreach($competitors_array as $competitor => $value){
+				$comp_value = round(((($value)/($sum))*100),1);
+ 				$competitors_existance[$competitor.' '.$comp_value.'%'] = $comp_value;
+			}
+		}else{
+			$competitors_existance = null;
+		}
+		return $competitors_existance;
+	}
+	
+	public function getCompetitorsJsonTable($competitors_existance){
+		$competitors_existance_json_table = GoogleChartHelper::getDataTable('competitor', 'existance', $competitors_existance);
+        return $competitors_existance_json_table;
+	}
+	
+	
 }// end of class

@@ -1,19 +1,24 @@
 <?php
 
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 use yii\authclient\widgets\AuthChoice;
 use digi\authclient\clients\Facebook;
 use digi\authclient\clients\Youtube;
+use common\models\custom\Model;
 
 $this->title = 'Dashboard';
-//echo '<pre>'; var_dump($insights); echo '</pre>'; die;
+$dashboard_accounts = Yii::$app->session['dashboard_accounts'];
 $sx = $oDashboard->getSocialMediaExistance($insights);
-$fb = array_key_exists('facebook', Yii::$app->session['dashboard_accounts']);
-$yt = array_key_exists('youtube', Yii::$app->session['dashboard_accounts']);
-$tw = array_key_exists('twitter', Yii::$app->session['dashboard_accounts']);
-$insta = array_key_exists('instagram', Yii::$app->session['dashboard_accounts']);
-$gp = array_key_exists('google_plus', Yii::$app->session['dashboard_accounts']);
-$in = array_key_exists('linkedin', Yii::$app->session['dashboard_accounts']);
+$fb = array_key_exists('facebook', $dashboard_accounts);
+$yt = array_key_exists('youtube', $dashboard_accounts);
+$tw = array_key_exists('twitter', $dashboard_accounts);
+$insta = array_key_exists('instagram', $dashboard_accounts);
+$gp = array_key_exists('google_plus', $dashboard_accounts);
+$in = array_key_exists('linkedin', $dashboard_accounts);
+reset($dashboard_accounts);
+$name = Model::findOne([$dashboard_accounts[key($dashboard_accounts)]['model_id']])->name;
 ?>
 <div class="page-content inside dashboard">
     <div class="container">
@@ -31,10 +36,10 @@ $in = array_key_exists('linkedin', Yii::$app->session['dashboard_accounts']);
 
 
             <?php 
-            if(Yii::$app->session['dashboard_accounts']){ 
+            if($dashboard_accounts){ 
                 $kpi_overviews = $oDashboard->getChannelsKpiOverviews();
             ?>
-            <?= $this->render('_socialMediaExistanceChart', ['sx_json_table' => $oDashboard->getSocialMediaExistanceJsonTable($sx),'sx' => $sx]); ?>
+            <?= $this->render('_socialMediaExistanceChart', ['sx_json_table' => $oDashboard->getSocialMediaExistanceJsonTable($sx),'sx' => $sx, 'name' => $name]); ?>
             
             <?= $this->render('_growthPerChannelChart', ['growth_per_channel' => $oDashboard->getGrowthPerMonth($insights)]); ?>
        
@@ -190,11 +195,6 @@ $in = array_key_exists('linkedin', Yii::$app->session['dashboard_accounts']);
 	</div>
 	<!-- inner page -->
 
-
-<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-  Launch demo modal
-</button>
-
     </div>
 
 </div>
@@ -211,118 +211,178 @@ $in = array_key_exists('linkedin', Yii::$app->session['dashboard_accounts']);
     </div>
 </div>
 
-<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal  bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
+		<?php $form = ActiveForm::begin(['id' => 'competitors-form', 'class' => 'competitors-form']); ?>
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <div class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
-        </button>
-        <h3 class="internal-title noneBG modal-title compNum" id="myModalLabel">Name Your Compitators</h3>
+        </div>
+        <div class="subsc-modal-title">Name Your Competitors</div> 
+        <!-- <h3 class="internal-title noneBG modal-title" id="myModalLabel">Name Your Compitators</h3> -->
       </div>
       <div class="modal-body">
         
             <div class="container">
+				
                 <div class="row">
                     <div class="col-md-4 comptitors">
-                        <div class="compNum">compatitor 1</div>
+                        <div class="compNum">competitor 1</div>
                         <div class="compSocial">
                             <ul>
+								<?php if($fb){ ?>
                                 <li>
                                     <label forr="antaka">facebook URL</label>
-                                    <input type="text" placeHolder="Add URL" name="antaka">
+									<?= $form->field($oCompetitorsForm, 'comp1fb')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL" name="antaka"-->
                                 </li>
+								<?php } ?>
+								<?php if($tw){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>Twitter URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp1tw')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($insta){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>instagram URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp1insta')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($yt){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>youtube URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp1yt')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($gp){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>google+ URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp1gp')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($in){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>linkedin URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp1in')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
                             </ul>
                         </div>
                     </div>
                     <div class="col-md-4 comptitors">
-                        <div class="compNum">compatitor 2</div>
+                        <div class="compNum">competitor 2</div>
                         <div class="compSocial">
                             <ul>
+								<?php if($fb){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label forr="antaka">facebook URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp2fb')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL" name="antaka"-->
                                 </li>
+								<?php } ?>
+                                <?php if($tw){ ?>
+								<li>
+                                    <label>Twitter URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp2tw')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
+                                </li>
+								<?php } ?>
+								<?php if($insta){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>instagram URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp2insta')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($yt){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>youtube URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp2yt')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($gp){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>google+ URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp2gp')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($in){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>linkedin URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp2in')->textInput()->label(false) ?>
+									<!--input type="text" placeHolder="Add URL"-->
                                 </li>
-                                <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
-                                </li>
+								<?php } ?>
                             </ul>
                         </div>
                     </div>
                     <div class="col-md-4 comptitors">
-                        <div class="compNum">compatitor 3</div>
+                        <div class="compNum">competitor 3</div>
                         <div class="compSocial">
                             <ul>
-                                <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                <?php if($fb){ ?>
+								<li>
+                                    <label forr="antaka">facebook URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp3fb')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL" name="antaka"-->
                                 </li>
+								<?php } ?>
+								<?php if($tw){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>Twitter URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp3tw')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($insta){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>instagram URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp3insta')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($yt){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>youtube URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp3yt')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($gp){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>google+ URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp3gp')->textInput()->label(false) ?>
+                                    <!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
+								<?php if($in){ ?>
                                 <li>
-                                    <label>facebook URL</label>
-                                    <input type="text" placeHolder="Add URL">
+                                    <label>linkedin URL</label>
+									<?= $form->field($oCompetitorsForm, 'comp3in')->textInput()->label(false) ?>
+									<!--input type="text" placeHolder="Add URL"-->
                                 </li>
+								<?php } ?>
                             </ul>
                         </div>
                     </div>
                 </div>
+				
             </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Save changes</button>
+		<?= Html::submitButton('Submit', ['id' => 'btn-competitors', 'class' => 'btn btn-primary' , 'name' => 'submit-competitors']) ?>
+        <!--button type="button" class="btn btn-primary">Submit</button-->
       </div>
+	  <?php ActiveForm::end(); ?>
     </div>
   </div>
 </div>

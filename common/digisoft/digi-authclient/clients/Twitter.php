@@ -75,16 +75,13 @@ class Twitter extends \yii\authclient\clients\Twitter
         return $user_data;
 	}
 	
-	public function getNumberOfFollowers($user_data){
-		$followers = $user_data["followers_count"];
-		return $followers;
-	}
-	
-	public function getCompatatorsFollowers($url){
+	public function getCompetitorNamesAndFollowers($url){
 		$screen_name = $this->getScreenNameFromUrl($url);
 		$user_data = $this->getAccountDataByScreenName($screen_name);
-		$followers = $this->getNumberOfFollowers($user_data);
-		return $followers;
+		$page['name'] = $user_data["name"];
+		$page['id'] = $user_data["id_str"];
+		$page['followers'] = $user_data["followers_count"];
+		return $page;
 	}
     
     public function getAccountFollowers(){

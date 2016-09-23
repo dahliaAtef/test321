@@ -123,21 +123,26 @@ class Youtube extends OAuth2
     
 	public function getChannelDataByUserName($username){
 		$client = $this->getClient();
-        $channel = $client->api("/youtube/v3/channels?part=id,statistics&forUsername=".$username, 'GET');
+        $channel = $client->api("/youtube/v3/channels?part=id,snippet,statistics&id=".$username, 'GET');
+		if(!($channel['items'])){
+			$channel = $client->api("/youtube/v3/channels?part=id,snippet,statistics&forUsername=".$username, 'GET');
+		}
         return $channel;
 	}
 	
 	public function getChannelUsernameFromUrl($url){
-		$name = substr($url, 29);
-		$username = explode('/', $name)[0];
+		$name = substr($url, 24);
+		$username = explode('/', $name)[1];
 		return $username;
 	}
 	
-	public function getCompatatorSubscribers($url){
+	public function getCompetitorNameAndSubscribers($url){
 		$username = $this->getChannelUsernameFromUrl($url);
 		$channel = $this->getChannelDataByUserName($username);
-		$subscribers = $channel["items"][0]["statistics"]["subscriberCount"];
-		return $subscribers;
+		$page['followers'] = $channel["items"][0]["statistics"]["subscriberCount"];
+		$page['name'] = $channel["items"][0]["id"];
+		$page['id'] = $channel["items"][0]["snippet"]["title"];
+		return $page;
 	}
 	
     public function getChannelAnalytics($start_date = null, $end_date = null){
