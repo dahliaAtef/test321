@@ -271,7 +271,16 @@ class SiteController extends \frontend\components\BaseController {
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
         $insta = new Instagram ();
-		//echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                Instagram::setClient( unserialize($oAuthclient->source_data));
+                //@ToDo check if the token is not expired
+            }
+        }
+
+
+        //echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
 			if(Yii::$app->request->post() && isset($_POST['since'])){
 				$since = $_POST['since'];
 			}else{
@@ -285,13 +294,13 @@ class SiteController extends \frontend\components\BaseController {
 		$days_in_range = $insta->getDaysInRange($since, $until);
         if($session->has('instagram')){
             $user_data = $insta->getUserData();
-            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']); 
-            if(!$oAuthclient){
+            if(!$oAuthclient or ($oAuthclient->source_data ==null )){
                 $client = $insta->getClient();
-                $oAuthclient = new Authclient();
+                $oAuthclient= !$oAuthclient ?  new Authclient() : $oAuthclient;
                 $oAuthclient->user_id = Yii::$app->user->getId();
                 $oAuthclient->source = $client->name;
                 $oAuthclient->source_id = $user_data["id"];
+                $oAuthclient->source_data = serialize($client);
                 $oAuthclient->save();
 				$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }
