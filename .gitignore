@@ -28,7 +28,7 @@ default.pack
 *.log
 *.rej
 *.swo
-*.swp
+*.swpconsole/migrations/m160923_213510_EditAuthUsersTBL.php
 *.vi
 *~
 
@@ -56,3 +56,4 @@ cgi-bin
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+amer

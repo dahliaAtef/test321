@@ -12,18 +12,24 @@
             echo '</div>';
         }
 
-        $sum = array_sum($devices);
-        $max = max($devices);
-        switch($max){
-            case ($devices['desktop'] == $max):
-                $device_type = 'Desktop';
-                break;
-            case ($devices['mobile/tablet'] == $max):
-                $device_type = 'Mobile/Tablet';
-                break;
-            case ($devices['other'] == $max):
-                $device_type = 'Others';
-                break;
+        if(! empty($devices)) {
+            $sum = array_sum($devices);
+            $max = max($devices);
+            switch ($max) {
+                case ($devices['desktop'] == $max):
+                    $device_type = 'Desktop';
+                    break;
+                case ($devices['mobile/tablet'] == $max):
+                    $device_type = 'Mobile/Tablet';
+                    break;
+                case ($devices['other'] == $max):
+                    $device_type = 'Others';
+                    break;
+            }
+        }else{
+            $device_type== 'Others';
+            $sum=1;
+            $max=0;
         }
         echo '<div class="internal-content">';
         echo '<span class="bold-title">Majority : '.$device_type.' by '.$max.' Percentage </span><span class="rounded twitter">'.round(((($max)/ $sum)*100)).'%</span>';

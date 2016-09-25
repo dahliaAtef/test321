@@ -872,10 +872,13 @@ class Twitter extends \yii\authclient\clients\Twitter
     }
     
 	public function getDeviceTypeJsonTable($devices){
-		asort($devices);
+        if(!empty($devices)){
+            asort($devices);
+        }
 		$devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
         return $devices_json_table;
 	}
-	
+
+
     
 }

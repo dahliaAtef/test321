@@ -55,7 +55,7 @@ class SiteController extends \frontend\components\BaseController {
      * Home page
      */
     public function actionHome() {
-        //var_dump (Yii::$app->user->getId()); die;
+          //var_dump (Yii::$app->user->getId()); die;
         return (Yii::$app->user->isGuest) ? $this->render('home') : $this->redirect('dashboard');
     }
     
@@ -321,23 +321,36 @@ class SiteController extends \frontend\components\BaseController {
     
     public function actionTwitter(){
         //ini_set('max_execution_time', 900000);
+
+        //check if the save access is working
         $twitter = new Twitter();
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                Twitter::setClient( unserialize($oAuthclient->source_data));
+                //@ToDo check if the token is not expired
+                }
+        }
+
+
         $session = Yii::$app->session;
 		//echo '<pre>'; var_dump($twitter->getCompetitorsNamesAndFollowers("https://twitter.com/GoldDerby")); echo '</pre>'; die;
         if($session->has('twitter')){
             $client = $twitter->getClient();
             //echo '<pre>'; var_dump($client->api('application/rate_limit_status.json', 'GET', ['resources' => 'statuses'])); echo '</pre>'; die;
             $user_data = $twitter->getAccountData();
-            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']); 
-            if(!$oAuthclient){
+           // $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
+            if(!$oAuthclient or ($oAuthclient->source_data==null)){
                 $client = $twitter->getClient();
-                $oAuthclient = new Authclient();
+                $oAuthclient= !$oAuthclient ?  new Authclient() : $oAuthclient;
                 $oAuthclient->user_id = Yii::$app->user->getId();
                 $oAuthclient->source = $client->name;
+                $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $user_data["id_str"];
                 $oAuthclient->save();
                 //$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }
+
             //$oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'instagram']);
             $oModels = $oAuthclient->model;
             if(!$oModels){
@@ -366,13 +379,25 @@ class SiteController extends \frontend\components\BaseController {
         ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();$oUserPagesForm = new UserPagesForm();
+
+        //check if the save access is working
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                Facebook::setClient( unserialize($oAuthclient->source_data));
+                //@ToDo check if the token is not expired
+            }
+        }
+
 		//echo '<pre>'; var_dump($fb->getCompetitorNameAndFollowersFromUrl("https://www.facebook.com/collectivenouncomedy/?hc_ref=NEWSFEED")); echo '</pre>'; die;
+
         if($session->has('facebook')){
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $fb->getClient();
                 $oAuthclient = new Authclient();
                 $oAuthclient->user_id = Yii::$app->user->getId();
                 $oAuthclient->source = $client->name;
+                $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
                 $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
@@ -409,15 +434,24 @@ class SiteController extends \frontend\components\BaseController {
             Facebook::setClient($client);
             return $this->action->redirect( Url::to(['facebook'],true) );
         }elseif($client->name == 'twitter'){
-            Twitter::setClient($client);
+                Twitter::setClient($client);
+//            echo "<pre>";
+//            print_r($client);
+//            echo "<pre>";
+//            die;
+//            $twitter = new Twitter();
+//            $user_data = $twitter->getAccountData();
+//
 //            $oAuthclient = new Authclient();
-//            $oAuthclient->user_id = 76;
+//            $oAuthclient->user_id = Yii::$app->user->getId();
 //            $oAuthclient->source = $client->name;
-//            $oAuthclient->source_id = strval($client->getUserAttributes()["id"]);
+//            $oAuthclient->source_data = serialize($client);
+//            $oAuthclient->source_id = $user_data["id_str"];
 //            $oAuthclient->save();
             return $this->action->redirect( Url::to(['twitter'],true) );
         }elseif($client->name == 'instagram'){
             Instagram::setClient($client);
+
 //            $oAuthclient = new Authclient();
 //            $oAuthclient->user_id = 75;
 //            $oAuthclient->source = $client->name;
