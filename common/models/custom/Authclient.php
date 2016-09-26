@@ -33,7 +33,7 @@ class Authclient extends \common\models\base\Base
     {
         return [
             [['user_id'], 'integer'],
-            [['created', 'updated'], 'safe'],
+            [['created', 'updated','source_data'], 'safe'],
             [['source', 'source_id'], 'string', 'max' => 255]
         ];
     }
