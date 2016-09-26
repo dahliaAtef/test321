@@ -1,7 +1,8 @@
 	<?php
 		foreach($top_posts_by_engagement as $post){
-		echo '<div class="col-md-3 col-sm-6">';
-		    echo '<div class="post-img"><img src="'.$post['media_url'].'" /></div>';
+		echo '<div class="col-lg-3 col-md-4 col-sm-6">';
+			echo '<div class="post-item">';
+		    	echo '<div class="post-img"><img src="'.$post['media_url'].'" /></div>';
 	?>
 	<div class="internal-content">
 		<ul>
@@ -10,6 +11,7 @@
 			<li><span class="small-title">Comments : </span><?= $post['comments'] ?></li>
 			<li><a href="<?= $post['link'] ?>" target="_blank">View on instagram</a></li>
 		</ul>
+	</div>
 	</div>
 
 	</div>

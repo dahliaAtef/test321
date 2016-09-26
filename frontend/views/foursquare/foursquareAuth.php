@@ -7,7 +7,7 @@ $this->title = 'Foursquare';
 			<div class="container">
 				<div class="inner-page">
 					<div class="authent foursquare btn ">
-                                            <a class="auth-link foursquare" href="/site/auth?authclient=foursquare" data-popup-width="860" data-popup-height="480"><span>Authenticate Your Account</span></a>
+                                            <a class="auth-link foursquare" href="/site/auth?authclient=linkedin" data-popup-width="860" data-popup-height="480"><span>Authenticate Your Account</span></a>
 					</div>
 				</div>
 				<!-- inner page -->

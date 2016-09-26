@@ -308,8 +308,22 @@ class Youtube extends OAuth2
         ($start_date) ? '' : ($start_date = date('Y-m-d', strtotime('-1 month', time()))) ;
         ($end_date) ? '' : ($end_date = date('Y-m-d', strtotime('-2 days', time())));
         $top_ten_viewed_videos = $client->api("/youtube/analytics/v1/reports?ids=channel==MINE&start-date=".$start_date."&end-date=".$end_date."&dimensions=video&sort=-estimatedMinutesWatched&metrics=estimatedMinutesWatched,views,likes,subscribersGained&max-results=10");
-        //echo '<pre>'; var_dump($top_ten_viewed_videos); echo '</pre>'; die;
-		return $top_ten_viewed_videos;
+        return $top_ten_viewed_videos;
+    }
+    
+    public function getTopTenVideosAnalyticsJson($top_ten_viewed_videos){
+        if(array_key_exists('rows', $top_ten_viewed_videos)){
+            $counter = 0;
+            foreach($top_ten_viewed_videos['rows'] as $video){
+                $videos_analytics[$counter]['data'] = $this->getVideoData($video[0])['items'][0];
+                $videos_analytics[$counter]['analytics'] = $this->getVideoAnalytics($video[0])['rows'];
+                $counter++;
+            }
+            $top_ten_viewed_videos_analytics_json = json_encode($videos_analytics);
+        }else{
+            $top_ten_viewed_videos_analytics_json = null;
+        }
+        return $top_ten_viewed_videos_analytics_json;
     }
     
     public static function getVideoData($video_id){

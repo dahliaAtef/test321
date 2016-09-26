@@ -1075,7 +1075,15 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
             }*/
 
             .bold-title{font-size: 16px;font-weight: bold;}
-            .rounded {font-size: 18px;font-weight: bold;padding: 20px 12px;border-radius: 50%;color: #fff;display: inline-block;text-align: center;width: 60px;    margin: 10px 0;}
+            .rounded {    font-size: 16px;
+    font-weight: bold;
+    padding: 16px 10px;
+    border-radius: 50%;
+    color: #fff;
+    display: inline-block;
+    text-align: center;
+    width: 56px;
+    margin: 10px 0;}
             .rounded.facebook{background:#4066ab } 
             .rounded.twitter {background:#25aae1 } 
             .rounded.instagram{background:#125688 } 
@@ -1176,7 +1184,8 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
 .dummy-img {width: 80%;margin: auto;}
 .dummy-img img{width: 100%}
 .addCompatitors {position: absolute;
-    top: 50%;
+    top: 41%;
     left: 0;
     right: 0;
-    text-align: center;} 
+    text-align: center;}
+#competitors-form {min-height: 99vh} 

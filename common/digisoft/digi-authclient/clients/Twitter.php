@@ -16,6 +16,7 @@ class Twitter extends \yii\authclient\clients\Twitter
     const POST = 1;
     const MENTION = 2;
     const REPLY = 3;
+    const TWEET = 1;
     
     public $account_insights_in_range;
     public $days_in_range;
@@ -252,10 +253,10 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oTweetModel->shares = $tweet["retweet_count"];
         $comments = Model::find()->andWhere([/*'parent_id' => $oAccountModel->id ,*/'in_reply_to_id' => $tweet["id_str"]])->all();
         $oTweetModel->comments = count($comments);
-		$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
+	$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
         $oTweetModel->followers = (strtotime($tweet["created_at"]) >= $today) ? $tweet['user']['followers_count'] :  null;
         $oTweetModel->creation_time = strtotime($tweet["created_at"]);
-		$oTweetModel->media_url = (array_key_exists('media', $tweet['entities'])) ? $tweet['entities']['media'][0]['media_url_https'] : null;
+	$oTweetModel->media_url = (array_key_exists('media', $tweet['entities'])) ? $tweet['entities']['media'][0]['media_url_https'] : null;
         $oTweetModel->url = 'https://twitter.com/'.$oAccountModel->name.'/status/'.$tweet['id_str'];
         $oTweetModel->source = strip_tags($tweet['source']);
         
@@ -272,6 +273,7 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oTweetModel->parent_id = $oAccountModel->id;
         $oTweetModel->entity_id = $tweet["id_str"];
         $oTweetModel->type = self::POST;
+        $oMentionModel->post_type = self::TWEET;
         $oTweetModel->content = $tweet["text"];
         $oTweetModel->likes = $tweet["favorite_count"];
         $oTweetModel->shares = $tweet["retweet_count"];
@@ -281,7 +283,7 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oTweetModel->followers = $tweet['user']['followers_count'];
         $oTweetModel->creation_time = strtotime($tweet["created_at"]);
         $oTweetModel->url = 'https://twitter.com/'.$oAccountModel->name.'/status/'.$tweet['id_str'];
-		$oTweetModel->media_url = (array_key_exists('media', $tweet['entities'])) ? $tweet['entities']['media'][0]['media_url_https'] : null;
+	$oTweetModel->media_url = (array_key_exists('media', $tweet['entities'])) ? $tweet['entities']['media'][0]['media_url_https'] : null;
         $oTweetModel->source = strip_tags($tweet['source']);
         $oTweetModel->tags = (!empty($tweet['entities']['hashtags'])) ? $this->getTweetTags($tweet['entities']['hashtags']) : null;
         if(!$oTweetModel->save()){
@@ -304,7 +306,8 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oMentionModel->authclient_id = $oAccountModel->authclient_id;
         $oMentionModel->parent_id = $oAccountModel->id;
         $oMentionModel->entity_id = $mention["id_str"];
-        $oMentionModel->type = ($mention["in_reply_to_status_id_str"] && ($mention["in_reply_to_user_id_str"] == $oAccountModel->authclient_id)) ? self::REPLY : self::MENTION;
+        $oMentionModel->type = self::POST;
+        $oMentionModel->post_type = ($mention["in_reply_to_status_id_str"] && ($mention["in_reply_to_user_id_str"] == $oAccountModel->authclient_id)) ? self::REPLY : self::MENTION;
         $oMentionModel->in_reply_to_id = $mention["in_reply_to_status_id_str"];
         //echo $oMentionModel->in_reply_to_id; die;
         //$oMentionModel->likes = $mention["favorite_count"];

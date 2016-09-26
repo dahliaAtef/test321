@@ -276,22 +276,26 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 Instagram::setClient( unserialize($oAuthclient->source_data));
                 //@ToDo check if the token is not expired
+            }else{
+                $client = Instagram::getClient();
+                $oAuthclient->source_data = serialize($client);
+                $oAuthclient->update();
             }
         }
 
 
         //echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
-			if(Yii::$app->request->post() && isset($_POST['since'])){
-				$since = $_POST['since'];
-			}else{
-				$since =  strtotime('-3 months', time());
-			}
-			if(Yii::$app->request->post() && isset($_POST['until'])){
-				$until = $_POST['until'];
-			}else{
-				$until = time();
-			}
-		$days_in_range = $insta->getDaysInRange($since, $until);
+	if(Yii::$app->request->post() && isset($_POST['since'])){
+            $since = $_POST['since'];
+	}else{
+            $since =  strtotime('-3 months', time());
+	}
+	if(Yii::$app->request->post() && isset($_POST['until'])){
+            $until = $_POST['until'];
+	}else{
+            $until = time();
+	}
+	$days_in_range = $insta->getDaysInRange($since, $until);
         if($session->has('instagram')){
             $user_data = $insta->getUserData();
             if(!$oAuthclient or ($oAuthclient->source_data ==null )){
@@ -302,7 +306,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_id = $user_data["id"];
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->save();
-				$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
+		$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }
             //$oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'instagram']); 
             $oModels = $oAuthclient->model;
@@ -310,7 +314,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }else{
 				
-				//$insta->saveAccountInsights($oModels[0], $user_data);
+		//$insta->saveAccountInsights($oModels[0], $user_data);
                 $insta->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
             }
             return $this->render('/instagram/instagram', [
@@ -319,9 +323,9 @@ class SiteController extends \frontend\components\BaseController {
                 'followers_growth' => $insta->getFollowersGrowth($days_in_range),
                 'followers_gained_lost_json_table' => $insta->getFollowersGainedAndLostJsonTable($days_in_range),
                 'statistics' => $insta->getEngagementStatistics($oModels[0]->id, $days_in_range, $since, $until),
-				'model_id' => $oModels[0]->id,
-				'since' => $since,
-				'until' => $until,
+		'model_id' => $oModels[0]->id,
+		'since' => $since,
+		'until' => $until,
                     ]);
         }else{
             return $this->render('/instagram/instagramAuth');
@@ -388,13 +392,17 @@ class SiteController extends \frontend\components\BaseController {
         ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();$oUserPagesForm = new UserPagesForm();
-
+        
         //check if the save access is working
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
                 Facebook::setClient( unserialize($oAuthclient->source_data));
                 //@ToDo check if the token is not expired
+            }else{
+                $client = Facebook::getClient();
+                $oAuthclient->source_data = serialize($client);
+                $oAuthclient->update();
             }
         }
 
@@ -484,7 +492,7 @@ class SiteController extends \frontend\components\BaseController {
             return $this->action->redirect( Url::to(['foursquare'],true) );
         }else{
 			
-            echo '<pre>'; var_dump($client->api('/v1/people/~')); echo '</pre>'; die;
+            echo '<pre>'; var_dump($client->api('companies/~?format=json')); echo '</pre>'; die;
         }
     }
 
