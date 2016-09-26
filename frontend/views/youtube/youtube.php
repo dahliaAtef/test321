@@ -92,8 +92,8 @@ $locations = $youtube->getAnalyticsPerLocation($start_date = null, $end_date = n
             </div>
 
             <?php
-
-            echo $this->render('_topTenViewedVideos', ['top_ten_viewed_videos' => $youtube->getTopTenMostedVideosForChannel(), 'youtube' => $youtube]);
+            $top_ten_viewed_videos = $youtube->getTopTenMostedVideosForChannel();
+            echo $this->render('_topTenViewedVideos', ['top_ten_viewed_videos' => $top_ten_viewed_videos, 'youtube' => $youtube, 'top_ten_analytics_json' => $youtube->getTopTenVideosAnalyticsJson($top_ten_viewed_videos)]);
 
             ?>
 

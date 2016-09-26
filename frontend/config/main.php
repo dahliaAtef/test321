@@ -125,6 +125,11 @@ return [
                     'clientId' => 'OP3O2BVLE41LUBNE0O4J5I2KWFVHMBGEIXQUFBSFFQCJRBNV',
                     'clientSecret' => '5E54ADIOBYGWOF2PRDVQXHLMALKY0T2GJ0NWXLJV0HAC0CK3',
                 ],
+		'linkedin' => [
+                    'class' => 'digi\authclient\clients\LinkedIn',
+                    'clientId' => '785ycgac580a0k',
+                    'clientSecret' => '1U8C8f4CPvELTDK0',
+		],
             ],
         ],
 

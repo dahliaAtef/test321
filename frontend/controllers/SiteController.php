@@ -441,7 +441,7 @@ class SiteController extends \frontend\components\BaseController {
             return $this->action->redirect( Url::to(['foursquare'],true) );
         }else{
 			
-            echo '<pre>'; var_dump($client->api('/v1/people/~')); echo '</pre>'; die;
+            echo '<pre>'; var_dump($client->api('companies/~?format=json')); echo '</pre>'; die;
         }
     }
 

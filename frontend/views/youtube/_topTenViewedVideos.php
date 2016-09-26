@@ -2,7 +2,7 @@
 <?php
 use yii\helpers\Url;
 use digi\authclient\clients\Youtube;
-
+echo '<pre>'; var_dump($top_ten_analytics_json); echo '</pre>'; die;
 if(array_key_exists('rows', $top_ten_viewed_videos)){
     echo "<div class='row'>";
     echo "<h3 class='internal-title noneBG'>Top 10 viewed videos</h3>";
