@@ -1187,4 +1187,5 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
     top: 41%;
     left: 0;
     right: 0;
-    text-align: center;} 
+    text-align: center;}
+#competitors-form {min-height: 99vh} 

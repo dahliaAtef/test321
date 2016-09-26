@@ -42,7 +42,7 @@ $this->title = 'Instagram';
             
 
 					<ul>
-						<li><span class="small-title">Total Followers Count : </span><?= $insta->account_insights_in_range[count($insta->account_insights_in_range)-1]->followers ?></li>
+						<li><span class="small-title">Followers Number : </span><?= $insta->account_insights_in_range[count($insta->account_insights_in_range)-1]->followers ?></li>
 						<li><span class="small-title">Followers Change : </span><?= $followers_change ?></li>
 						<li><span class="small-title">Avg. Followers Change per Day : </span><?= round((($followers_change)/(count($followers_growth))), 2) ?></li>
 					</ul>

@@ -30,7 +30,7 @@ $this->title = 'Twitter';
             <?php
             echo '<ul>';
             
-            echo '<li><span class="small-title">Total Followers Count : </span>'.$twitter->account_insights_in_range[count($twitter->account_insights_in_range)-1]->followers.'</li>';
+            echo '<li><span class="small-title">Followers Number : </span>'.$twitter->account_insights_in_range[count($twitter->account_insights_in_range)-1]->followers.'</li>';
 
             echo '<li><span class="small-title">Followers Change : </span>'.$followers_change.'</li>';
 
@@ -60,7 +60,7 @@ $this->title = 'Twitter';
             <?php
             echo '<ul>';
             
-            echo '<li><span class="small-title">Total Following Count : </span>'.$twitter->account_insights_in_range[count($twitter->account_insights_in_range)-1]->follows.'</li>';
+            echo '<li><span class="small-title">Following Number : </span>'.$twitter->account_insights_in_range[count($twitter->account_insights_in_range)-1]->follows.'</li>';
 
             echo '<li><span class="small-title">Following Change : </span>'.$following_change.'</li>';
 
@@ -90,7 +90,7 @@ $this->title = 'Twitter';
             <?php
             echo '<ul>';
             
-            echo '<li><span class="small-title">Total Listing Count : </span>'.$twitter->account_insights_in_range[count($twitter->account_insights_in_range)-1]->listed.'</li>';
+            echo '<li><span class="small-title">Listing Number : </span>'.$twitter->account_insights_in_range[count($twitter->account_insights_in_range)-1]->listed.'</li>';
 
             echo '<li><span class="small-title">Listing Change : </span>'.$listed_change.'</li>';
 
@@ -157,8 +157,8 @@ $this->title = 'Twitter';
             <h3 class="internal-title twitter ">Interactions Overview</h3>
             <div class="internal-content">
                 <ul>
-                    <li>Total Interactions : <?= $statistics['total_interaction'] ?></li>
-                    <li>Avg Interactions per day : <?= round((($statistics['avg_interaction_per_day'])/30),2) ?></li>
+                    <li><span class="small-title">Total Interactions : </span><?= $statistics['total_interaction'] ?></li>
+                    <li><span class="small-title">Avg Interactions per day : </span><?= round((($statistics['avg_interaction_per_day'])/30),2) ?></li>
                 </ul>
             </div>
             </div>
@@ -186,8 +186,8 @@ $this->title = 'Twitter';
             <h3 class="internal-title twitter ">Mentions Overview</h3>
             <div class="internal-content">
                 <ul>
-                    <li>Total Mentions : <?= $statistics['mentions_per_day']['total_mentions'] ?></li>
-                    <li>Avg Mentions per day : <?= $statistics['mentions_per_day']['avg_mentions_per_day'] ?></li>
+                    <li><span class="small-title">Total Mentions : </span><?= $statistics['mentions_per_day']['total_mentions'] ?></li>
+                    <li><span class="small-title">Avg Mentions per day : </span><?= $statistics['mentions_per_day']['avg_mentions_per_day'] ?></li>
                 </ul>
             </div>
             </div>

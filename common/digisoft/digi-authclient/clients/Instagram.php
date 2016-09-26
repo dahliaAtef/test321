@@ -292,7 +292,7 @@ class Instagram extends OAuth2
         return $oMediaModel;
     }
 	
-	public function updateMediaModel($oMediaModel, $media){
+    public function updateMediaModel($oMediaModel, $media){
         $oMediaModel->likes = $media["likes"]["count"];
         $oMediaModel->comments = $media["comments"]["count"];
         $oMediaModel->update();
@@ -434,20 +434,20 @@ class Instagram extends OAuth2
         foreach($days_in_range as $day){
             if(is_array($this->account_insights_in_range)){
                 foreach($this->account_insights_in_range as $account_insights){
-                    if(date('d M, y', strtotime($account_insights->created)) == date('d M, y', $day)){
-                       $followers_gained_lost[date('d M, y', $day)]['gained'] = $account_insights->gained_followers;
-                       $followers_gained_lost[date('d M, y', $day)]['lost'] = $account_insights->lost_followers;
+                    if(date('M d', strtotime($account_insights->created)) == date('M d', $day)){
+                       $followers_gained_lost[date('M d', $day)]['gained'] = $account_insights->gained_followers;
+                       $followers_gained_lost[date('M d', $day)]['lost'] = $account_insights->lost_followers;
                     }
                 } 
             }else{
-                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == date('d M, y', $day)){
-                    $followers_gained_lost[date('d M, y', $day)]['gained'] = $this->account_insights_in_range->gained_followers;
-                    $followers_gained_lost[date('d M, y', $day)]['lost'] = $this->account_insights_in_range->lost_followers;
+                if(date('M d', strtotime($this->account_insights_in_range->created)) == date('M d', $day)){
+                    $followers_gained_lost[date('M d', $day)]['gained'] = $this->account_insights_in_range->gained_followers;
+                    $followers_gained_lost[date('M d', $day)]['lost'] = $this->account_insights_in_range->lost_followers;
                 }
             }
-            if(!array_key_exists(date('d M, y', $day), $followers_gained_lost)){
-                $followers_gained_lost[date('d M, y', $day)]['gained'] = null;
-                $followers_gained_lost[date('d M, y', $day)]['lost'] = null;
+            if(!array_key_exists(date('M d', $day), $followers_gained_lost)){
+                $followers_gained_lost[date('M d', $day)]['gained'] = null;
+                $followers_gained_lost[date('M d', $day)]['lost'] = null;
             }
         }
         return $followers_gained_lost;
@@ -465,17 +465,17 @@ class Instagram extends OAuth2
             if(is_array($this->account_insights_in_range)){
                 foreach($this->account_insights_in_range as $account_insights){
                     //var_dump($account_insights->created); die;
-                    if(date('d M, y', strtotime($account_insights->created)) == date('d M, y', $day)){
-                       $followers_growth[date('d M, y', $day)] = $account_insights->followers;
+                    if(date('M d', strtotime($account_insights->created)) == date('M d', $day)){
+                       $followers_growth[date('M d', $day)] = $account_insights->followers;
                     }
                 } 
             }else{
-                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == date('d M, y', $day)){
-                       $followers_growth[date('d M, y', $day)] = $this->account_insights_in_range->followers;
+                if(date('M d', strtotime($this->account_insights_in_range->created)) == date('M d', $day)){
+                       $followers_growth[date('M d', $day)] = $this->account_insights_in_range->followers;
                     }
             }
-            if(!array_key_exists(date('d M, y', $day), $followers_growth)){
-                $followers_growth[date('d M, y', $day)] = null;
+            if(!array_key_exists(date('M d', $day), $followers_growth)){
+                $followers_growth[date('M d', $day)] = null;
             }
         }
         return $followers_growth;
@@ -487,18 +487,18 @@ class Instagram extends OAuth2
     }
     
     public function getEngagementStatistics($model_id, $days_in_range, $since, $until){
-        $this->getTimeBasedMedia($model_id, $since, $until);
+       $this->getTimeBasedMedia($model_id, $since, $until);
         if(!empty($this->media_in_range)){
             $this->clearStatistics();
             $this->statistics['top_posts_by_engagement'] = $this->getTopPostsByEngagement();
             $this->statistics['source_of_engagement'] = $this->sourceOfEngagement();
             
             foreach($days_in_range as $day){
-                $day_formated = date('d M, y', $day);
+                $day_formated = date('M d', $day);
                 
                 foreach($this->media_in_range as $media){
                     
-                    if(date('d M, y', $media->creation_time) == $day_formated){
+                    if(date('M d', $media->creation_time) == $day_formated){
                         
                         if(!array_key_exists($day_formated, $this->statistics['profile'])){
                             $this->statistics["profile"][$day_formated]["amount"] = 1;
@@ -727,32 +727,32 @@ class Instagram extends OAuth2
     }
 	
 	public function saveAccountInsights($oAccountModel, $user_data){
-		$since = strtotime('first day of this month');
-		$all_media = $this->getAllMedia($since);
+            $since = strtotime('first day of this month');
+            $all_media = $this->getAllMedia($since);
             $total_photo_likes = $total_photo_comments = $total_video_likes = $total_video_comments = 0;
             foreach($all_media as $media){
-				$oMedia = Model::findOne(['entity_id' => $media['id'], 'parent_id' => $oAccountModel->id]);
-				if(!$oMedia){
-					if(($media['created_time']) >= $since){
-						$oMediaModel = $this->createNewMediaModel($oAccountModel, $user_data["counts"]["followed_by"], $media);
-						if($oMediaModel->post_type == self::IMAGE){
-							$total_photo_likes += $oMediaModel->likes;
-							$total_photo_comments += $oMediaModel->comments;
-						}else{
-							$total_video_likes += $oMediaModel->likes;
-							$total_video_comments += $oMediaModel->comments;
-						}
-					}
-				}else{
-					$oMediaModel = $this->updateMediaModel($oMedia, $media);
-					if($oMediaModel->post_type == self::IMAGE){
-						$total_photo_likes += $oMediaModel->likes;
-						$total_photo_comments += $oMediaModel->comments;
-					}else{
-						$total_video_likes += $oMediaModel->likes;
-						$total_video_comments += $oMediaModel->comments;
-					}
-				}
+		$oMedia = Model::findOne(['entity_id' => $media['id'], 'parent_id' => $oAccountModel->id]);
+		if(!$oMedia){
+                    if(($media['created_time']) >= $since){
+                        $oMediaModel = $this->createNewMediaModel($oAccountModel, $user_data["counts"]["followed_by"], $media);
+			if($oMediaModel->post_type == self::IMAGE){
+                            $total_photo_likes += $oMediaModel->likes;
+                            $total_photo_comments += $oMediaModel->comments;
+			}else{
+                            $total_video_likes += $oMediaModel->likes;
+                            $total_video_comments += $oMediaModel->comments;
+			}
+                    }
+		}else{
+                    $oMediaModel = $this->updateMediaModel($oMedia, $media);
+                    if($oMediaModel->post_type == self::IMAGE){
+			$total_photo_likes += $oMediaModel->likes;
+			$total_photo_comments += $oMediaModel->comments;
+                    }else{
+			$total_video_likes += $oMediaModel->likes;
+			$total_video_comments += $oMediaModel->comments;
+                    }
+		}
                 
             }
             $oAccountInsights = new Insights();
