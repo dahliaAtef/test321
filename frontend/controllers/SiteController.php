@@ -198,8 +198,31 @@ class SiteController extends \frontend\components\BaseController {
     
     public function actionGooglePlus(){ 
         $session = Yii::$app->session;
-        $gPlus = new GooglePlus ();
+        $gPlus = new GooglePlus();
+
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'google_plus']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                GooglePlus::setClient( unserialize($oAuthclient->source_data));
+                //@ToDo check if the token is not expired
+            }
+        }
+
+
         if($session->has('google_plus')){
+            $client = $gPlus->getClient();
+            //save the auth client data
+            if(!$oAuthclient or ($oAuthclient->source_data==null)) {
+                $oAuthclient = !$oAuthclient ? new Authclient() : $oAuthclient;
+                $oAuthclient->user_id = Yii::$app->user->getId();
+                $oAuthclient->source = $client->name;
+                $oAuthclient->source_data = serialize($client);
+                $oAuthclient->source_id = $client->getUserAttributes()["id"];
+                $oAuthclient->save();
+            }
+
+
+
 			//echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
             $account = $gPlus->getAccountDetails();
             $gPlus->getTimeBasedAccountInsights();
@@ -222,7 +245,7 @@ class SiteController extends \frontend\components\BaseController {
     public function actionYoutube($p = null, $v = null){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
-        $youtube = new Youtube ();
+        $youtube = new Youtube();
         if($p){
             $playlist_videos = $youtube->getPlaylistVideos($p);
             return $this->render('/youtube/channel-videos', ['videos' => $playlist_videos]);
@@ -274,15 +297,16 @@ class SiteController extends \frontend\components\BaseController {
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
+                //check stored token
                 Instagram::setClient( unserialize($oAuthclient->source_data));
-                //@ToDo check if the token is not expired
-            }else{
-                $client = Instagram::getClient();
-                $oAuthclient->source_data = serialize($client);
-                $oAuthclient->update();
+                $ReturnData = $insta->getUserData() ;
+                if( $ReturnData == null){
+                    $oAuthclient->source_data =null;
+                    $oAuthclient->save();
+                    Instagram::setClient( null);
+                }
             }
         }
-
 
         //echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
 	if(Yii::$app->request->post() && isset($_POST['since'])){
