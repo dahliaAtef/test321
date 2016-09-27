@@ -305,6 +305,7 @@ class SiteController extends \frontend\components\BaseController {
                     $oAuthclient->save();
                     Instagram::setClient( null);
                 }
+                //@ToDo check if the token is not expired
             }
         }
 
