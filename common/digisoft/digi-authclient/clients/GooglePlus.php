@@ -461,5 +461,52 @@ class GooglePlus extends OAuth2
         $best_time_to_post_json_table = GoogleChartHelper::getBestTimeToPost($best_time_to_post);
         return $best_time_to_post_json_table;
     }
-    
+
+   // inherit this function to check the api return
+    protected function sendRequest($method, $url, array $params = [], array $headers = [])
+    {
+        $curlOptions = $this->mergeCurlOptions(
+            $this->defaultCurlOptions(),
+            $this->getCurlOptions(),
+            [
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_URL => $url,
+            ],
+            $this->composeRequestCurlOptions(strtoupper($method), $url, $params)
+        );
+        $curlResource = curl_init();
+        foreach ($curlOptions as $option => $value) {
+            curl_setopt($curlResource, $option, $value);
+        }
+        $response = curl_exec($curlResource);
+        $responseHeaders = curl_getinfo($curlResource);
+
+        // check cURL error
+        $errorNumber = curl_errno($curlResource);
+        $errorMessage = curl_error($curlResource);
+
+        curl_close($curlResource);
+
+        if ($errorNumber > 0) {
+            throw new Exception('Curl error requesting "' .  $url . '": #' . $errorNumber . ' - ' . $errorMessage);
+        }
+        if (strncmp($responseHeaders['http_code'], '20', 2) !== 0) {
+            $error= json_decode($response, TRUE);
+             //            echo "<pre>";
+//            print_r($error['error']['message']);
+//            echo "</pre>";
+//            die;
+            if( $error['error']['message']  == "Invalid Credentials") {
+                return null;
+            }else{
+                throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
+            }
+        }
+
+        return $this->processResponse($response, $this->determineContentTypeByHeaders($responseHeaders));
+    }
+
+
+
 }

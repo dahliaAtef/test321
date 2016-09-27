@@ -204,7 +204,12 @@ class SiteController extends \frontend\components\BaseController {
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
                 GooglePlus::setClient( unserialize($oAuthclient->source_data));
-                //@ToDo check if the token is not expired
+                $ReturnData =$gPlus->getAccountDetails();
+                if( $ReturnData == null){
+                   $oAuthclient->source_data =null;
+                   $oAuthclient->save();
+                   GooglePlus::setClient( null);
+                }
             }
         }
 
