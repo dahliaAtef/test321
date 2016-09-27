@@ -276,11 +276,11 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 Instagram::setClient( unserialize($oAuthclient->source_data));
                 //@ToDo check if the token is not expired
-            }/*else{
+            }else{
                 $client = Instagram::getClient();
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->update();
-            }*/
+            }
         }
 
 
@@ -399,11 +399,11 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 Facebook::setClient( unserialize($oAuthclient->source_data));
                 //@ToDo check if the token is not expired
-            }/*else{
+            }else{
                 $client = Facebook::getClient();
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->update();
-            }*/
+            }
         }
 
 		//echo '<pre>'; var_dump($fb->getCompetitorNameAndFollowersFromUrl("https://www.facebook.com/collectivenouncomedy/?hc_ref=NEWSFEED")); echo '</pre>'; die;
