@@ -12,6 +12,7 @@ use yii\authclient\OAuth2;
 use common\helpers\GoogleChartHelper;
 use common\models\custom\Model;
 use common\models\custom\Insights;
+use common\models\custom\Authclient;
 
 /**
  * GoogleOAuth allows authentication via Google OAuth.
@@ -194,19 +195,21 @@ class Youtube extends OAuth2
         return $gender_ages;
     }
     
-	public function getCountriesNames($countries){
-		$countries_json = '{"BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria", "BA": "Bosnia and Herzegovina", "BB": "Barbados", "WF": "Wallis and Futuna", "BL": "Saint Barthelemy", "BM": "Bermuda", "BN": "Brunei", "BO": "Bolivia", "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BT": "Bhutan", "JM": "Jamaica", "BV": "Bouvet Island", "BW": "Botswana", "WS": "Samoa", "BQ": "Bonaire, Saint Eustatius and Saba ", "BR": "Brazil", "BS": "Bahamas", "JE": "Jersey", "BY": "Belarus", "BZ": "Belize", "RU": "Russia", "RW": "Rwanda", "RS": "Serbia", "TL": "East Timor", "RE": "Reunion", "TM": "Turkmenistan", "TJ": "Tajikistan", "RO": "Romania", "TK": "Tokelau", "GW": "Guinea-Bissau", "GU": "Guam", "GT": "Guatemala", "GS": "South Georgia and the South Sandwich Islands", "GR": "Greece", "GQ": "Equatorial Guinea", "GP": "Guadeloupe", "JP": "Japan", "GY": "Guyana", "GG": "Guernsey", "GF": "French Guiana", "GE": "Georgia", "GD": "Grenada", "GB": "United Kingdom", "GA": "Gabon", "SV": "El Salvador", "GN": "Guinea", "GM": "Gambia", "GL": "Greenland", "GI": "Gibraltar", "GH": "Ghana", "OM": "Oman", "TN": "Tunisia", "JO": "Jordan", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary", "HK": "Hong Kong", "HN": "Honduras", "HM": "Heard Island and McDonald Islands", "VE": "Venezuela", "PR": "Puerto Rico", "PS": "Palestinian Territory", "PW": "Palau", "PT": "Portugal", "SJ": "Svalbard and Jan Mayen", "PY": "Paraguay", "IQ": "Iraq", "PA": "Panama", "PF": "French Polynesia", "PG": "Papua New Guinea", "PE": "Peru", "PK": "Pakistan", "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PM": "Saint Pierre and Miquelon", "ZM": "Zambia", "EH": "Western Sahara", "EE": "Estonia", "EG": "Egypt", "ZA": "South Africa", "EC": "Ecuador", "IT": "Italy", "VN": "Vietnam", "SB": "Solomon Islands", "ET": "Ethiopia", "SO": "Somalia", "ZW": "Zimbabwe", "SA": "Saudi Arabia", "ES": "Spain", "ER": "Eritrea", "ME": "Montenegro", "MD": "Moldova", "MG": "Madagascar", "MF": "Saint Martin", "MA": "Morocco", "MC": "Monaco", "UZ": "Uzbekistan", "MM": "Myanmar", "ML": "Mali", "MO": "Macao", "MN": "Mongolia", "MH": "Marshall Islands", "MK": "Macedonia", "MU": "Mauritius", "MT": "Malta", "MW": "Malawi", "MV": "Maldives", "MQ": "Martinique", "MP": "Northern Mariana Islands", "MS": "Montserrat", "MR": "Mauritania", "IM": "Isle of Man", "UG": "Uganda", "TZ": "Tanzania", "MY": "Malaysia", "MX": "Mexico", "IL": "Israel", "FR": "France", "IO": "British Indian Ocean Territory", "SH": "Saint Helena", "FI": "Finland", "FJ": "Fiji", "FK": "Falkland Islands", "FM": "Micronesia", "FO": "Faroe Islands", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway", "NA": "Namibia", "VU": "Vanuatu", "NC": "New Caledonia", "NE": "Niger", "NF": "Norfolk Island", "NG": "Nigeria", "NZ": "New Zealand", "NP": "Nepal", "NR": "Nauru", "NU": "Niue", "CK": "Cook Islands", "XK": "Kosovo", "CI": "Ivory Coast", "CH": "Switzerland", "CO": "Colombia", "CN": "China", "CM": "Cameroon", "CL": "Chile", "CC": "Cocos Islands", "CA": "Canada", "CG": "Republic of the Congo", "CF": "Central African Republic", "CD": "Democratic Republic of the Congo", "CZ": "Czech Republic", "CY": "Cyprus", "CX": "Christmas Island", "CR": "Costa Rica", "CW": "Curacao", "CV": "Cape Verde", "CU": "Cuba", "SZ": "Swaziland", "SY": "Syria", "SX": "Sint Maarten", "KG": "Kyrgyzstan", "KE": "Kenya", "SS": "South Sudan", "SR": "Suriname", "KI": "Kiribati", "KH": "Cambodia", "KN": "Saint Kitts and Nevis", "KM": "Comoros", "ST": "Sao Tome and Principe", "SK": "Slovakia", "KR": "South Korea", "SI": "Slovenia", "KP": "North Korea", "KW": "Kuwait", "SN": "Senegal", "SM": "San Marino", "SL": "Sierra Leone", "SC": "Seychelles", "KZ": "Kazakhstan", "KY": "Cayman Islands", "SG": "Singapore", "SE": "Sweden", "SD": "Sudan", "DO": "Dominican Republic", "DM": "Dominica", "DJ": "Djibouti", "DK": "Denmark", "VG": "British Virgin Islands", "DE": "Germany", "YE": "Yemen", "DZ": "Algeria", "US": "United States", "UY": "Uruguay", "YT": "Mayotte", "UM": "United States Minor Outlying Islands", "LB": "Lebanon", "LC": "Saint Lucia", "LA": "Laos", "TV": "Tuvalu", "TW": "Taiwan", "TT": "Trinidad and Tobago", "TR": "Turkey", "LK": "Sri Lanka", "LI": "Liechtenstein", "LV": "Latvia", "TO": "Tonga", "LT": "Lithuania", "LU": "Luxembourg", "LR": "Liberia", "LS": "Lesotho", "TH": "Thailand", "TF": "French Southern Territories", "TG": "Togo", "TD": "Chad", "TC": "Turks and Caicos Islands", "LY": "Libya", "VA": "Vatican", "VC": "Saint Vincent and the Grenadines", "AE": "United Arab Emirates", "AD": "Andorra", "AG": "Antigua and Barbuda", "AF": "Afghanistan", "AI": "Anguilla", "VI": "U.S. Virgin Islands", "IS": "Iceland", "IR": "Iran", "AM": "Armenia", "AL": "Albania", "AO": "Angola", "AQ": "Antarctica", "AS": "American Samoa", "AR": "Argentina", "AU": "Australia", "AT": "Austria", "AW": "Aruba", "IN": "India", "AX": "Aland Islands", "AZ": "Azerbaijan", "IE": "Ireland", "ID": "Indonesia", "UA": "Ukraine", "QA": "Qatar", "MZ": "Mozambique"}';
+    public function getCountriesNames($countries){
+	$countries_json = '{"BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria", "BA": "Bosnia and Herzegovina", "BB": "Barbados", "WF": "Wallis and Futuna", "BL": "Saint Barthelemy", "BM": "Bermuda", "BN": "Brunei", "BO": "Bolivia", "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BT": "Bhutan", "JM": "Jamaica", "BV": "Bouvet Island", "BW": "Botswana", "WS": "Samoa", "BQ": "Bonaire, Saint Eustatius and Saba ", "BR": "Brazil", "BS": "Bahamas", "JE": "Jersey", "BY": "Belarus", "BZ": "Belize", "RU": "Russia", "RW": "Rwanda", "RS": "Serbia", "TL": "East Timor", "RE": "Reunion", "TM": "Turkmenistan", "TJ": "Tajikistan", "RO": "Romania", "TK": "Tokelau", "GW": "Guinea-Bissau", "GU": "Guam", "GT": "Guatemala", "GS": "South Georgia and the South Sandwich Islands", "GR": "Greece", "GQ": "Equatorial Guinea", "GP": "Guadeloupe", "JP": "Japan", "GY": "Guyana", "GG": "Guernsey", "GF": "French Guiana", "GE": "Georgia", "GD": "Grenada", "GB": "United Kingdom", "GA": "Gabon", "SV": "El Salvador", "GN": "Guinea", "GM": "Gambia", "GL": "Greenland", "GI": "Gibraltar", "GH": "Ghana", "OM": "Oman", "TN": "Tunisia", "JO": "Jordan", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary", "HK": "Hong Kong", "HN": "Honduras", "HM": "Heard Island and McDonald Islands", "VE": "Venezuela", "PR": "Puerto Rico", "PS": "Palestinian Territory", "PW": "Palau", "PT": "Portugal", "SJ": "Svalbard and Jan Mayen", "PY": "Paraguay", "IQ": "Iraq", "PA": "Panama", "PF": "French Polynesia", "PG": "Papua New Guinea", "PE": "Peru", "PK": "Pakistan", "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PM": "Saint Pierre and Miquelon", "ZM": "Zambia", "EH": "Western Sahara", "EE": "Estonia", "EG": "Egypt", "ZA": "South Africa", "EC": "Ecuador", "IT": "Italy", "VN": "Vietnam", "SB": "Solomon Islands", "ET": "Ethiopia", "SO": "Somalia", "ZW": "Zimbabwe", "SA": "Saudi Arabia", "ES": "Spain", "ER": "Eritrea", "ME": "Montenegro", "MD": "Moldova", "MG": "Madagascar", "MF": "Saint Martin", "MA": "Morocco", "MC": "Monaco", "UZ": "Uzbekistan", "MM": "Myanmar", "ML": "Mali", "MO": "Macao", "MN": "Mongolia", "MH": "Marshall Islands", "MK": "Macedonia", "MU": "Mauritius", "MT": "Malta", "MW": "Malawi", "MV": "Maldives", "MQ": "Martinique", "MP": "Northern Mariana Islands", "MS": "Montserrat", "MR": "Mauritania", "IM": "Isle of Man", "UG": "Uganda", "TZ": "Tanzania", "MY": "Malaysia", "MX": "Mexico", "IL": "Israel", "FR": "France", "IO": "British Indian Ocean Territory", "SH": "Saint Helena", "FI": "Finland", "FJ": "Fiji", "FK": "Falkland Islands", "FM": "Micronesia", "FO": "Faroe Islands", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway", "NA": "Namibia", "VU": "Vanuatu", "NC": "New Caledonia", "NE": "Niger", "NF": "Norfolk Island", "NG": "Nigeria", "NZ": "New Zealand", "NP": "Nepal", "NR": "Nauru", "NU": "Niue", "CK": "Cook Islands", "XK": "Kosovo", "CI": "Ivory Coast", "CH": "Switzerland", "CO": "Colombia", "CN": "China", "CM": "Cameroon", "CL": "Chile", "CC": "Cocos Islands", "CA": "Canada", "CG": "Republic of the Congo", "CF": "Central African Republic", "CD": "Democratic Republic of the Congo", "CZ": "Czech Republic", "CY": "Cyprus", "CX": "Christmas Island", "CR": "Costa Rica", "CW": "Curacao", "CV": "Cape Verde", "CU": "Cuba", "SZ": "Swaziland", "SY": "Syria", "SX": "Sint Maarten", "KG": "Kyrgyzstan", "KE": "Kenya", "SS": "South Sudan", "SR": "Suriname", "KI": "Kiribati", "KH": "Cambodia", "KN": "Saint Kitts and Nevis", "KM": "Comoros", "ST": "Sao Tome and Principe", "SK": "Slovakia", "KR": "South Korea", "SI": "Slovenia", "KP": "North Korea", "KW": "Kuwait", "SN": "Senegal", "SM": "San Marino", "SL": "Sierra Leone", "SC": "Seychelles", "KZ": "Kazakhstan", "KY": "Cayman Islands", "SG": "Singapore", "SE": "Sweden", "SD": "Sudan", "DO": "Dominican Republic", "DM": "Dominica", "DJ": "Djibouti", "DK": "Denmark", "VG": "British Virgin Islands", "DE": "Germany", "YE": "Yemen", "DZ": "Algeria", "US": "United States", "UY": "Uruguay", "YT": "Mayotte", "UM": "United States Minor Outlying Islands", "LB": "Lebanon", "LC": "Saint Lucia", "LA": "Laos", "TV": "Tuvalu", "TW": "Taiwan", "TT": "Trinidad and Tobago", "TR": "Turkey", "LK": "Sri Lanka", "LI": "Liechtenstein", "LV": "Latvia", "TO": "Tonga", "LT": "Lithuania", "LU": "Luxembourg", "LR": "Liberia", "LS": "Lesotho", "TH": "Thailand", "TF": "French Southern Territories", "TG": "Togo", "TD": "Chad", "TC": "Turks and Caicos Islands", "LY": "Libya", "VA": "Vatican", "VC": "Saint Vincent and the Grenadines", "AE": "United Arab Emirates", "AD": "Andorra", "AG": "Antigua and Barbuda", "AF": "Afghanistan", "AI": "Anguilla", "VI": "U.S. Virgin Islands", "IS": "Iceland", "IR": "Iran", "AM": "Armenia", "AL": "Albania", "AO": "Angola", "AQ": "Antarctica", "AS": "American Samoa", "AR": "Argentina", "AU": "Australia", "AT": "Austria", "AW": "Aruba", "IN": "India", "AX": "Aland Islands", "AZ": "Azerbaijan", "IE": "Ireland", "ID": "Indonesia", "UA": "Ukraine", "QA": "Qatar", "MZ": "Mozambique"}';
         $countries_arr = json_decode($countries_json, true);
-		if(array_key_exists('rows', $countries)){
-			$counter = 0; $countries_names = $countries;
-			foreach($countries['rows'] as $country){
-				$country_name = (array_key_exists($country[0], $countries_arr)) ? ($countries_arr[$country[0]]) : $country[0];
-				$countries_names['rows'][$counter][0] = $country_name;
-				$counter++;
-			}
-		}
-		return $countries_names;
-	}
+	if(array_key_exists('rows', $countries)){
+            $counter = 0; $countries_names = $countries;
+            foreach($countries['rows'] as $country){
+		$country_name = (array_key_exists($country[0], $countries_arr)) ? ($countries_arr[$country[0]]) : $country[0];
+                $countries_names['rows'][$counter][0] = $country_name;
+                $counter++;
+            }
+        }else{
+            $countries_names = null;
+        }
+        return $countries_names;
+    }
 	
     public function getAnalyticsPerLocation($start_date = null, $end_date = null){
         $client = $this->getClient();
@@ -218,7 +221,7 @@ class Youtube extends OAuth2
     }
     
     public function getAnalyticsPerLocationsViewsJsonTable($locations){
-		if(array_key_exists('rows', $locations)){
+		if($locations && array_key_exists('rows', $locations)){
 			$top_fifteen_locations = (count($locations['rows']) > 15) ? array_slice($locations['rows'], 0, 15) : $locations['rows'];
 			$locations_views_json_table = GoogleChartHelper::getKeyAndValueByValueIndexDataTable('country', 'views', $top_fifteen_locations, 1);
 		}else{
@@ -234,7 +237,7 @@ class Youtube extends OAuth2
     }
 	
     public function getAnalyticsPerLocationsMinutesWatchedJsonTable($locations){
-		if(array_key_exists('rows', $locations)){
+		if($locations && array_key_exists('rows', $locations)){
 			if($locations['rows'] > 15){
 				foreach($locations['rows'] as $location){
 					$locations_per_mins_watched[$location[0]] = $location[2];
@@ -250,7 +253,7 @@ class Youtube extends OAuth2
     }
     
     public function getAnalyticsPerLocationsViewDurationPercentageJsonTable($locations){
-		if(array_key_exists('rows', $locations)){
+		if($locations && array_key_exists('rows', $locations)){
 			if($locations['rows'] > 15){
 				foreach($locations['rows'] as $location){
 					$locations_per_view_duration[$location[0]] = $location[4];
@@ -509,9 +512,9 @@ class Youtube extends OAuth2
         return $videos_in_range;
     }
     
-	public function createNewAuthclient(){
+	public function createNewAuthclient($channels){
         $client = $this->getClient();
-		$client = $youtube->getClient();
+	//$client = $youtube->getClient();
         $oAuthclient = new Authclient();
         $oAuthclient->user_id = Yii::$app->user->getId();
         $oAuthclient->source = $client->name;
@@ -528,31 +531,33 @@ class Youtube extends OAuth2
         $oAccountModel->entity_id = $channels['items'][0]['id'];
         $oAccountModel->type = self::ACCOUNT;
         $oAccountModel->name = $channels['items'][0]['snippet']['title'];
-        $oAccountModel->media_url = $channels['items'][0]['snippet']['thumbnails']['maxres']['url'];
+        $oAccountModel->media_url = $channels['items'][0]['snippet']['thumbnails']['high']['url'];
         if($oAccountModel->save()){
-			$oAccountInsights = new Insights();
-			$oAccountInsights->model_id = $oAccountModel->id;
-			$oAccountInsights->followers = $channels['items'][0]['statistics']['subscriberCount'];
-			$oAccountInsights->gained_followers = $channel_analytics['rows'][0][8];
-			$oAccountInsights->lost_followers = $channel_analytics['rows'][0][9];
-			$oAccountInsights->number_of_posted_media = $channels['items'][0]['statistics']['videoCount'];
-			$oAccountInsights->total_views = $channel_analytics['rows'][0][0];
-			$oAccountInsights->total_likes = $channel_analytics['rows'][0][2];
-			$oAccountInsights->total_comments = $channel_analytics['rows'][0][1];
-			$oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
-			$oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
-			$oAccountInsights->insights_json = $this->getInsightsJson();
-			$oAccountInsights->save();
-			$this->getAndSaveChannelVideosInRange($channels['items'][0]['contentDetails']['relatedPlaylists']['uploads'], $oAccountModel->id);
-		}else{
-			die('error saving Account Data');
-		}
+            $oAccountInsights = new Insights();
+            $oAccountInsights->model_id = $oAccountModel->id;
+            $oAccountInsights->followers = $channels['items'][0]['statistics']['subscriberCount'];
+            $oAccountInsights->number_of_posted_media = $channels['items'][0]['statistics']['videoCount'];
+            if(array_key_exists('rows', $channel_analytics)){
+                $oAccountInsights->gained_followers = $channel_analytics['rows'][0][8];
+                $oAccountInsights->lost_followers = $channel_analytics['rows'][0][9];
+                $oAccountInsights->total_views = $channel_analytics['rows'][0][0];
+                $oAccountInsights->total_likes = $channel_analytics['rows'][0][2];
+                $oAccountInsights->total_comments = $channel_analytics['rows'][0][1];
+                $oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
+                $oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
+                $oAccountInsights->insights_json = $this->getInsightsJson();
+            }
+            $oAccountInsights->save();
+            $this->getAndSaveChannelVideosInRange($channels['items'][0]['contentDetails']['relatedPlaylists']['uploads'], $oAccountModel->id);
+        }else{
+            die('error saving Account Data');
+	}
     }
 	
 	public function saveAccountInsights($model_id, $channels, $channel_analytics, $start_date = null){
-		$client = $this->getClient();
-        ($start_date) ? '' : ($start_date = strtotime('first day of last month')) ;
-		$end_date = time();
+            $client = $this->getClient();
+            ($start_date) ? '' : ($start_date = strtotime('first day of last month')) ;
+            $end_date = time();
         $videos = $client->api("/youtube/v3/playlistItems?part=contentDetails,snippet&maxResults=50&playlistId=".$channels['items'][0]['contentDetails']['relatedPlaylists']['uploads'], 'GET')['items'];
         foreach($videos as $video){
             $oVideo = Model::findOne(['entity_id' => $video['contentDetails']['videoId'], 'parent_id' => $model_id]);
@@ -566,15 +571,17 @@ class Youtube extends OAuth2
         $oAccountInsights = new Insights();
 		$oAccountInsights->model_id = $model_id;
 		$oAccountInsights->followers = $channels['items'][0]['statistics']['subscriberCount'];
-		$oAccountInsights->gained_followers = $channel_analytics['rows'][0][8];
-		$oAccountInsights->lost_followers = $channel_analytics['rows'][0][9];
 		$oAccountInsights->number_of_posted_media = $channels['items'][0]['statistics']['videoCount'];
-		$oAccountInsights->total_views = $channel_analytics['rows'][0][0];
-		$oAccountInsights->total_likes = $channel_analytics['rows'][0][2];
-		$oAccountInsights->total_comments = $channel_analytics['rows'][0][1];
-		$oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
-		$oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
-		$oAccountInsights->insights_json = $this->getInsightsJson($start_date, $end_date);
+                if(array_key_exists('rows', $channel_analytics)){
+                    $oAccountInsights->gained_followers = $channel_analytics['rows'][0][8];
+                    $oAccountInsights->lost_followers = $channel_analytics['rows'][0][9];
+                    $oAccountInsights->total_views = $channel_analytics['rows'][0][0];
+                    $oAccountInsights->total_likes = $channel_analytics['rows'][0][2];
+                    $oAccountInsights->total_comments = $channel_analytics['rows'][0][1];
+                    $oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
+                    $oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
+                    $oAccountInsights->insights_json = $this->getInsightsJson();
+                }
 		$oAccountInsights->save();
 	}
 	

@@ -261,7 +261,7 @@ class SiteController extends \frontend\components\BaseController {
             $channel_analytics = $youtube->getChannelAnalytics();
             $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']); 
             if(!$oAuthclient){
-                $oAuthclient = $youtube->createNewAuthclient();
+                $oAuthclient = $youtube->createNewAuthclient($channels);
             }else{
                 if($oAuthclient->source_id != $channels['items'][0]['id']){
                     Yii::$app->getSession()->setFlash('error', 'Please select the youtube channel you registered with in the First time.');
@@ -305,6 +305,7 @@ class SiteController extends \frontend\components\BaseController {
                     $oAuthclient->save();
                     Instagram::setClient( null);
                 }
+                //@ToDo check if the token is not expired
             }
         }
 
