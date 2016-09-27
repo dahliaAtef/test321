@@ -15,7 +15,7 @@
     <div class="col-md-12">
 <?php
 
-if(array_key_exists('rows', $locations)){
+if($locations && array_key_exists('rows', $locations)){
 
 ?>
 
