@@ -66,7 +66,8 @@ class Twitter extends \yii\authclient\clients\Twitter
     }
 	
 	public function getScreenNameFromUrl($url){
-		$screen_name = substr($url, 20);
+		$name = substr($url, 20);
+                $screen_name = explode('?', $name)[0];
 		return $screen_name;
 	}
 	
@@ -273,13 +274,13 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oTweetModel->parent_id = $oAccountModel->id;
         $oTweetModel->entity_id = $tweet["id_str"];
         $oTweetModel->type = self::POST;
-        $oMentionModel->post_type = self::TWEET;
+        $oTweetModel->post_type = self::TWEET;
         $oTweetModel->content = $tweet["text"];
         $oTweetModel->likes = $tweet["favorite_count"];
         $oTweetModel->shares = $tweet["retweet_count"];
         $comments = Model::find()->andWhere(['parent_id' => $oAccountModel->id ,'in_reply_to_id' => $tweet["id_str"]])->all();
         $oTweetModel->comments = ($comments)? count($comments) : null;
-		$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
+	$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
         $oTweetModel->followers = $tweet['user']['followers_count'];
         $oTweetModel->creation_time = strtotime($tweet["created_at"]);
         $oTweetModel->url = 'https://twitter.com/'.$oAccountModel->name.'/status/'.$tweet['id_str'];
@@ -469,14 +470,14 @@ class Twitter extends \yii\authclient\clients\Twitter
     public function getTimeBasedMedia($id, $since = null, $until = null){
         (!$since) ? ($since = date('Y-m-d H:i:s', strtotime('first day of this month'))) : '';
         (!$until) ? ($until = date('Y-m-d H:i:s', time())) : '';
-        $media_in_range = Model::find()->where(['parent_id' => $id, 'type' => self::POST])->andWhere(['between', 'created', $since, $until])->all();
+        $media_in_range = Model::find()->where(['parent_id' => $id, 'post_type' => self::TWEET])->andWhere(['between', 'created', $since, $until])->all();
         return $media_in_range;
     }
     
     public function getTimeBasedMentionsAndReplies($id, $since = null, $until = null){
         (!$since) ? ($since = date('Y-m-d H:i:s', strtotime('first day of this month'))) : '';
         (!$until) ? ($until = date('Y-m-d H:i:s', time())) : '';
-        $mentions_replies_in_range = Model::find()->where(['parent_id' => $id, 'type' => [self::MENTION, self::REPLY]])->andWhere(['between', 'creation_time', $since, $until])->all();
+        $mentions_replies_in_range = Model::find()->where(['parent_id' => $id, 'post_type' => [self::MENTION, self::REPLY]])->andWhere(['between', 'creation_time', $since, $until])->all();
         return $mentions_replies_in_range;
     }
     

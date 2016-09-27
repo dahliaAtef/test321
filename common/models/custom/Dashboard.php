@@ -341,13 +341,15 @@ class Dashboard extends \common\models\base\Base
 	}
     
 	public function getUserCompetitors($user_followers, $name){
-		$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+		$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->With('compChannels')->all();
 		if($oCompetitors){
+                    //echo '<pre>'; var_dump($oCompetitors[0]->compChannels); echo '</pre>'; die;
 			foreach($oCompetitors as $oCompetitor){
 				$competitor_followers = 0;
 				foreach($oCompetitor->compChannels as $oChannel){
 					$competitor_followers += $oChannel->comp_channel_followers;
 				}
+                                //echo '<pre>'; var_dump($oCompetitor->compChannels); echo '</pre>'; die;
 				$competitors_array[$oCompetitor->compChannels[0]->comp_channel_name] = $competitor_followers;
 			}
 			$competitors_array[$name] = $user_followers;
