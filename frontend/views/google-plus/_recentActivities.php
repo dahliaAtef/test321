@@ -7,7 +7,7 @@ if(count($public_activities['items']) > 0){
 		<ul>
 			<li>Title : <?= $activity['title'] ?></li>
 			<li>Published by : <a href="<?= $activity['actor']['url'] ?>" ><?= $activity['actor']['displayName'] ?></a></li>
-			<li>Published at '.date('M d, Y', strtotime($activity['published']));
+			<li>Published at <?= date('M d, Y', strtotime($activity['published'])); ?>
 			<?php
 			if($activity['object']['content']){ ?>
 				<li>Content : <?= $activity['object']['content'] ?></li>
