@@ -260,11 +260,11 @@ class SiteController extends \frontend\components\BaseController {
                 'video_analytics' => $youtube->getVideoAnalytics($v),
                 'title' => $video_data["items"][0]["snippet"]["title"],
                 'img' => $video_data["items"][0]["snippet"]["thumbnails"]["default"]["url"].'" alt="'.$video_data["items"][0]["snippet"]["title"]
-                ]);
+            ]);
         }else if($session['youtube']){
             $channels = $youtube->getChannelData();
             $channel_analytics = $youtube->getChannelAnalytics();
-            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']); 
+            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
             if(!$oAuthclient){
                 $oAuthclient = $youtube->createNewAuthclient($channels);
             }else{
@@ -273,14 +273,14 @@ class SiteController extends \frontend\components\BaseController {
                     return $this->render('/youtube/youtubeAuth');
                 }
             }
-			$models = $oAuthclient->model;
-			if(!$models){
-				$youtube->firstTimeToLog($oAuthclient->id);
-			}else{
-				//echo '<pre>'; var_dump($youtube->getCompetitorNameAndSubscribers("https://www.youtube.com/channel/UC89jxlRgoiqAnO_0pm-Ug0g")); echo '</pre>'; die;
-				//$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
-				$youtube->saveAccountInsights($oAuthclient->model[0]->id, $channels, $channel_analytics);
-			}
+            $models = $oAuthclient->model;
+            if(!$models){
+                $youtube->firstTimeToLog($oAuthclient->id);
+            }else{
+                //echo '<pre>'; var_dump($youtube->getCompetitorNameAndSubscribers("https://www.youtube.com/channel/UC89jxlRgoiqAnO_0pm-Ug0g")); echo '</pre>'; die;
+                //$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
+                $youtube->saveAccountInsights($oAuthclient->model[0]->id, $channels, $channel_analytics);
+            }
             $subscribers = $youtube->getChannelSubscribers();
             return $this->render('/youtube/youtube', [
                 'channels' => $channels,
@@ -288,13 +288,12 @@ class SiteController extends \frontend\components\BaseController {
                 'subscribers' => $subscribers,
                 'youtube' => $youtube
             ]);
-            
+
         }else{
             return $this->render('/youtube/youtubeAuth');
         }
-
     }
-    
+
     public function actionInstagram(){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
@@ -310,7 +309,6 @@ class SiteController extends \frontend\components\BaseController {
                     $oAuthclient->save();
                     Instagram::setClient( null);
                 }
-                //@ToDo check if the token is not expired
             }
         }
 
