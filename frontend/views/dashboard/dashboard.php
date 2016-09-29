@@ -199,7 +199,6 @@ $name = Model::findOne([$dashboard_accounts[key($dashboard_accounts)]['model_id'
 
 </div>
 <!-- page content -->
-
 <div class="modal  bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -220,48 +219,54 @@ $name = Model::findOne([$dashboard_accounts[key($dashboard_accounts)]['model_id'
                         <div class="compNum">competitor 1</div>
                         <div class="compSocial">
                             <ul>
-								<?php if($fb){ ?>
-                                <li>
+								<li>
                                     <label forr="antaka">facebook URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp1fb')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL" name="antaka"-->
+									<?php if($fb){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp1fb')->textInput()->label(false) ?>
+									<?php }else{ ?>
+										<a href="<?= Url::to(['facebook']) ?>">Please Authenticate Facebook first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($tw){ ?>
-                                <li>
+								<li>
                                     <label>Twitter URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp1tw')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($tw){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp1tw')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['twitter']) ?>">Please Authenticate Twitter first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($insta){ ?>
-                                <li>
+								<li>
                                     <label>instagram URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp1insta')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($insta){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp1insta')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['instagram']) ?>">Please Authenticate Instagram first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($yt){ ?>
                                 <li>
                                     <label>youtube URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp1yt')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($yt){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp1yt')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['youtube']) ?>">Please Authenticate Youtube first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($gp){ ?>
                                 <li>
                                     <label>google+ URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp1gp')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($gp){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp1gp')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($in){ ?>
                                 <li>
                                     <label>linkedin URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp1in')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($in){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp1in')->textInput()->label(false) ?>
+									<?php }else{ ?>
+										<a href="<?= Url::to(['foursquare']) ?>">Please Authenticate LinkedIn first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
                             </ul>
                         </div>
                     </div>
@@ -269,48 +274,54 @@ $name = Model::findOne([$dashboard_accounts[key($dashboard_accounts)]['model_id'
                         <div class="compNum">competitor 2</div>
                         <div class="compSocial">
                             <ul>
-								<?php if($fb){ ?>
-                                <li>
+								<li>
                                     <label forr="antaka">facebook URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp2fb')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL" name="antaka"-->
+									<?php if($fb){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp2fb')->textInput()->label(false) ?>
+									<?php }else{ ?>
+										<a href="<?= Url::to(['facebook']) ?>">Please Authenticate Facebook first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-                                <?php if($tw){ ?>
 								<li>
                                     <label>Twitter URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp2tw')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($tw){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp2tw')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['twitter']) ?>">Please Authenticate Twitter first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($insta){ ?>
-                                <li>
+								<li>
                                     <label>instagram URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp2insta')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($insta){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp2insta')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['instagram']) ?>">Please Authenticate Instagram first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($yt){ ?>
                                 <li>
                                     <label>youtube URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp2yt')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($yt){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp2yt')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['youtube']) ?>">Please Authenticate Youtube first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($gp){ ?>
                                 <li>
                                     <label>google+ URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp2gp')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($gp){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp2gp')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($in){ ?>
                                 <li>
                                     <label>linkedin URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp2in')->textInput()->label(false) ?>
-									<!--input type="text" placeHolder="Add URL"-->
+									<?php if($in){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp2in')->textInput()->label(false) ?>
+									<?php }else{ ?>
+										<a href="<?= Url::to(['foursquare']) ?>">Please Authenticate LinkedIn first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
                             </ul>
                         </div>
                     </div>
@@ -318,48 +329,54 @@ $name = Model::findOne([$dashboard_accounts[key($dashboard_accounts)]['model_id'
                         <div class="compNum">competitor 3</div>
                         <div class="compSocial">
                             <ul>
-                                <?php if($fb){ ?>
-								<li>
+                                <li>
                                     <label forr="antaka">facebook URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp3fb')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL" name="antaka"-->
+									<?php if($fb){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp3fb')->textInput()->label(false) ?>
+									<?php }else{ ?>
+										<a href="<?= Url::to(['facebook']) ?>">Please Authenticate Facebook first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($tw){ ?>
-                                <li>
+								<li>
                                     <label>Twitter URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp3tw')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($tw){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp3tw')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['twitter']) ?>">Please Authenticate Twitter first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($insta){ ?>
-                                <li>
+								<li>
                                     <label>instagram URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp3insta')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($insta){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp3insta')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['instagram']) ?>">Please Authenticate Instagram first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($yt){ ?>
                                 <li>
                                     <label>youtube URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp3yt')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($yt){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp3yt')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['youtube']) ?>">Please Authenticate Youtube first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($gp){ ?>
                                 <li>
                                     <label>google+ URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp3gp')->textInput()->label(false) ?>
-                                    <!--input type="text" placeHolder="Add URL"-->
+									<?php if($gp){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp3gp')->textInput()->label(false) ?>
+                                    <?php }else{ ?>
+										<a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
-								<?php if($in){ ?>
                                 <li>
                                     <label>linkedin URL</label>
-									<?= $form->field($oCompetitorsForm, 'comp3in')->textInput()->label(false) ?>
-									<!--input type="text" placeHolder="Add URL"-->
+									<?php if($in){ ?>
+										<?= $form->field($oCompetitorsForm, 'comp3in')->textInput()->label(false) ?>
+									<?php }else{ ?>
+										<a href="<?= Url::to(['foursquare']) ?>">Please Authenticate LinkedIn first.</a>
+									<?php } ?>
                                 </li>
-								<?php } ?>
                             </ul>
                         </div>
                     </div>

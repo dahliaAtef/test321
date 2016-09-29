@@ -99,7 +99,7 @@ header {display:block;position:relative;padding: 20px 0 0;text-align:center;tran
 
         header .nav-menu li.sub-menu {position:relative;}
 
-				header .nav-menu li.sub-menu ul {margin: 10px -10px 0 0;display:none;width:290px;position:absolute;z-index:4;border-radius: 8px;padding:12px 20px;right: 0;text-align: left;background:#737373 /*#DE1271*/}
+				header .nav-menu li.sub-menu ul {margin: 10px -10px 0 0;display:none;width:290px;position:absolute;z-index:4;border-radius: 8px;padding:12px 20px;right: 0;text-align: left;background:#35173b  /*#DE1271*/}
 
 					header .nav-menu li.sub-menu ul:before {content: "";
 
@@ -115,7 +115,7 @@ header {display:block;position:relative;padding: 20px 0 0;text-align:center;tran
 
                                                   border-bottom-width: 8px;
 
-                                                  border-bottom-color: #737373;
+                                                  border-bottom-color: #35173b ;
 
                                                   width: 0;
 
@@ -315,6 +315,7 @@ header.inside .nav-menu li.setting {display: inline-block;}
 .page-content.inside {min-height:100%;padding-top: 140px;margin-left: 76px;color:#4C4C4C;font-size: 13px}
 
 .page-tabs {width: 76px;position: fixed;z-index:2;left: 0;top: 140px;background: #f7f7f7;border-right:1px solid #dddddd }
+.page-tabs.disappered {display: none;}
 
   .page-tabs .tabs {}
 

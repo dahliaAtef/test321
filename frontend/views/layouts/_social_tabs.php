@@ -2,7 +2,7 @@
 use yii\helpers\Url;
 
 ?>
-<div class="page-tabs">
+<div class="page-tabs disappered">
 
     <div class="tabs">
 
@@ -18,7 +18,7 @@ use yii\helpers\Url;
 
 	<div class="tab-item"><a href="<?= Url::to(['google-plus']) ?>"><i class="pinter <?= (($this->title == 'Google+') ? 'active' : '') ?>"></i></a></div>
 
-	<div class="tab-item"><a href="<?= Url::to(['foursquare']) ?>"><i class="square <?= (($this->title == 'Foursquare') ? 'active' : '') ?>"></i></a></div>
+	<div class="tab-item"><a href="<?= Url::to(['foursquare']) ?>"><i class="square <?= (($this->title == 'LinkedIn') ? 'active' : '') ?>"></i></a></div>
 
     </div>
 
