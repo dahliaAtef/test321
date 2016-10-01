@@ -13,6 +13,7 @@ use digi\authclient\clients\Instagram;
 use digi\authclient\clients\Youtube;
 use digi\authclient\clients\GooglePlus;
 use digi\authclient\clients\Foursquare;
+use digi\authclient\clients\LinkedIn;
 use common\models\custom\User;
 use common\models\custom\Authclient;
 use common\models\custom\Model;
@@ -158,6 +159,38 @@ class SiteController extends \frontend\components\BaseController {
         return $this->render('privacy-policy');
     }
     
+    public function actionLinkedin(){
+        $session = Yii::$app->session;
+        $linkedin = new LinkedIn ();
+        $oUserPagesForm = new UserPagesForm();
+        if($session->has('linkedin')){
+            if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
+                $client = $linkedin->getClient();
+                $oAuthclient = new Authclient();
+                $oAuthclient->user_id = Yii::$app->user->getId();
+                $oAuthclient->source = $client->name;
+                $oAuthclient->source_data = serialize($client);
+                $oAuthclient->source_id = $client->getUserAttributes()["id"];
+                $oAuthclient->save();
+                $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
+            }
+            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'linkedin']);
+            if($oAuthclient){
+                $oModel = $oAuthclient->model;
+                if($oModel){
+                    //$fb->getPostContent($oModel[0]->id);
+                    //$page = $fb->getPageData($oModel[0]->entity_id);
+                    //$fb->saveAccountInsights($oModel[0], $page['likes']);
+                    return $this->render('/linkedin/linkedinPage');
+                }
+            }else{
+                return $this->render('/linkedin/linkedin',['user_pages' => $linkedin->getUserAdminCompanies(), 'oUserPagesForm' => $oUserPagesForm]);
+            }
+        }else{
+            return $this->render('/linkedin/linkedinAuth');
+        }
+    }
+    
     public function actionFoursquare(){
         $session = Yii::$app->session;
         $foursquare = new Foursquare ();
@@ -237,11 +270,6 @@ class SiteController extends \frontend\components\BaseController {
         }
     }
     
-    public function actionGooglePlusActivities(){
-        $googleP = new GooglePlus();
-        return $this->render('/google-plus/activities', ['public_activities' => $googleP->getPublicActivities()]);
-    }
-
     public function actionYoutube($p = null, $v = null){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
@@ -416,7 +444,8 @@ class SiteController extends \frontend\components\BaseController {
     public function actionFacebook(){
         ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
-        $fb = new Facebook();$oUserPagesForm = new UserPagesForm();
+        $fb = new Facebook();
+        $oUserPagesForm = new UserPagesForm();
         
         //check if the save access is working
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
@@ -515,9 +544,11 @@ class SiteController extends \frontend\components\BaseController {
         }elseif($client->name == 'foursquare'){
             Foursquare::setClient($client);
             return $this->action->redirect( Url::to(['foursquare'],true) );
+        }elseif($client->name == 'linkedin'){
+            LinkedIn::setClient($client);
+            return $this->action->redirect( Url::to(['linkedin'],true) );
         }else{
-			
-            echo '<pre>'; var_dump($client->api('companies/~?format=json')); echo '</pre>'; die;
+            echo '<pre>'; var_dump($client); echo '</pre>'; die;
         }
     }
 
