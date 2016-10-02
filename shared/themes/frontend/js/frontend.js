@@ -260,6 +260,8 @@ Frontend.tabsCustom = function () {
 
         });
 
+        $('.page-tabs').removeClass("disappered");
+
     };
 
     

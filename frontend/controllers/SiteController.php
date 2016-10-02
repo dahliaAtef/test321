@@ -13,6 +13,7 @@ use digi\authclient\clients\Instagram;
 use digi\authclient\clients\Youtube;
 use digi\authclient\clients\GooglePlus;
 use digi\authclient\clients\Foursquare;
+use digi\authclient\clients\LinkedIn;
 use common\models\custom\User;
 use common\models\custom\Authclient;
 use common\models\custom\Model;
@@ -158,6 +159,38 @@ class SiteController extends \frontend\components\BaseController {
         return $this->render('privacy-policy');
     }
     
+    public function actionLinkedin(){
+        $session = Yii::$app->session;
+        $linkedin = new LinkedIn ();
+        $oUserPagesForm = new UserPagesForm();
+        if($session->has('linkedin')){
+            if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
+                $client = $linkedin->getClient();
+                $oAuthclient = new Authclient();
+                $oAuthclient->user_id = Yii::$app->user->getId();
+                $oAuthclient->source = $client->name;
+                $oAuthclient->source_data = serialize($client);
+                $oAuthclient->source_id = $client->getUserAttributes()["id"];
+                $oAuthclient->save();
+                $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
+            }
+            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'linkedin']);
+            if($oAuthclient){
+                $oModel = $oAuthclient->model;
+                if($oModel){
+                    //$fb->getPostContent($oModel[0]->id);
+                    //$page = $fb->getPageData($oModel[0]->entity_id);
+                    //$fb->saveAccountInsights($oModel[0], $page['likes']);
+                    return $this->render('/linkedin/linkedinPage');
+                }
+            }else{
+                return $this->render('/linkedin/linkedin',['user_pages' => $linkedin->getUserAdminCompanies(), 'oUserPagesForm' => $oUserPagesForm]);
+            }
+        }else{
+            return $this->render('/linkedin/linkedinAuth');
+        }
+    }
+    
     public function actionFoursquare(){
         $session = Yii::$app->session;
         $foursquare = new Foursquare ();
@@ -242,15 +275,24 @@ class SiteController extends \frontend\components\BaseController {
         }
     }
     
-    public function actionGooglePlusActivities(){
-        $googleP = new GooglePlus();
-        return $this->render('/google-plus/activities', ['public_activities' => $googleP->getPublicActivities()]);
-    }
-
     public function actionYoutube($p = null, $v = null){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
         $youtube = new Youtube();
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                //check stored token
+                Youtube::setClient( unserialize($oAuthclient->source_data));
+                $ReturnData = $youtube->getChannelData() ;
+                if( $ReturnData == null){
+                    $oAuthclient->source_data =null;
+                    $oAuthclient->save();
+                    Youtube::setClient( null);
+                }
+            }
+        }
+
         if($p){
             $playlist_videos = $youtube->getPlaylistVideos($p);
             return $this->render('/youtube/channel-videos', ['videos' => $playlist_videos]);
@@ -264,10 +306,10 @@ class SiteController extends \frontend\components\BaseController {
         }else if($session['youtube']){
             $channels = $youtube->getChannelData();
             $channel_analytics = $youtube->getChannelAnalytics();
-            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
             if(!$oAuthclient){
                 $oAuthclient = $youtube->createNewAuthclient($channels);
             }else{
+                if($oAuthclient->source_data==null) $youtube->UpdateAuthclient($oAuthclient);
                 if($oAuthclient->source_id != $channels['items'][0]['id']){
                     Yii::$app->getSession()->setFlash('error', 'Please select the youtube channel you registered with in the First time.');
                     return $this->render('/youtube/youtubeAuth');
@@ -361,18 +403,21 @@ class SiteController extends \frontend\components\BaseController {
     }
     
     public function actionTwitter(){
-        //ini_set('max_execution_time', 900000);
-
+        ini_set('max_execution_time', 900000);
         //check if the save access is working
         $twitter = new Twitter();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
                 Twitter::setClient( unserialize($oAuthclient->source_data));
-                //@ToDo check if the token is not expired
+                $ReturnData = $twitter->getAccountData() ;
+                if( $ReturnData == null){
+                    $oAuthclient->source_data =null;
+                    $oAuthclient->save();
+                    Twitter::setClient( null);
+                    }
                 }
         }
-
 
         $session = Yii::$app->session;
 		//echo '<pre>'; var_dump($twitter->getCompetitorsNamesAndFollowers("https://twitter.com/GoldDerby")); echo '</pre>'; die;
@@ -419,18 +464,26 @@ class SiteController extends \frontend\components\BaseController {
     public function actionFacebook(){
         ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
-        $fb = new Facebook();$oUserPagesForm = new UserPagesForm();
+        $fb = new Facebook();
+        $oUserPagesForm = new UserPagesForm();
         
-        //check if the save access is working
+        //check if the saved access is working
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
                 Facebook::setClient( unserialize($oAuthclient->source_data));
-                //@ToDo check if the token is not expired
+               $client = $fb->getClient();
+              $ReturnData = $client->getUserAttributes() ;
+                if( $ReturnData == null){
+                    $oAuthclient->source_data =null;
+                    $oAuthclient->save();
+                    Facebook::setClient( null);
+                }
             }else{
                 $client = Facebook::getClient();
+                $client->getUserAttributes() ;
                 $oAuthclient->source_data = serialize($client);
-                $oAuthclient->update();
+                $oAuthclient->save();
             }
         }
 
@@ -518,9 +571,11 @@ class SiteController extends \frontend\components\BaseController {
         }elseif($client->name == 'foursquare'){
             Foursquare::setClient($client);
             return $this->action->redirect( Url::to(['foursquare'],true) );
+        }elseif($client->name == 'linkedin'){
+            LinkedIn::setClient($client);
+            return $this->action->redirect( Url::to(['linkedin'],true) );
         }else{
-			
-            echo '<pre>'; var_dump($client->api('companies/~?format=json')); echo '</pre>'; die;
+            echo '<pre>'; var_dump($client); echo '</pre>'; die;
         }
     }
 

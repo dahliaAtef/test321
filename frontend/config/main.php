@@ -65,6 +65,7 @@ return [
                 'support' => 'site/support',
                 'subscribe' => 'site/subscribe',
                 'dashboard' => 'site/dashboard',
+                'linkedin' => 'site/linkedin',
                 'facebook' => 'site/facebook',
                 'twitter' => 'site/twitter',
                 'instagram' => 'site/instagram',
@@ -129,6 +130,7 @@ return [
                     'class' => 'digi\authclient\clients\LinkedIn',
                     'clientId' => '785ycgac580a0k',
                     'clientSecret' => '1U8C8f4CPvELTDK0',
+                    'scope' => 'r_basicprofile r_emailaddress rw_company_admin'
 		],
             ],
         ],

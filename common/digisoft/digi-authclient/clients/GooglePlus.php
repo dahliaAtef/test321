@@ -506,6 +506,22 @@ class GooglePlus extends OAuth2
 
         return $this->processResponse($response, $this->determineContentTypeByHeaders($responseHeaders));
     }
+    public function api($apiSubUrl, $method = 'GET', array $params = [], array $headers = [])
+    {
+        if (preg_match('/^https?:\\/\\//is', $apiSubUrl)) {
+            $url = $apiSubUrl;
+        } else {
+            $url = $this->apiBaseUrl . '/' . $apiSubUrl;
+        }
+        $accessToken = $this->getAccessToken();
+
+        if (!is_object($accessToken) || !$accessToken->getIsValid()) {
+
+            return null ;
+            //throw new Exception('Invalid access token.');
+        }
+        return $this->apiInternal($accessToken, $url, $method, $params, $headers);
+    }
 
 
 

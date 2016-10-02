@@ -17,11 +17,11 @@ class Twitter extends \yii\authclient\clients\Twitter
     const MENTION = 2;
     const REPLY = 3;
     const TWEET = 1;
-    
+
     public $account_insights_in_range;
     public $days_in_range;
-    
-    
+
+
     /**
      * get array of days in the specified range of days 
      **/
@@ -42,7 +42,7 @@ class Twitter extends \yii\authclient\clients\Twitter
             Yii::$app->session->set('twitter', $client);
         //}
     }
-    
+
     public function getClient(){
         $client = Yii::$app->session->get('twitter');
         if(Yii::$app->session->get('twitter')){
