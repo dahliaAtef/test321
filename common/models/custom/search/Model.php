@@ -18,7 +18,7 @@ class Model extends ModelModel
     public function rules()
     {
         return [
-            [['authclient_id', 'parent_id', 'type', 'post_type', 'followers', 'likes', 'comments', 'shares', 'reactions', 'in_reply_to_id'], 'integer'],
+            [['authclient_id', 'parent_id', 'type', 'post_type', 'followers', 'likes', 'comments', 'shares', 'clicks', 'impressions', 'reactions', 'in_reply_to_id'], 'integer'],
             [['name', 'media_url', 'created', 'url', 'tags'], 'safe'],
         ];
     }
