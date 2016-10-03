@@ -78,7 +78,28 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         $oUpdateModel->likes = $update['numLikes'];
         $oUpdateModel->comments = $update['updateComments']['_total'];
         $oUpdateModel->creation_time = $update['timestamp'];
-        $oUpdateModel->save();
+        //$oUpdateStatistics = $this->getUpdateStatistics($parent_id, $update['updateKey']);
+        if(!$oUpdateModel->save()){
+            echo '<pre>'; var_dump($oUpdateModel->getErrors()); echo '</pre>'; die;
+        }
+    }
+    
+    public function getUpdateStatisticsInTime($company_id = '5260201', $update_key = 'UPDATE-c5260201-6082180170444267520', $since = '1475280000000'){
+        $client = $this->getClient();
+        $company_update_statistics = $client->api('companies/'.$company_id.'/historical-status-update-statistics:(click-count,like-count,comment-count,impression-count,share-count,time)?update-key='.$update_key.'&time-granularity=day&start-timestamp='.$since.'&format=json');
+        return $company_update_statistics;
+    }
+    
+    public function getHistoricalStatisticsInTime($company_id = '5260201', $since = '1475280000000'){
+        $client = $this->getClient();
+        $company_update_statistics = $client->api('companies/'.$company_id.'/historical-status-update-statistics:(click-count,like-count,comment-count,impression-count,share-count,time)?time-granularity=day&start-timestamp='.$since.'&format=json');
+        return $company_update_statistics;
+    }
+    
+    public function getHistoricalFollowersStatisticsInTime($company_id, $since){
+        $client = $this->getClient();
+        $company_followers_statistics = $client->api('companies/'.$company_id.'/historical-follow-statistics?time-granularity=day&start-timestamp='.$since.'&format=json');
+        return $company_followers_statistics;
     }
     
     public function firstTimeToLog($company_id, $authclient_id){
@@ -88,5 +109,28 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         foreach($company_updates['values'] as $update){
             $this->createUpdateModel($oAccountModel->id, $authclient_id, $update);
         }
+        return $oAccountModel;
+    }
+    
+    public function statistics($company_id = '5260201'){
+        $since = strtotime('-3 months') * 1000;
+        $historical_statistics = $this->getHistoricalStatisticsInTime($company_id, $since)['values'];
+        //echo '<pre>'; var_dump($historical_statistics); echo '</pre>'; die;
+        $statistics_array = ['clicks' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'impressions' => 0];
+        foreach($historical_statistics as $statistics){
+            $statistics_array['clicks'] += $statistics['clickCount'];
+            $statistics_array['likes'] += $statistics['likeCount'];
+            $statistics_array['comments'] += $statistics['commentCount'];
+            $statistics_array['shares'] += $statistics['shareCount'];
+            $statistics_array['impressions'] += $statistics['impressionCount'];
+        }
+        $statistics_array['interactions'] = $statistics_array['likes'] + $statistics_array['comments'] + $statistics_array['shares'];
+        $statistics_array['followers'] = $this->getHistoricalFollowersStatisticsInTime($company_id, $since);
+        $statistics_array['new_followers'] = $statistics_array['followers']['values'][92]['totalFollowerCount'] - $statistics_array['followers']['values'][0]['totalFollowerCount'];
+        $statistics_array['total_followers'] = $statistics_array['followers']['values'][92]['totalFollowerCount'];
+        $statistics_array['organic_followers'] = $statistics_array['followers']['values'][92]['organicFollowerCount'];
+        $statistics_array['paid_followers'] = $statistics_array['followers']['values'][92]['paidFollowerCount'];
+        //echo '<pre>'; var_dump($statistics_array['followers']['values']); echo '</pre>'; die;
+        echo '<pre>'; var_dump($statistics_array['followers']['values'][0]); echo '</pre>'; die;
     }
 }
