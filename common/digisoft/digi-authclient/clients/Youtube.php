@@ -13,6 +13,7 @@ use common\helpers\GoogleChartHelper;
 use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\Authclient;
+use yii\base\Exception;
 
 /**
  * GoogleOAuth allows authentication via Google OAuth.
@@ -52,7 +53,7 @@ class Youtube extends OAuth2
     /**
      * @inheritdoc
      */
-    public $authUrl = 'https://accounts.google.com/o/oauth2/auth?prompt=consent&access_type=offline';
+    public $authUrl = 'https://accounts.google.com/o/oauth2/auth'; //?prompt=consent&access_type=offline';
     /**
      * @inheritdoc
      */
@@ -151,6 +152,8 @@ class Youtube extends OAuth2
         ($start_date) ? '' : ($start_date = date('Y-m-01', time())) ;
         ($end_date) ? '' : ($end_date = date('Y-m-d', strtotime('-1 days', time())));
         //$channel_analytics = $client->api("/youtube/analytics/v1/reports?ids=channel==MINE&start-date=".$start_date."&end-date=".$end_date."&metrics=views,comments,likes,dislikes,shares,favoritesAdded,favoritesRemoved,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost");
+      echo $start_date .' + '.$end_date ;
+      //  die;
         $channel_analytics = $client->api("/youtube/analytics/v1/reports?ids=channel==MINE&start-date=".$start_date."&end-date=".$end_date."&metrics=views,comments,likes,dislikes,shares,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost");
         
         return $channel_analytics;
@@ -518,11 +521,18 @@ class Youtube extends OAuth2
         $oAuthclient = new Authclient();
         $oAuthclient->user_id = Yii::$app->user->getId();
         $oAuthclient->source = $client->name;
+        $oAuthclient->source_data =serialize($client);
         $oAuthclient->source_id = $channels['items'][0]['id'];
         $oAuthclient->save();
         return $oAuthclient;
     }
-	
+	public function UpdateAuthclient($oAuthclient){
+        $client = $this->getClient();
+        $oAuthclient->source_data =serialize($client);
+        $oAuthclient->save();
+        return true;
+    }
+
 	public function firstTimeToLog($authclient_id){
 		$channels = $this->getChannelData();
 		$channel_analytics = $this->getChannelAnalytics();
@@ -622,4 +632,68 @@ class Youtube extends OAuth2
 			$post->update();
 		}
 	}
+
+    // inherit this function to check the api return
+    protected function sendRequest($method, $url, array $params = [], array $headers = [])
+    {
+        $curlOptions = $this->mergeCurlOptions(
+            $this->defaultCurlOptions(),
+            $this->getCurlOptions(),
+            [
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_URL => $url,
+            ],
+            $this->composeRequestCurlOptions(strtoupper($method), $url, $params)
+        );
+        $curlResource = curl_init();
+        foreach ($curlOptions as $option => $value) {
+            curl_setopt($curlResource, $option, $value);
+        }
+        $response = curl_exec($curlResource);
+        $responseHeaders = curl_getinfo($curlResource);
+
+        // check cURL error
+        $errorNumber = curl_errno($curlResource);
+        $errorMessage = curl_error($curlResource);
+
+        curl_close($curlResource);
+
+        if ($errorNumber > 0) {
+            throw new Exception('Curl error requesting "' .  $url . '": #' . $errorNumber . ' - ' . $errorMessage);
+        }
+        if (strncmp($responseHeaders['http_code'], '20', 2) !== 0) {
+            $error= json_decode($response, TRUE);
+                        echo "<pre>";
+            print_r($error);
+            echo "</pre>";
+            die;
+            if( $error['error']['message']  == "Invalid Credentials") {
+                return null;
+            }else{
+                throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
+            }
+        }
+
+        return $this->processResponse($response, $this->determineContentTypeByHeaders($responseHeaders));
+    }
+
+    public function api($apiSubUrl, $method = 'GET', array $params = [], array $headers = [])
+    {
+        if (preg_match('/^https?:\\/\\//is', $apiSubUrl)) {
+            $url = $apiSubUrl;
+        } else {
+            $url = $this->apiBaseUrl . '/' . $apiSubUrl;
+        }
+        $accessToken = $this->getAccessToken();
+
+        if (!is_object($accessToken) || !$accessToken->getIsValid()) {
+
+            return null ;
+            //throw new Exception('Invalid access token.');
+        }
+        return $this->apiInternal($accessToken, $url, $method, $params, $headers);
+    }
+
+
 }

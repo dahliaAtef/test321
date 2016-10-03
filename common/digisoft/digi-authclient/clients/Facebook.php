@@ -31,7 +31,8 @@ class Facebook extends \yii\authclient\clients\Facebook
             return false;
         }
     }
-    
+
+
     public static function getUserPages(){
         $fb = new Facebook();
         $client = $fb->getClient();
