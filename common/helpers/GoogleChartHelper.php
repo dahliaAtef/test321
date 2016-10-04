@@ -109,7 +109,7 @@ class GoogleChartHelper {
     }
     
     /**
-     * Get Data Table for two graphs
+     * Get Data Table for two time graphs
      * @author Dalia Atef <dahliaatef@hotmail.com>
      * @param string $x_axis of graph
      * @param string $y_axis of graph
@@ -132,6 +132,39 @@ class GoogleChartHelper {
                 ['v' => $graph_two_values[$counter]["value"]]
             ]];
             $counter++;
+        }
+        if($rows){
+            $table['rows'] = $rows;
+            $json_table = json_encode($table);
+            return $json_table;
+        }else{
+            $json_table = null;
+            return $json_table;
+        }
+    }
+    
+    /**
+     * Get Data Table for two Date graphs using key names
+     * @author Dalia Atef <dahliaatef@hotmail.com>
+     * @param string $x_axis of graph
+     * @param string $y_axis of graph
+     * @param array $values to be graphed
+     * @return object $json_table of values
+     */
+    public static function getTwoGraphsByDayDataTableUsingKeyNames($x_axis, $graph_one_y_axis,$graph_two_y_axis, $x_axis_values, $graph_one_values, $graph_one_key, $graph_two_values, $graph_two_key) {
+        $table = array();
+        $table['cols'] = [
+            ['label' => $x_axis, 'type' => 'string'],
+            ['label' => $graph_one_y_axis, 'type' => 'number'],
+            ['label' => $graph_two_y_axis, 'type' => 'number'],
+        ];
+        $rows = array();
+        foreach($x_axis_values as $x_axis_value){
+            $rows[] = ['c' =>[
+                ['v' => $x_axis_value],
+                ['v' => $graph_one_values[$x_axis_value][$graph_one_key]],
+                ['v' => $graph_two_values[$x_axis_value][$graph_two_key]]
+            ]];
         }
         if($rows){
             $table['rows'] = $rows;

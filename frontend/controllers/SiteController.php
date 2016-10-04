@@ -163,7 +163,7 @@ class SiteController extends \frontend\components\BaseController {
         $session = Yii::$app->session;
         $linkedin = new LinkedIn ();
         $client = $linkedin->getClient();
-        echo '<pre>'; var_dump($linkedin->statistics()); echo '</pre>'; die;
+        //echo '<pre>'; var_dump($linkedin->statistics()); echo '</pre>'; die;
         //echo '<pre>'; var_dump($client->api('companies/5260201/historical-status-update-statistics:(time,like-count,share-count,comment-count,impression-count,click-count)?update-key=UPDATE-c5260201-6082180170444267520&time-granularity=month&start-timestamp=1451820285000&end-timestamp=1475493885000&format=json')); echo '</pre>'; die;
         //echo '<pre>'; var_dump($client->api('companies/5260201/historical-status-update-statistics:(time,like-count,share-count,comment-count,impression-count,click-count)?time-granularity=month&start-timestamp=1451820285000&end-timestamp=1475493885000&format=json')); echo '</pre>'; die;
         $oUserPagesForm = new UserPagesForm();
@@ -183,11 +183,8 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
-                    //$linkedin->firstTimeToLog($oModel[0]->entity_id, $oAuthclient->id);
-                    //$fb->getPostContent($oModel[0]->id);
-                    //$page = $fb->getPageData($oModel[0]->entity_id);
-                    //$fb->saveAccountInsights($oModel[0], $page['likes']);
-                    return $this->render('/linkedin/linkedinPage');
+                    $statistics = $linkedin->statistics($oModel[0]);
+                    return $this->render('/linkedin/linkedinPage', ['statistics' => $statistics, 'linkedin' => $linkedin, 'oModel' => $oModel[0]]);
                 }
             }else{
                 return $this->render('/linkedin/linkedin',['user_pages' => $linkedin->getUserAdminCompanies(), 'oUserPagesForm' => $oUserPagesForm]);
