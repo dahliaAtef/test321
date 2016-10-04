@@ -77,14 +77,11 @@ GoogleCharts.drawColumns = function (jsonTable, title, divId) {
     google.charts.setOnLoadCallback(function(){
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
-            //title : title,
-            //width: 800,
-            //height: 400,
             bar: {groupWidth: "100%"},
             legend: { position: "none" },
             colors : ["#194D86","#699A36","#FCBE8F"],
             backgroundColor: 'transparent',
-			height:360,
+            height:360,
             vAxis: {minValue:0, maxValue:100},
             animation:{
                 duration: 6000,
