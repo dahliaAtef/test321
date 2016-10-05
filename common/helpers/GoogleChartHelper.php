@@ -77,6 +77,33 @@ class GoogleChartHelper {
         }
     }
     
+    public static function getSameArrayThreeValuesDataTableUsingKeyNames($x_axis, $first_y_axis, $second_y_axis, $third_y_axis, $values, $first_key_name, $second_key_name, $third_key_name){
+        $table = array();
+        $table['cols'] = [
+            ['label' => $x_axis, 'type' => 'string'],
+            ['label' => $first_y_axis, 'type' => 'number'],
+            ['label' => $second_y_axis, 'type' => 'number'],
+            ['label' => $third_y_axis, 'type' => 'number'],
+        ];
+        $rows = array();
+        foreach($values as $key => $value){
+                $rows[] = ['c' => [
+                ['v' => $key],
+                ['v' => $value[$first_key_name]],
+                ['v' => $value[$second_key_name]],
+                ['v' => $value[$third_key_name]],
+                ]];
+        }
+        if($rows){
+            $table['rows'] = $rows;
+            $json_table = json_encode($table);
+            return $json_table;
+        }else{
+            $json_table = null;
+            return $json_table;
+        }
+    }
+    
     /**
      * Get Data Table
      * @author Dalia Atef <dahliaatef@hotmail.com>
