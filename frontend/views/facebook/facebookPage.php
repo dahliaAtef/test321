@@ -10,7 +10,6 @@ use digi\authclient\clients\Facebook;
 
 $client = $fb->getClient();
 $statistics = $fb->statistics($page['id'], $page['likes']);
-//echo '<pre>'; var_dump($statistics['posts_by_day_statistics']['posts_by_day']); echo '</pre>'; die;
 $top_fifteen_cities = $fb->getFansByCityFifteenCities($statistics['fans_by_city']);
 $colors = ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"];
 $this->title = 'Facebook';
@@ -30,35 +29,35 @@ $session = Yii::$app->session;
                 </div>
             </div>
         </div>
-		<div class="row">
-			<div class="col-md-6">
-				<h3 class="internal-title facebook ">KPIs Overview</h3>
-				<div class="internal-content">
-					<ul>
-						<div class="row">
-							<li class="col-md-5"><span class="small-title">Total page fans : </span><?= $page['likes'] ?></li>
-							<li class="col-md-5"><span class="small-title">Change In Fans : </span><?= $statistics['change_in_fans'] ?></li>
-							<li class="col-md-5"><span class="small-title">Page Posts : </span><?= $statistics['posts_by_day_statistics']['total_posts_count'] ?></li>
-							<li class="col-md-5"><span class="small-title">Total Interactions : </span><?= $statistics['posts_by_day_statistics']['total_interactions_count'] ?></li>
-							<li class="col-md-5"><span class="small-title">Likes : </span><?= $statistics['posts_by_day_statistics']['total_reactions_count'] ?></li>
-							<li class="col-md-5"><span class="small-title">Comments : </span><?= $statistics['posts_by_day_statistics']['total_comments_count'] ?></li>
-							<li class="col-md-5"><span class="small-title">Shares : </span><?= $statistics['posts_by_day_statistics']['total_shares_count'] ?></li>
-							<li class="col-md-5"><span class="small-title">User Posts : </span><?= array_sum($statistics['user_posts_per_day']) ?></li>
-						</div>
-					</ul>
-				</div>
+	<div class="row">
+            <div class="col-md-6">
+		<h3 class="internal-title facebook ">KPIs Overview</h3>
+		<div class="internal-content">
+                    <ul>
+			<div class="row">
+                            <li class="col-md-5"><span class="small-title">Total page fans : </span><?= $page['likes'] ?></li>
+                            <li class="col-md-5"><span class="small-title">Change In Fans : </span><?= $statistics['change_in_fans'] ?></li>
+                            <li class="col-md-5"><span class="small-title">Page Posts : </span><?= $statistics['posts_by_day_statistics']['total_posts_count'] ?></li>
+                            <li class="col-md-5"><span class="small-title">Total Interactions : </span><?= $statistics['posts_by_day_statistics']['total_interactions_count'] ?></li>
+                            <li class="col-md-5"><span class="small-title">Likes : </span><?= $statistics['posts_by_day_statistics']['total_reactions_count'] ?></li>
+                            <li class="col-md-5"><span class="small-title">Comments : </span><?= $statistics['posts_by_day_statistics']['total_comments_count'] ?></li>
+                            <li class="col-md-5"><span class="small-title">Shares : </span><?= $statistics['posts_by_day_statistics']['total_shares_count'] ?></li>
+                            <li class="col-md-5"><span class="small-title">User Posts : </span><?= array_sum($statistics['user_posts_per_day']) ?></li>
 			</div>
-			<div class="col-md-6">
-				<?php 						
-					echo $this->render('_pageNegativeFeedback', ['negative_feedback' => $fb->getPageNegativeFeedback($page['id'])]);
-				?>
-            </div>
+                    </ul>
 		</div>
-		<div class="row">
-			<div class="col-md-6">
-				<?php
-					echo $this->render('_fansDetails', ['age_gender_array' => $statistics['age_gender_array'], 'fans_count' => $page['likes']]);
-				?>
+            </div>
+            <div class="col-md-6">
+		<?php 						
+                    echo $this->render('_pageNegativeFeedback', ['negative_feedback' => $fb->getPageNegativeFeedback($page['id'])]);
+		?>
+            </div>
+	</div>
+	<div class="row">
+            <div class="col-md-6">
+		<?php
+                    echo $this->render('_fansDetails', ['age_gender_array' => $statistics['age_gender_array'], 'fans_count' => $page['likes']]);
+		?>
             </div>
         </div>
 
@@ -71,55 +70,53 @@ $session = Yii::$app->session;
                 </div>
             </div>
         </div>
-
-
-		<div class="row">
-			<div class="col-md-6">
-				<?php
-					echo $this->render('_fansOverview', ['fans_in_range' => $statistics['fans_in_range'], 'change_in_fans' => $statistics['change_in_fans'], 'max_change_in_fans' => $statistics['max_change_in_fans'], 'avg_fan_change_per_day' => $statistics['avg_fan_change_per_day'], 'page_name' => $page['name']]);
-				?>
+        <div class="row">
+            <div class="col-md-6">
+		<?php
+                    echo $this->render('_fansOverview', ['fans_in_range' => $statistics['fans_in_range'], 'change_in_fans' => $statistics['change_in_fans'], 'max_change_in_fans' => $statistics['max_change_in_fans'], 'avg_fan_change_per_day' => $statistics['avg_fan_change_per_day'], 'page_name' => $page['name']]);
+		?>
             </div>
         </div>
         <div class="row">
-			<div class="col-md-12">
-				<?php
-					echo $this->render('_allFansChart', ['page_fans_month_json_table' => $fb->getAllFansJsonTable($statistics['fans_in_range'])]);
-				?>
-			</div>
-		</div>
+            <div class="col-md-12">
+		<?php
+                    echo $this->render('_allFansChart', ['page_fans_month_json_table' => $fb->getAllFansJsonTable($statistics['fans_in_range'])]);
+		?>
+            </div>
+	</div>
         <div class="row">
-			<div class="col-md-12">
-				<?php
+            <div class="col-md-12">
+		<?php
                     echo $this->render('_fansGrowth', ['page_fans_growth_json_table' => $fb->getFanGrowthJsonTable($statistics['fans_growth'])]);
-				?>
-			</div>
-		</div>
+		?>
+            </div>
+	</div>
         <div class="row">
-			<div class="col-md-12">
-				<?php
+            <div class="col-md-12">
+		<?php
                     echo $this->render('_fansByCountryChart', ['country_json_table' => $fb->getFansByCountryJsonTable($statistics['fans_by_country'])]);
-				?>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<?php
-					echo $this->render('_fansByCountryTable', ['fans_by_country_table' => $statistics['fans_by_country_table']]); 
-				?>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-6">
-				<?php
-					echo $this->render('_fansByCityChart', ['fans_city_json_table' => $fb->getFansByCityJsonTable($top_fifteen_cities)]);
-				?>
-			</div>
-			<div class="col-md-6">
-				<?php
+		?>
+            </div>
+	</div>
+	<div class="row">
+            <div class="col-md-12">
+		<?php
+                    echo $this->render('_fansByCountryTable', ['fans_by_country_table' => $statistics['fans_by_country_table']]); 
+		?>
+            </div>
+	</div>
+	<div class="row">
+            <div class="col-md-6">
+		<?php
+                    echo $this->render('_fansByCityChart', ['fans_city_json_table' => $fb->getFansByCityJsonTable($top_fifteen_cities)]);
+		?>
+            </div>
+            <div class="col-md-6">
+		<?php
                     echo $this->render('_fansByLanguageChart', ['fans_language_json_table' => $fb->getFansByLanguageJsonTable($statistics['fans_lang'])]);
-				?>		
-			</div>
-		</div>
+		?>		
+            </div>
+	</div>
 		<!--<div class="row">
 			<div class="col-md-6">
 				
