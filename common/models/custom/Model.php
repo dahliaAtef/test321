@@ -51,11 +51,11 @@ class Model extends \common\models\base\Base
     {
         return [
             [['authclient_id', 'type', 'entity_id'], 'required'],
-            [['authclient_id', 'parent_id', 'type', 'post_type', 'followers', 'likes', 'comments', 'shares', 'reactions', 'in_reply_to_id', 'interactions'], 'integer'],
+            [['authclient_id', 'parent_id', 'type', 'post_type', 'followers', 'likes', 'comments', 'shares', 'clicks', 'impressions', 'reactions', 'in_reply_to_id', 'interactions'], 'integer'],
             [['created', 'updated'], 'safe'],
             [[/*'creation_time',*/ 'filter', 'source', 'content'], 'string'],
             [['name'], 'string', 'max' => 150],
-            [['media_url', 'url', 'tags'], 'string', 'max' => 255]
+            [['media_url', 'url', 'tags'], 'string', 'max' => 500]
         ];
     }
 
@@ -78,6 +78,8 @@ class Model extends \common\models\base\Base
             'likes' => 'Likes',
             'comments' => 'Comments',
             'shares' => 'Shares',
+            'clicks' => 'Clicks',
+            'impressions' => 'Impressions',
             'interactions' => 'Interactions',
             'reactions' => 'Reactions',
             'followers' => 'Followers',
