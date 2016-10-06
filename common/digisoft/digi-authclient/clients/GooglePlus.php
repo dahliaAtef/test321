@@ -9,6 +9,7 @@ use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\helpers\GoogleChartHelper;
 use common\helpers\InstagramGoogleChartHelper;
+use yii\base\Exception;
 
 
 class GooglePlus extends OAuth2
@@ -518,7 +519,7 @@ class GooglePlus extends OAuth2
         if (!is_object($accessToken) || !$accessToken->getIsValid()) {
 
             return null ;
-            //throw new Exception('Invalid access token.');
+           // throw new Exception('Invalid access token.');
         }
         return $this->apiInternal($accessToken, $url, $method, $params, $headers);
     }

@@ -8,6 +8,7 @@
 namespace yii\authclient\clients;
 
 use yii\authclient\OAuth1;
+use yii\base\Exception;
 
 /**
  * Twitter allows authentication via Twitter OAuth.

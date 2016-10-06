@@ -32,7 +32,20 @@ class SiteController extends \frontend\components\BaseController {
 
     public $defaultAction = 'home';
 
-    /**
+    public function behaviors()
+    {
+        return [
+
+            'pageCache' => [
+                'class' => 'yii\filters\PageCache',
+                'only' => ['facebook','twitter','instagram'],
+                'duration' => 60*60*12, // 12 h
+            ],
+        ];
+    }
+
+
+        /**
      * @inheritdoc
      */
     public function actions() {
