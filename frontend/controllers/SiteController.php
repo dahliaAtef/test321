@@ -549,39 +549,14 @@ class SiteController extends \frontend\components\BaseController {
             return $this->action->redirect( Url::to(['facebook'],true) );
         }elseif($client->name == 'twitter'){
                 Twitter::setClient($client);
-//            echo "<pre>";
-//            print_r($client);
-//            echo "<pre>";
-//            die;
-//            $twitter = new Twitter();
-//            $user_data = $twitter->getAccountData();
-//
-//            $oAuthclient = new Authclient();
-//            $oAuthclient->user_id = Yii::$app->user->getId();
-//            $oAuthclient->source = $client->name;
-//            $oAuthclient->source_data = serialize($client);
-//            $oAuthclient->source_id = $user_data["id_str"];
-//            $oAuthclient->save();
-            return $this->action->redirect( Url::to(['twitter'],true) );
+                return $this->action->redirect( Url::to(['twitter'],true) );
         }elseif($client->name == 'instagram'){
             Instagram::setClient($client);
-
-//            $oAuthclient = new Authclient();
-//            $oAuthclient->user_id = 75;
-//            $oAuthclient->source = $client->name;
-//            $oAuthclient->source_id = $client->getUserAttributes()["id"];
-//            $oAuthclient->save();
             return $this->action->redirect( Url::to(['instagram'],true));
         }elseif($client->name == 'youtube'){
-			//echo '<pre>'; var_dump($client); echo '</pre>'; die;
             Youtube::setClient($client);
             return $this->action->redirect( Url::to(['youtube'],true) );
         }elseif($client->name == 'google_plus'){
-//            $oAuthclient = new Authclient();
-//            $oAuthclient->user_id = 75;
-//            $oAuthclient->source = $client->name;
-//            $oAuthclient->source_id = $client->getUserAttributes()["id"];
-//            $oAuthclient->save();die;
             GooglePlus::setClient($client);
             return $this->action->redirect( Url::to(['google-plus'],true) );
         }elseif($client->name == 'foursquare'){
