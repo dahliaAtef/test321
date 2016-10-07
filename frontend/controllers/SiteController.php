@@ -38,7 +38,7 @@ class SiteController extends \frontend\components\BaseController {
 
             'pageCache' => [
                 'class' => 'yii\filters\PageCache',
-                'only' => ['facebook','twitter','instagram'],
+                'only' => ['facebook','twitter','instagram','youtube','google-plus'],
                 'duration' => 60*60*12, // 12 h
             ],
         ];
