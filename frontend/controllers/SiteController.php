@@ -163,9 +163,8 @@ class SiteController extends \frontend\components\BaseController {
         $session = Yii::$app->session;
         $linkedin = new LinkedIn ();
         $client = $linkedin->getClient();
-        //echo '<pre>'; var_dump($linkedin->statistics()); echo '</pre>'; die;
-        //echo '<pre>'; var_dump($client->api('companies/5260201/historical-status-update-statistics:(time,like-count,share-count,comment-count,impression-count,click-count)?update-key=UPDATE-c5260201-6082180170444267520&time-granularity=month&start-timestamp=1451820285000&end-timestamp=1475493885000&format=json')); echo '</pre>'; die;
-        //echo '<pre>'; var_dump($client->api('companies/5260201/historical-status-update-statistics:(time,like-count,share-count,comment-count,impression-count,click-count)?time-granularity=month&start-timestamp=1451820285000&end-timestamp=1475493885000&format=json')); echo '</pre>'; die;
+        $company_statistics = $linkedin->getCompanyStatistics();
+        //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
         $oUserPagesForm = new UserPagesForm();
         if($session->has('linkedin')){
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){

@@ -157,7 +157,9 @@ $days_count = count($statistics['days']);
                     ?>
                 </div>
             </div>
-            
+            <?php
+                echo $this->render('_followersDemographics', ['followers_statistics' => $statistics['company_statistics']['followStatistics'], 'linkedin' => $linkedin]);
+            ?>
             
             
 	</div>
