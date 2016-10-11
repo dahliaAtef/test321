@@ -18,7 +18,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     const IMAGE = 0;
     const VIDEO = 1;
     
-    const COMPANYSIZE = [
+    public $company_size = [
         'A' => 'Self-employed', 
         'B' => '1-10', 
         'C' => '11-50', 
@@ -30,7 +30,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         'I' => '10,001+', 
         ];
     
-    const COUNTRY = [
+    public $country = [
         "bd" => "Bangladesh", "be" => "Belgium", "bf" => "Burkina Faso", "bg" => "Bulgaria", 
         "ba" => "Bosnia and Herzegovina", "bb" => "Barbados", "wf" => "Wallis and Futuna", 
         "bl" => "Saint Barthelemy", "bm" => "Bermuda", "bn" => "Brunei", "bo" => "Bolivia", 
@@ -98,7 +98,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         "ie" => "Ireland", "id" => "Indonesia", "ua" => "Ukraine", "qa" => "Qatar", "mz" => "Mozambique"
     ];
     
-    const SENIORITY = [
+    public $seniority = [
         '1' => 'Unpaid',
         '2' => 'Training',
         '3' => 'Entry-level',
@@ -111,7 +111,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         '10' => 'Owner',
     ];
     
-    const INDUSTRY = [
+    public $industry = [
         '47' => 'Accounting',
         '94' => 'Airlines/Aviation',
         '120' => 'Alternative Dispute Resolution',
@@ -261,7 +261,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         '103' => 'Writing and Editing'
     ];
     
-    const JOB = [
+    public $job = [
         '-1' => 'None',
         '1' => 'Accounting',
         '2' => 'Administrative',
@@ -526,7 +526,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     public function getCompanySize($followers_company_size_statistics){
         $company_size_statistics = [];
         foreach($followers_company_size_statistics as $value){
-            $company_size_statistics[self::COMPANYSIZE[$value['entryKey']]] = $value['entryValue'];
+            $company_size_statistics[$this->company_size[$value['entryKey']]] = $value['entryValue'];
         }
         return $company_size_statistics;
     }
@@ -539,7 +539,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     public function getCountry($followers_country_statistics){
         $country_statistics = [];
         foreach($followers_country_statistics as $value){
-            $country_statistics[self::COUNTRY[$value['entryKey']]] = $value['entryValue'];
+            $country_statistics[$this->country[$value['entryKey']]] = $value['entryValue'];
         }
         return $country_statistics;
     }
@@ -552,7 +552,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     public function getSeniority($followers_seniority_statistics){
         $seniority_statistics = [];
         foreach($followers_seniority_statistics as $value){
-            $seniority_statistics[self::SENIORITY[$value['entryKey']]] = $value['entryValue'];
+            $seniority_statistics[$this->seniority[$value['entryKey']]] = $value['entryValue'];
         }
         return $seniority_statistics;
     }
@@ -565,7 +565,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     public function getIndustry($followers_industry_statistics){
         $industry_statistics = [];
         foreach($followers_industry_statistics as $value){
-            $industry_statistics[self::INDUSTRY[$value['entryKey']]] = $value['entryValue'];
+            $industry_statistics[$this->industry[$value['entryKey']]] = $value['entryValue'];
         }
         return $industry_statistics;
     }
@@ -578,7 +578,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     public function getJobs($followers_job_statistics){
         $job_statistics = [];
         foreach($followers_job_statistics as $value){
-            $job_statistics[self::JOB[$value['entryKey']]] = $value['entryValue'];
+            $job_statistics[$this->job[$value['entryKey']]] = $value['entryValue'];
         }
         return $job_statistics;
     }
