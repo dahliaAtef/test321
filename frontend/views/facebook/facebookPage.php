@@ -9,7 +9,7 @@ use yii\helpers\Url;
 use digi\authclient\clients\Facebook;
 
 $client = $fb->getClient();
-$statistics = $fb->statistics($page['id'], $page['likes']);
+$statistics = $fb->statistics($page['id'], $page['likes'], $since, $until);
 $top_fifteen_cities = $fb->getFansByCityFifteenCities($statistics['fans_by_city']);
 $colors = ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"];
 $this->title = 'Facebook';
@@ -201,7 +201,7 @@ $session = Yii::$app->session;
 
 				echo $this->render('_pageUserPosts', ['page_user_posts_by_day_json_table' => $statistics['user_posts_per_day_json_table'], 'user_posts' => $statistics['user_posts_per_day'], 'page_name' => $page['name']]);
 
-				echo $this->render('_pageViewsChart', ['page_views_json_table' => $fb->getPageViewsJsonTable($page['id'])]);
+				echo $this->render('_pageViewsChart', ['page_views_json_table' => $fb->getPageViewsJsonTable($page['id'], $since, $until)]);
 			?>
 			<!-- sperated line -->
 	        <div class="row">

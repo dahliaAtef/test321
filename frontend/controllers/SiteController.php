@@ -182,7 +182,10 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
+                    $since = strtotime('-10 months') * 1000;
+                    $until = time() * 1000;
                     $statistics = $linkedin->statistics($oModel[0]);
+                    $linkedin->saveAccountInsights($oModel[0], $since);
                     return $this->render('/linkedin/linkedinPage', ['statistics' => $statistics, 'linkedin' => $linkedin, 'oModel' => $oModel[0]]);
                 }
             }else{
@@ -505,13 +508,16 @@ class SiteController extends \frontend\components\BaseController {
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
             if($oModel){
-				//$fb->getPostContent($oModel[0]->id);
+		$since = strtotime('first day of this month');
+                $until = time();
                 $page = $fb->getPageData($oModel[0]->entity_id);
-				$fb->saveAccountInsights($oModel[0], $page['likes']);
+		$fb->saveAccountInsights($oModel[0], $page['likes']);
                 return $this->render('/facebook/facebookPage',[
                     'page' => $page,
                     'fb' => $fb,
                     'id' => $oModel[0]->entity_id,
+                    'since' => $since,
+                    'until' => $until,
                 ]);
             }else{
                 return $this->render('/facebook/facebook',['user_pages' => $fb->getUserPages(), 'oUserPagesForm' => $oUserPagesForm]);

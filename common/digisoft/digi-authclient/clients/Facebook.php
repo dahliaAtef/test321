@@ -568,7 +568,8 @@ class Facebook extends \yii\authclient\clients\Facebook
         $counter = 0;
         $fan = $this->getFansAddsAndRemoves($page_id, $since, $until);
         foreach($fan['adds'] as $fan_add){
-            $net[date('M d', strtotime($fan_add['end_time']))] = ($fan_add['value'] - $fan['removes'][$counter]['value']);
+            $date = (date('d', strtotime($fan_add['end_time'])) != '01') ?  date('d', strtotime($fan_add['end_time'])) : date('M d', strtotime($fan_add['end_time']));
+            $net[$date] = ($fan_add['value'] - $fan['removes'][$counter]['value']);
             $counter++;
         }
         return $net;
@@ -704,11 +705,11 @@ class Facebook extends \yii\authclient\clients\Facebook
         if(array_key_exists('full_picture', $post)){
             $oPostModel->media_url = $post['full_picture'];
         }
-		if(array_key_exists('message', $post)){
-			$oPostModel->content = $post['message'];
-		}elseif(array_key_exists('story', $post)){
-			$oPostModel->content = $post['story'];
-		}
+	if(array_key_exists('message', $post)){
+            $oPostModel->content = $post['message'];
+	}elseif(array_key_exists('story', $post)){
+            $oPostModel->content = $post['story'];
+	}
         $oPostModel->likes = (array_key_exists('like' , $stories) ? $stories['like'] : 0);
         $oPostModel->comments = (array_key_exists('comment' , $stories) ? $stories['comment'] : 0);
         $oPostModel->shares = (array_key_exists('share' , $stories) ? $stories['share'] : 0);
@@ -722,7 +723,7 @@ class Facebook extends \yii\authclient\clients\Facebook
         return $oPostModel;
     }
     
-	public function updatePostModel($oPostModel){
+    public function updatePostModel($oPostModel){
         $stories = $this->getPageStoriesByActionType($oPostModel->entity_id)['data'][0]['values'][0]['value'];
         $reactions = array_sum($this->getPostReactionsByType($oPostModel->entity_id)['data'][0]['values'][0]['value']);
         $oPostModel->likes = (array_key_exists('like' , $stories) ? $stories['like'] : 0);
@@ -805,7 +806,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     /**
      * Save fans posts in database
      **/
-    public function saveUserPosts($page_id, $page_model_id = 326, $since, $until){
+    public function saveUserPosts($page_id, $page_model_id, $since, $until){
         $all_user_posts = $this->getAllUserPosts($page_id, $since, $until);
         //echo '<pre>'; var_dump($all_user_posts); echo '</pre>'; die;
         foreach($all_user_posts as $user_post){
@@ -814,7 +815,7 @@ class Facebook extends \yii\authclient\clients\Facebook
                 $oUserPost = new UserPosts();
                 $oUserPost->page_model_id = $page_model_id;
                 $oUserPost->post_id = $user_post['id'];
-                $oUserPost->message = (array_key_exists('message', $user_post)) ? $user_post['message'] : $user_post['story'];
+                //$oUserPost->message = (array_key_exists('message', $user_post)) ? $user_post['message'] : $user_post['story'];
                 $oUserPost->creation_time = strtotime($user_post['created_time']);
                 $oUserPost->save();
             }
@@ -840,10 +841,12 @@ class Facebook extends \yii\authclient\clients\Facebook
         $user_posts_per_day = [];
         foreach($days_in_range as $day){
             $date_day = date('M d', $day);
-            $user_posts_per_day[$date_day] = 0;
+            $refine_date = date('d', $day);
+            $date = ($refine_date != '01') ?  $refine_date : $date_day;
+            $user_posts_per_day[$date] = 0;
             foreach($user_posts_in_range as $user_post){
                 if((date('M d', $user_post->creation_time)) == $date_day){
-                    $user_posts_per_day[$date_day] ++;
+                    $user_posts_per_day[$date] ++;
                 }
             }
         }
@@ -895,6 +898,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Get json table of the page engagement
      **/
     public function getPageEngagementJsonTable($page_engagement_by_day){
+        //echo '<pre>'; var_dump($page_engagement_by_day); echo '</pre>'; die;
         $page_engagement_by_day_json_table = ($page_engagement_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'interaction per 1000 fans', $page_engagement_by_day, 'engagement') : '';
         return $page_engagement_by_day_json_table;
     }
@@ -927,7 +931,6 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Get statistics posts by day
      **/
     public function getPostsByDayStatistics($days_in_range, $posts_in_range){
-        //echo '<pre>'; var_dump($posts_in_range); echo '</pre>'; die;
         $statistics = array();
         $types_array = ['value' => 0, 'interaction' => 0, 'engagement' => 0];
         $statistics['posts_by_day'] = array(); $statistics['post_types'] = [
@@ -938,30 +941,32 @@ class Facebook extends \yii\authclient\clients\Facebook
         $statistics['min_interaction'] = $posts_in_range[0]->interactions; $statistics['min_interaction_day'] = date('M d, y', $posts_in_range[0]->creation_time);
         $statistics['total_likes_count'] = $statistics['total_reactions_count'] = $statistics['total_comments_count'] = $statistics['total_shares_count'] = 0;
         foreach($days_in_range as $day){
+            $refine_date = date('d', $day);
             $date_day = date('M d', $day);
-            $statistics['posts_by_day'][$date_day] = [];
-            $statistics['posts_by_day'][$date_day]['posts'] = 0;
-            $statistics['posts_by_day'][$date_day]['reactions'] = 0;
-            $statistics['posts_by_day'][$date_day]['likes'] = 0;
-            $statistics['posts_by_day'][$date_day]['comments'] = 0;
-            $statistics['posts_by_day'][$date_day]['shares'] = 0;
-            $statistics['posts_by_day'][$date_day]['interactions'] = 0;
-            $statistics['posts_by_day'][$date_day]['followers'] = 0;
-            $statistics['posts_by_day'][$date_day]['engagement'] = 0;
+            $date = (($refine_date != '01') ? $refine_date : $date_day);
+            $statistics['posts_by_day'][$date] = [];
+            $statistics['posts_by_day'][$date]['posts'] = 0;
+            $statistics['posts_by_day'][$date]['reactions'] = 0;
+            $statistics['posts_by_day'][$date]['likes'] = 0;
+            $statistics['posts_by_day'][$date]['comments'] = 0;
+            $statistics['posts_by_day'][$date]['shares'] = 0;
+            $statistics['posts_by_day'][$date]['interactions'] = 0;
+            $statistics['posts_by_day'][$date]['followers'] = 0;
+            $statistics['posts_by_day'][$date]['engagement'] = 0;
             foreach($posts_in_range as $post){
                 //echo '<pre>'; var_dump(date('Y-m-d', $post->creation_time)); echo '</pre>'; die;
                 if(date('M d', $post->creation_time) == $date_day){
                     $statistics['post_types'][$this->getPostTypeName($post->post_type)]['value']++;
-                    $statistics['posts_by_day'][$date_day]['posts']++;
-                    $statistics['posts_by_day'][$date_day]['reactions'] += $post->reactions;
+                    $statistics['posts_by_day'][$date]['posts']++;
+                    $statistics['posts_by_day'][$date]['reactions'] += $post->reactions;
                     $statistics['total_reactions_count'] += $post->reactions;
-                    $statistics['posts_by_day'][$date_day]['likes'] += $post->likes;
+                    $statistics['posts_by_day'][$date]['likes'] += $post->likes;
                     $statistics['total_likes_count'] += $post->likes;
-                    $statistics['posts_by_day'][$date_day]['comments'] += $post->comments;
+                    $statistics['posts_by_day'][$date]['comments'] += $post->comments;
                     $statistics['total_comments_count'] += $post->comments;
-                    $statistics['posts_by_day'][$date_day]['shares'] += $post->shares;
+                    $statistics['posts_by_day'][$date]['shares'] += $post->shares;
                     $statistics['total_shares_count'] += $post->shares;
-                    $statistics['posts_by_day'][$date_day]['interactions'] += $post->interactions;
+                    $statistics['posts_by_day'][$date]['interactions'] += $post->interactions;
                     if($post->interactions > $statistics['max_interaction']){
                         $statistics['max_interaction'] = $post->interactions;
                         $statistics['max_interaction_day'] = date('M d, y', $post->creation_time);
@@ -972,8 +977,8 @@ class Facebook extends \yii\authclient\clients\Facebook
                     }
                     $statistics['total_interactions_count'] += $post->interactions;
                     $statistics['post_types'][$this->getPostTypeName($post->post_type)]['interaction'] += $post->interactions;
-                    $statistics['posts_by_day'][$date_day]['engagement'] += (($post->followers) ? ((($post->interactions)/($post->followers)) * 1000) : 0);
-                    $statistics['post_types'][$this->getPostTypeName($post->post_type)]['engagement'] += $statistics['posts_by_day'][$date_day]['engagement'];
+                    $statistics['posts_by_day'][$date]['engagement'] += (($post->followers) ? round((((($post->interactions)/($post->followers)) * 1000)*100),1) : 0);
+                    $statistics['post_types'][$this->getPostTypeName($post->post_type)]['engagement'] += $statistics['posts_by_day'][$date]['engagement'];
                 }
             }
         }
@@ -981,14 +986,7 @@ class Facebook extends \yii\authclient\clients\Facebook
         return $statistics;
     }
     
-    public function statistics($id, $total_fans, $since = '', $until = ''){
-        ($since)? '' : $since = strtotime('-3 month');
-        ($until)? '' : $until = time();
-//        
-//        ($since)? '' : $since = strtotime('2015-11-15');
-//        ($until)? '' : $until = strtotime('2016-01-30');
-//        ($since)? '' : $since = strtotime('2011-8-20');
-//        ($until)? '' : $until = strtotime('2011-10-15');
+    public function statistics($id, $total_fans, $since, $until){
         $days_in_range = $this->getDaysInRange($since, $until);
         $statistics['fans_lang'] = $this->getFansLanguage($id, $since, $until);
         $statistics['age_gender_array'] = $this->getFansByAgeGenderArrays($id, $since, $until);
@@ -1001,12 +999,9 @@ class Facebook extends \yii\authclient\clients\Facebook
         $statistics['fans_by_country_before'] = $this->getFansByCountryBefore($id, $since);
         $statistics['fans_by_country_table'] = $this->getFansByCountryTable($statistics['fans_by_country'], $statistics['fans_by_country_before'], $total_fans);
         $statistics['fans_by_city'] = $this->getFansByCity($id, $since, $until);
-        //var_dump(count($statistics['fans_by_city'])); die;
         $statistics['posts_in_range'] = $this->getPostsInRange($id, $since, $until);
-        //echo '<pre>'; var_dump($statistics['posts_in_range']); echo '</pre>'; die;
         $statistics['posts_by_day_statistics'] = $this->getPostsByDayStatistics($days_in_range, $statistics['posts_in_range']);
         $statistics['user_posts_per_day'] = $this->getUserPostsByDay($days_in_range, $id, $since, $until);
-        //echo '<pre>'; var_dump($statistics['user_posts_per_day']); echo '</pre>'; die;
         $statistics['user_posts_per_day_json_table'] = $this->getUserPostsByDayJsonTable($statistics['user_posts_per_day']);
         
         return $statistics;
@@ -1121,39 +1116,37 @@ class Facebook extends \yii\authclient\clients\Facebook
         return $this->getFansByAgeGenderArrays($page_id, $since, $until);
     }
 	
-	public function getAccountInsightsInRange($account_model_id, $since, $until){
-		$since_str = date('Y-m-d H:i:s', $since);
-		$until_str = date('Y-m-d H:i:s', $until);
-		$account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since_str, $until_str])->all();
-		return $account_insights;
-	}
+    public function getAccountInsightsInRange($account_model_id, $since, $until){
+	$since_str = date('Y-m-d H:i:s', $since);
+	$until_str = date('Y-m-d H:i:s', $until);
+	$account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since_str, $until_str])->all();
+	return $account_insights;
+    }
 
-	public function saveAccountInsights($oAccountModel, $followers){
-		$since = date('Y-m-d', strtotime('first day of this month'));
-		$until = date('Y-m-d', strtotime('+2days', time()));
-		$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until);
-		//echo '<pre>'; var_dump($posts); echo '</pre>'; die;
-		$total_likes = $total_comments = $total_reactions = $total_shares = $total_reactions = $total_interactions = 0;
-		foreach($posts as $post){
-			$oPost = Model::findOne(['entity_id' => $post['id'],'parent_id' => $oAccountModel->id]);
-			if(!$oPost){
-				
-				$oPostModel = $this->firstLogNewPostModel($oAccountModel, $post, $followers);
+    public function saveAccountInsights($oAccountModel, $followers){
+	$since = date('Y-m-d', strtotime('first day of this month'));
+	$until = date('Y-m-d', strtotime('+2days', time()));
+	$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until);
+	$total_likes = $total_comments = $total_reactions = $total_shares = $total_reactions = $total_interactions = 0;
+	foreach($posts as $post){
+            $oPost = Model::findOne(['entity_id' => $post['id'],'parent_id' => $oAccountModel->id]);
+            if(!$oPost){
+		$oPostModel = $this->firstLogNewPostModel($oAccountModel, $post, $followers);
                 $total_likes += $oPostModel->likes;
                 $total_comments += $oPostModel->comments;
                 $total_shares += $oPostModel->shares;
                 $total_reactions += $oPostModel->reactions;
                 $total_interactions += $oPostModel->interactions;
-			}else{
-				$oPostModel = $this->updatePostModel($oPost);
-				$total_likes += $oPostModel->likes;
+            }else{
+		$oPostModel = $this->updatePostModel($oPost);
+		$total_likes += $oPostModel->likes;
                 $total_comments += $oPostModel->comments;
                 $total_shares += $oPostModel->shares;
                 $total_reactions += $oPostModel->reactions;
                 $total_interactions += $oPostModel->interactions;
-			}
-		}
-		$oAccountInsights = new Insights();
+            }
+	}
+	$oAccountInsights = new Insights();
         $oAccountInsights->model_id = $oAccountModel->id;
         $oAccountInsights->followers = $followers;
         $oAccountInsights->number_of_posted_media = count($posts);
@@ -1162,14 +1155,14 @@ class Facebook extends \yii\authclient\clients\Facebook
         $oAccountInsights->total_shares = $total_shares;
         $oAccountInsights->total_reactions = $total_reactions;
         $oAccountInsights->total_interactions = $total_interactions;
-		$oAccountInsights->insights_json = $this->getInsightsJson($oAccountModel->entity_id, $since, $until);
-		$oAccountInsights->save();
-        //if($oAccountInsights->save()){
-            //$this->saveUserPosts($id, $oAccountModel->id, $since, $until);
-        //}
-	}
+	$oAccountInsights->insights_json = $this->getInsightsJson($oAccountModel->entity_id, $since, $until);
+	$oAccountInsights->save();
+        if($oAccountInsights->save()){
+            $this->saveUserPosts($oAccountModel->entity_id, $oAccountModel->id, $since, $until);
+        }
+    }
 	
-	public function getPageViewsByDevice($id, $since, $until){
+    public function getPageViewsByDevice($id, $since, $until){
         $client = $this->getClient();
         $views_by_device_array = ['desktop' => 0, 'mobile/tablet' => 0, 'other' => 0];
         $views_by_device = $client->api($id.'/insights/page_views_by_site_logged_in_unique?since='.$since.'&until='.$until)['data'][0]['values'];
@@ -1215,70 +1208,71 @@ class Facebook extends \yii\authclient\clients\Facebook
         $insights['gender_age'] = $this->getFansByAgeGenderArrays($page_id, $since, $until);
         $insights['page_views'] = $this->getPageViewsByDevice($page_id, $since, $until);
         $insights['page_reach'] = $this->getPageReachArray($page_id, $since, $until);
-		$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
-		$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTable($page_id, $since, $until);
+	$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
+	$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTable($page_id, $since, $until);
         return json_encode($insights);
     }
 	
-	public function getDeviceTypeJsonTable($devices){
-		asort($devices);
-		$devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
+    public function getDeviceTypeJsonTable($devices){
+	asort($devices);
+	$devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
         return $devices_json_table;
-	}
+    }
 	
     public function getcountriesJsonTable($countries){
         $countries_json_table = ($countries) ? GoogleChartHelper::getDataTable('country', 'views', $countries) : '';
         return $countries_json_table;
     }
 	
-	public function getPost($id){
-		$client = $this->getClient();
-		$post_details = $client->api($id."?fields=full_picture,message,story", "GET");
+    public function getPost($id){
+	$client = $this->getClient();
+	$post_details = $client->api($id."?fields=full_picture,message,story", "GET");
         return $post_details;
-	}
+    }
 	
-	public function getImageActualSize($page_id){
-		$posts = Model::find()->Where(['parent_id' => $page_id])->all();
-		foreach($posts as $post){
-			$post_details = $this->getPost($post->entity_id);
-			if(array_key_exists('full_picture', $post_details)){
-				$post->media_url = $post_details['full_picture'];
-				$post->update();
-			}
-		}
+    public function getImageActualSize($page_id){
+	$posts = Model::find()->Where(['parent_id' => $page_id])->all();
+	foreach($posts as $post){
+            $post_details = $this->getPost($post->entity_id);
+            if(array_key_exists('full_picture', $post_details)){
+		$post->media_url = $post_details['full_picture'];
+		$post->update();
+            }
 	}
+    }
 	
-	public function getPostContent($page_id){
-		$posts = Model::find()->Where(['parent_id' => $page_id])->all();
-		foreach($posts as $post){
-			$post_details = $this->getPost($post->entity_id);
-			if(array_key_exists('message', $post_details)){
-				$post->content = $post_details['message'];
-				$post->update();
-			}elseif(array_key_exists('story', $post_details)){
-				$post->content = $post_details['story'];
-				$post->update();
-			}
-		}
+    public function getPostContent($page_id){
+	$posts = Model::find()->Where(['parent_id' => $page_id])->all();
+	foreach($posts as $post){
+            $post_details = $this->getPost($post->entity_id);
+            if(array_key_exists('message', $post_details)){
+		$post->content = $post_details['message'];
+		$post->update();
+            }elseif(array_key_exists('story', $post_details)){
+		$post->content = $post_details['story'];
+		$post->update();
+            }
 	}
+    }
 	
-	public function getPageNameAndIdUsingPageUrl($url){
-		$client = $this->getClient();
-		$page_name_id = $client->api("?id=".$url);
-		return $page_name_id;
-	}
+    public function getPageNameAndIdUsingPageUrl($url){
+        $client = $this->getClient();
+	$page_name_id = $client->api("?id=".$url);
+	return $page_name_id;
+    }
 	
-	public function getCompetitorData($url){
-		$page_name_id = $this->getPageNameAndIdUsingPageUrl($url);
-		$page_data = $this->getPageData($page_name_id["id"]);
-		return $page_data;
-	}
+    public function getCompetitorData($url){
+	$page_name_id = $this->getPageNameAndIdUsingPageUrl($url);
+	$page_data = $this->getPageData($page_name_id["id"]);
+	return $page_data;
+    }
 	
-	public function getCompetitorNameAndFollowersFromUrl($url){
-		$page_data = $this->getCompetitorData($url);
-		$page['name'] = $page_data["name"];
-		$page['followers'] = $page_data["likes"];
-		$page['id'] = $page_data['id'];
-		return $page;
-	}
+    public function getCompetitorNameAndFollowersFromUrl($url){
+	$page_data = $this->getCompetitorData($url);
+	$page['name'] = $page_data["name"];
+	$page['followers'] = $page_data["likes"];
+	$page['id'] = $page_data['id'];
+	return $page;
+    }
+    
 }

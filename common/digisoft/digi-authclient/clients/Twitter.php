@@ -65,26 +65,26 @@ class Twitter extends \yii\authclient\clients\Twitter
         
     }
 	
-	public function getScreenNameFromUrl($url){
-		$name = substr($url, 20);
-                $screen_name = explode('?', $name)[0];
-		return $screen_name;
-	}
+    public function getScreenNameFromUrl($url){
+	$name = substr($url, 20);
+        $screen_name = explode('?', $name)[0];
+	return $screen_name;
+    }
 	
-	public function getAccountDataByScreenName($name){
-		$client = $this->getClient();
+    public function getAccountDataByScreenName($name){
+	$client = $this->getClient();
         $user_data = $client->api("users/show.json", 'GET', ['screen_name' => $name]);
         return $user_data;
-	}
+    }
 	
-	public function getCompetitorNamesAndFollowers($url){
-		$screen_name = $this->getScreenNameFromUrl($url);
-		$user_data = $this->getAccountDataByScreenName($screen_name);
-		$page['name'] = $user_data["name"];
-		$page['id'] = $user_data["id_str"];
-		$page['followers'] = $user_data["followers_count"];
-		return $page;
-	}
+    public function getCompetitorNamesAndFollowers($url){
+	$screen_name = $this->getScreenNameFromUrl($url);
+	$user_data = $this->getAccountDataByScreenName($screen_name);
+	$page['name'] = $user_data["name"];
+	$page['id'] = $user_data["id_str"];
+	$page['followers'] = $user_data["followers_count"];
+	return $page;
+    }
     
     public function getAccountFollowers(){
         $client = $this->getClient();

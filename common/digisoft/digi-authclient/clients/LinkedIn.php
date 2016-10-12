@@ -340,7 +340,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         return $company_updates;
     }
     
-    public function createUpdateModel($parent_id, $authclient_id, $update){
+    public function createUpdateModel($company_id, $parent_id, $authclient_id, $update, $since){
         $oUpdateModel = new Model();
         $oUpdateModel->authclient_id = $authclient_id;
         $oUpdateModel->parent_id = $parent_id;
@@ -351,7 +351,39 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         $oUpdateModel->likes = $update['numLikes'];
         $oUpdateModel->comments = $update['updateComments']['_total'];
         $oUpdateModel->creation_time = (($update['timestamp'])/1000);
+        $update_statistics = $this->getUpdateStatisticsInTime($company_id, $update['updateKey'], $since);
+        $sum_update_statistics = ['shares' => 0, 'clicks' => 0, 'impressions' => 0];
+        foreach($update_statistics['values'] as $value){
+            $sum_update_statistics['shares'] += $value['shareCount'];
+            $sum_update_statistics['clicks'] += $value['clickCount'];
+            $sum_update_statistics['impressions'] += $value['impressionCount'];
+        }
+        $oUpdateModel->shares = $sum_update_statistics['shares'];
+        $oUpdateModel->clicks = $sum_update_statistics['clicks'];
+        $oUpdateModel->impressions = $sum_update_statistics['impressions'];
+        $oUpdateModel->interactions = $oUpdateModel->likes + $oUpdateModel->comments + $oUpdateModel->shares;
         if(!$oUpdateModel->save()){
+            echo '<pre>'; var_dump($oUpdateModel->getErrors()); echo '</pre>'; die;
+        }
+    }
+    
+    public function updateUpdateModel($company_id, $oUpdate, $since){
+        $update_statistics = $this->getUpdateStatisticsInTime($company_id, $oUpdate->entity_id, $since);
+        $sum_update_statistics = ['likes' => 0, 'comments' => 0, 'shares' => 0, 'clicks' => 0, 'impressions' => 0];
+        foreach($update_statistics['values'] as $value){
+            $sum_update_statistics['likes'] += $value['likeCount'];
+            $sum_update_statistics['comments'] += $value['commentCount'];
+            $sum_update_statistics['shares'] += $value['shareCount'];
+            $sum_update_statistics['clicks'] += $value['clickCount'];
+            $sum_update_statistics['impressions'] += $value['impressionCount'];
+        }
+        $oUpdateModel->likes = $sum_update_statistics['likes'];
+        $oUpdateModel->comments = $sum_update_statistics['comments'];
+        $oUpdateModel->shares = $sum_update_statistics['shares'];
+        $oUpdateModel->clicks = $sum_update_statistics['clicks'];
+        $oUpdateModel->impressions = $sum_update_statistics['impressions'];
+        $oUpdateModel->interactions = $oUpdateModel->likes + $oUpdateModel->comments + $oUpdateModel->shares;
+        if(!$oUpdateModel->update()){
             echo '<pre>'; var_dump($oUpdateModel->getErrors()); echo '</pre>'; die;
         }
     }
@@ -387,7 +419,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         $oAccountModel = $this->createCompanyModel($company_data, $authclient_id);
         $company_updates = $this->getCompanyUpdates($company_id);
         foreach($company_updates['values'] as $update){
-            $this->createUpdateModel($oAccountModel->id, $authclient_id, $update);
+            $this->createUpdateModel($company_id, $oAccountModel->id, $authclient_id, $update, $since);
         }
         return $oAccountModel;
     }
@@ -616,4 +648,16 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         return $best_time_to_post_json_table;
     }
 
+    public function saveAccountInsights($parent_model, $since){
+        $updates = $this->getCompanyUpdates($parent_model->entity_id);
+        foreach($updates['values'] as $update){
+            $oUpdate = Model::findOne(['entity_id' => $update['updateKey']]);
+            if(!$oUpdate){
+                $this->updateUpdateModel($parent_model->entity_id, $oUpdate, $since);
+            }else{
+                $this->createUpdateModel($parent_model->entity_id, $parent_model->id, $parent_model->authclient_id, $update, $since);
+            }
+        }
+    }
+    
 }
