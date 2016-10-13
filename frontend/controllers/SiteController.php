@@ -80,9 +80,9 @@ class SiteController extends \frontend\components\BaseController {
         $oSubscribeForm = new SubscribeForm();
         if($oSubscribeForm->load(Yii::$app->request->post()) && $oSubscribeForm->validate()){
             if($oUser = $oSubscribeForm->subscribe()){
-                if (\common\helpers\MailHelper::sendVerificationToken($oUser)) {
+                if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
                     Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Check your email for further instructions.'));
-					return $this->redirect(Url::to(['/']));
+                    return $this->redirect(Url::to(['/']));
                 } else {
                     Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error sending email.'));
                     $oUser->delete();
@@ -124,7 +124,7 @@ class SiteController extends \frontend\components\BaseController {
         
 		$oContactForm = new ContactForm();
 		if($oContactForm->load(Yii::$app->request->post()) && $oContactForm->validate()){
-			if($oContactForm->sendEmail(Yii::$app->params['adminEmail'])){
+		if($oContactForm->sendEmail(Yii::$app->params['adminEmail'])){
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Thank you for contacting us. We will respond to you as soon as possible.'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'There was an error sending this email.'));
@@ -276,10 +276,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
             }
-
-
-
-			//echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
+            //echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
             $account = $gPlus->getAccountDetails();
             $gPlus->getTimeBasedAccountInsights();
             return $this->render('/google-plus/google-plus', [
@@ -339,7 +336,7 @@ class SiteController extends \frontend\components\BaseController {
             }else{
                 //echo '<pre>'; var_dump($youtube->getCompetitorNameAndSubscribers("https://www.youtube.com/channel/UC89jxlRgoiqAnO_0pm-Ug0g")); echo '</pre>'; die;
                 //$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
-                $youtube->saveAccountInsights($oAuthclient->model[0]->id, $channels, $channel_analytics);
+                $youtube->saveAccountInsights($oAuthclient->model[0]->id);
             }
             $subscribers = $youtube->getChannelSubscribers();
             return $this->render('/youtube/youtube', [
@@ -357,10 +354,8 @@ class SiteController extends \frontend\components\BaseController {
     public function actionInstagram(){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
-        echo '<pre>'; var_dump($session); echo '</pre>'; die;
         $insta = new Instagram ();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
-        echo '<pre>'; var_dump($oAuthclient); echo '</pre>'; die;
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
                 //check stored token
