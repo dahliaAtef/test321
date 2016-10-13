@@ -664,10 +664,10 @@ class Youtube extends OAuth2
         }
         if (strncmp($responseHeaders['http_code'], '20', 2) !== 0) {
             $error= json_decode($response, TRUE);
-                        echo "<pre>";
-            print_r($error);
-            echo "</pre>";
-            die;
+//            echo "<pre>";
+//            print_r($error);
+//            echo "</pre>";
+//            die;
             if( $error['error']['message']  == "Invalid Credentials") {
                 return null;
             }else{
