@@ -767,7 +767,8 @@ class Instagram extends OAuth2
         return $most_engaging_video_filters_json_table;
     }
 	
-	public function saveAccountInsights($oAccountModel, $user_data){
+	public function saveAccountInsights($oAccountModel){
+            $user_data = $this->getUserData();
             $since = strtotime('first day of this month');
             $all_media = $this->getAllMedia($since);
             $total_photo_likes = $total_photo_comments = $total_video_likes = $total_video_comments = 0;

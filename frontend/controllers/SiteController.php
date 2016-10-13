@@ -357,8 +357,10 @@ class SiteController extends \frontend\components\BaseController {
     public function actionInstagram(){
         ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
+        echo '<pre>'; var_dump($session); echo '</pre>'; die;
         $insta = new Instagram ();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
+        echo '<pre>'; var_dump($oAuthclient); echo '</pre>'; die;
         if($oAuthclient ){
             if($oAuthclient->source_data != null){
                 //check stored token
@@ -401,8 +403,7 @@ class SiteController extends \frontend\components\BaseController {
             if(!$oModels){
                 $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }else{
-				
-		//$insta->saveAccountInsights($oModels[0], $user_data);
+		$insta->saveAccountInsights($oModels[0]);
                 $insta->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
             }
             return $this->render('/instagram/instagram', [
@@ -433,8 +434,8 @@ class SiteController extends \frontend\components\BaseController {
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
                     Twitter::setClient( null);
-                    }
                 }
+            }
         }
 
         $session = Yii::$app->session;
@@ -459,9 +460,9 @@ class SiteController extends \frontend\components\BaseController {
             $oModels = $oAuthclient->model;
             if(!$oModels){
                 $oModels[0] = $twitter->firstTimeToLog($user_data, $oAuthclient->id);
-				$twitter->getTimeBasedAccountInsights($oModels[0]->id);
+		$twitter->getTimeBasedAccountInsights($oModels[0]->id);
             }else{
-				$twitter->saveAccountInsights($oModels[0], $user_data);
+		$twitter->saveAccountInsights($oModels[0]);
                 $twitter->getTimeBasedAccountInsights($oModels[0]->id);
             }
             

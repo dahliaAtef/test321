@@ -788,17 +788,18 @@ class Twitter extends \yii\authclient\clients\Twitter
         return $top_ten_trends;
     }
 
-	public function saveAccountInsights($oAccountModel, $user_data){
-		$since = strtotime('first day of this month');
-		$until = time();
-		$new_mentions = $this->getAllAccountMentions();
+    public function saveAccountInsights($oAccountModel){
+        $user_data = $this->getAccountData();
+        $since = strtotime('first day of this month');
+        $until = time();
+        $new_mentions = $this->getAllAccountMentions();
         foreach($new_mentions as $mention){
             $oMentionModel = Model::findOne(['entity_id' => $mention['id_str']]);
             if(!$oMentionModel){
-                $oMentionModel = $this->createNewMentionModel($oAccountModel, $mention); 
+                    $oMentionModel = $this->createNewMentionModel($oAccountModel, $mention); 
             }
         }
-		$all_mentions = $this->getTimeBasedMentionsAndReplies($oAccountModel->id, $since, $until);
+        $all_mentions = $this->getTimeBasedMentionsAndReplies($oAccountModel->id, $since, $until);
         $new_tweets = $this->getAllAccountTweets();
         $total_replies = $total_retweets = $total_favourites = 0;
         foreach($new_tweets as $tweet){
@@ -806,18 +807,18 @@ class Twitter extends \yii\authclient\clients\Twitter
             if(!$oTweetModel){
                 $oTweetModel = $this->createNewTweetModel($oAccountModel, $tweet);
             }else{
-				$oTweetModel = $this->updateTweetModel($oTweetModel, $tweet);
-			}
+                $oTweetModel = $this->updateTweetModel($oTweetModel, $tweet);
+            }
         }
-		$tweets_this_month = $this->getTimeBasedMedia($oAccountModel->id);
-		foreach($tweets_this_month as $oTweetModel){
-			$total_retweets += $oTweetModel->shares;
+        $tweets_this_month = $this->getTimeBasedMedia($oAccountModel->id);
+        foreach($tweets_this_month as $oTweetModel){
+            $total_retweets += $oTweetModel->shares;
             $total_replies += $oTweetModel->comments;
             $total_favourites += $oTweetModel->likes;
-		}
-		$sources = json_encode($this->getInteractionsSources($tweets_this_month, $all_mentions));
-		$oAccountInsights = $this->createAccountInsights($oAccountModel, $user_data, $total_retweets, $total_replies, $total_favourites, count($all_mentions), $sources, 0, 0);
-	}
+        }
+        $sources = json_encode($this->getInteractionsSources($tweets_this_month, $all_mentions));
+        $oAccountInsights = $this->createAccountInsights($oAccountModel, $user_data, $total_retweets, $total_replies, $total_favourites, count($all_mentions), $sources, 0, 0);
+    }
 	
 	/*
      * get retweet sources for a given tweet id
