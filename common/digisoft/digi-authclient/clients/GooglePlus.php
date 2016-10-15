@@ -152,19 +152,19 @@ class GooglePlus extends OAuth2
         return $account;
     }
 	
-	public function getUserIdUsingUrl($url){
-		$username  = substr($url, 24);
-		return $username;
-	}
+    public function getUserIdUsingUrl($url){
+        $username  = substr($url, 24);
+        return $username;
+    }
 	
-	public function getCompetitorNameAndCircledBy($url){
-		$username = $this->getUserIdUsingUrl($url);
-		$data = $this->getAccountDetailsById($username);
-		$page['followers'] = $data["circledByCount"];
-		$page['name'] = $data["displayName"];
-		$page['id'] = $data["id"];
-		return $page;
-	}
+    public function getCompetitorNameAndCircledBy($url){
+	$username = $this->getUserIdUsingUrl($url);
+	$data = $this->getAccountDetailsById($username);
+	$page['followers'] = $data["circledByCount"];
+	$page['name'] = $data["displayName"];
+	$page['id'] = $data["id"];
+	return $page;
+    }
     
     public function getPublicActivitiesById($id){
         $client = GooglePlus::getClient();

@@ -80,9 +80,9 @@ class SiteController extends \frontend\components\BaseController {
         $oSubscribeForm = new SubscribeForm();
         if($oSubscribeForm->load(Yii::$app->request->post()) && $oSubscribeForm->validate()){
             if($oUser = $oSubscribeForm->subscribe()){
-                if (\common\helpers\MailHelper::sendVerificationToken($oUser)) {
+                if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
                     Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Check your email for further instructions.'));
-					return $this->redirect(Url::to(['/']));
+                    return $this->redirect(Url::to(['/']));
                 } else {
                     Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error sending email.'));
                     $oUser->delete();
@@ -124,7 +124,7 @@ class SiteController extends \frontend\components\BaseController {
         
 		$oContactForm = new ContactForm();
 		if($oContactForm->load(Yii::$app->request->post()) && $oContactForm->validate()){
-			if($oContactForm->sendEmail(Yii::$app->params['adminEmail'])){
+		if($oContactForm->sendEmail(Yii::$app->params['adminEmail'])){
                 Yii::$app->session->setFlash('success', Yii::t('app', 'Thank you for contacting us. We will respond to you as soon as possible.'));
             } else {
                 Yii::$app->session->setFlash('error', Yii::t('app', 'There was an error sending this email.'));
@@ -176,9 +176,8 @@ class SiteController extends \frontend\components\BaseController {
         $session = Yii::$app->session;
         $linkedin = new LinkedIn ();
         $client = $linkedin->getClient();
-        //echo '<pre>'; var_dump($linkedin->statistics()); echo '</pre>'; die;
-        //echo '<pre>'; var_dump($client->api('companies/5260201/historical-status-update-statistics:(time,like-count,share-count,comment-count,impression-count,click-count)?update-key=UPDATE-c5260201-6082180170444267520&time-granularity=month&start-timestamp=1451820285000&end-timestamp=1475493885000&format=json')); echo '</pre>'; die;
-        //echo '<pre>'; var_dump($client->api('companies/5260201/historical-status-update-statistics:(time,like-count,share-count,comment-count,impression-count,click-count)?time-granularity=month&start-timestamp=1451820285000&end-timestamp=1475493885000&format=json')); echo '</pre>'; die;
+        $company_statistics = $linkedin->getCompanyStatistics();
+        //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
         $oUserPagesForm = new UserPagesForm();
         if($session->has('linkedin')){
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
@@ -196,7 +195,10 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
+                    $since = strtotime('-10 months') * 1000;
+                    $until = time() * 1000;
                     $statistics = $linkedin->statistics($oModel[0]);
+                    $linkedin->saveAccountInsights($oModel[0], $since);
                     return $this->render('/linkedin/linkedinPage', ['statistics' => $statistics, 'linkedin' => $linkedin, 'oModel' => $oModel[0]]);
                 }
             }else{
@@ -274,10 +276,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
             }
-
-
-
-			//echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
+            //echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
             $account = $gPlus->getAccountDetails();
             $gPlus->getTimeBasedAccountInsights();
             return $this->render('/google-plus/google-plus', [
@@ -337,7 +336,7 @@ class SiteController extends \frontend\components\BaseController {
             }else{
                 //echo '<pre>'; var_dump($youtube->getCompetitorNameAndSubscribers("https://www.youtube.com/channel/UC89jxlRgoiqAnO_0pm-Ug0g")); echo '</pre>'; die;
                 //$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
-                $youtube->saveAccountInsights($oAuthclient->model[0]->id, $channels, $channel_analytics);
+                $youtube->saveAccountInsights($oAuthclient->model[0]->id);
             }
             $subscribers = $youtube->getChannelSubscribers();
             return $this->render('/youtube/youtube', [
@@ -399,8 +398,7 @@ class SiteController extends \frontend\components\BaseController {
             if(!$oModels){
                 $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }else{
-				
-		//$insta->saveAccountInsights($oModels[0], $user_data);
+		$insta->saveAccountInsights($oModels[0]);
                 $insta->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
             }
             return $this->render('/instagram/instagram', [
@@ -431,8 +429,8 @@ class SiteController extends \frontend\components\BaseController {
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
                     Twitter::setClient( null);
-                    }
                 }
+            }
         }
 
         $session = Yii::$app->session;
@@ -457,9 +455,9 @@ class SiteController extends \frontend\components\BaseController {
             $oModels = $oAuthclient->model;
             if(!$oModels){
                 $oModels[0] = $twitter->firstTimeToLog($user_data, $oAuthclient->id);
-				$twitter->getTimeBasedAccountInsights($oModels[0]->id);
+		$twitter->getTimeBasedAccountInsights($oModels[0]->id);
             }else{
-				$twitter->saveAccountInsights($oModels[0], $user_data);
+		$twitter->saveAccountInsights($oModels[0]);
                 $twitter->getTimeBasedAccountInsights($oModels[0]->id);
             }
             
@@ -489,7 +487,7 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 Facebook::setClient( unserialize($oAuthclient->source_data));
                $client = $fb->getClient();
-              $ReturnData = $client->getUserAttributes() ;
+               $ReturnData = $client->getUserAttributes() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
@@ -519,13 +517,16 @@ class SiteController extends \frontend\components\BaseController {
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
             if($oModel){
-				//$fb->getPostContent($oModel[0]->id);
+		$since = strtotime('first day of this month');
+                $until = time();
                 $page = $fb->getPageData($oModel[0]->entity_id);
-				$fb->saveAccountInsights($oModel[0], $page['likes']);
+		$fb->saveAccountInsights($oModel[0], $page['likes']);
                 return $this->render('/facebook/facebookPage',[
                     'page' => $page,
                     'fb' => $fb,
                     'id' => $oModel[0]->entity_id,
+                    'since' => $since,
+                    'until' => $until,
                 ]);
             }else{
                 return $this->render('/facebook/facebook',['user_pages' => $fb->getUserPages(), 'oUserPagesForm' => $oUserPagesForm]);

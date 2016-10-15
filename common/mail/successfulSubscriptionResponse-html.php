@@ -1,0 +1,1 @@
+<p class="thanks">Your account will be activated with 24 hours</p>

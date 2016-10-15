@@ -31,7 +31,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $key => $value){
                 $rows[] = ['c' => [
-                ['v' => date('M d', $key)],
+                ['v' => (((date('d', $key)) != 1) ? date('d', $key) : date('M d', $key))],
                 ['v' => $value[$value_key_name]],    
                 ]];
         }
@@ -154,7 +154,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($graph_one_values as $value){
             $rows[] = ['c' =>[
-                ['v' => date('M d', strtotime($value["end_time"]))],
+                ['v' => (((date('d', strtotime($value["end_time"]))) != 1) ? date('d', strtotime($value["end_time"])) : date('M d', strtotime($value["end_time"])))],
                 ['v' => $value["value"]],
                 ['v' => $graph_two_values[$counter]["value"]]
             ]];
@@ -223,7 +223,7 @@ class GoogleChartHelper {
         foreach($values as $value){
             if(array_key_exists('value', $value)){
                 $rows[] = ['c' => [
-                ['v' => date('M d', strtotime($value["end_time"]))],
+                ['v' => (((date('d', strtotime($value["end_time"]))) != 1) ? date('d', strtotime($value["end_time"])) : date('M d', strtotime($value["end_time"])))],
                 ['v' => $value["value"]],    
                 ]];
             }

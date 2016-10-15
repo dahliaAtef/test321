@@ -52,6 +52,18 @@ class MailHelper {
                         ->setSubject(Yii::t('app', 'Successful payment response from ') . Yii::$app->name)
                         ->send();
     }
+    
+    /**
+     * Send Successful Subscription Response
+     * @return boolean whether the email was send
+     */
+    public static function sendSubscriptionResponse($oUser) {
 
+        return Yii::$app->mailer->compose(['html' => 'successfulSubscriptionResponse-html'])
+                        ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
+                        ->setTo($oUser->email)
+                        ->setSubject(Yii::t('app', 'Successful subscription response from ') . Yii::$app->name)
+                        ->send();
+    }
 
 }

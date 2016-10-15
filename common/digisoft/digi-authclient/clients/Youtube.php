@@ -104,7 +104,6 @@ class Youtube extends OAuth2
     
     public static function setClient($client){
         Yii::$app->session->set('youtube', $client);
-		//var_dump(Yii::$app->session['youtube']); die;
     }
     
     public function getClient(){
@@ -564,43 +563,44 @@ class Youtube extends OAuth2
 	}
     }
 	
-	public function saveAccountInsights($model_id, $channels, $channel_analytics, $start_date = null){
-            $client = $this->getClient();
-            ($start_date) ? '' : ($start_date = strtotime('first day of last month')) ;
-            $end_date = time();
+    public function saveAccountInsights($model_id, $start_date = null){
+        $client = $this->getClient();
+        $channels = $this->getChannelData();
+        $channel_analytics = $this->getChannelAnalytics();
+        ($start_date) ? '' : ($start_date = strtotime('first day of last month')) ;
+        $end_date = time();
         $videos = $client->api("/youtube/v3/playlistItems?part=contentDetails,snippet&maxResults=50&playlistId=".$channels['items'][0]['contentDetails']['relatedPlaylists']['uploads'], 'GET')['items'];
         foreach($videos as $video){
             $oVideo = Model::findOne(['entity_id' => $video['contentDetails']['videoId'], 'parent_id' => $model_id]);
-			if(!$oVideo){
-				//echo '<pre>'; var_dump($video); echo '</pre>'; die;
-				if(strtotime($video['snippet']['publishedAt']) >= $start_date){
-					$this->createNewVideoModel($video, $model_id);
-				}
-			}
+            if(!$oVideo){
+		if(strtotime($video['snippet']['publishedAt']) >= $start_date){
+                    $this->createNewVideoModel($video, $model_id);
+		}
+            }
         }
         $oAccountInsights = new Insights();
-		$oAccountInsights->model_id = $model_id;
-		$oAccountInsights->followers = $channels['items'][0]['statistics']['subscriberCount'];
-		$oAccountInsights->number_of_posted_media = $channels['items'][0]['statistics']['videoCount'];
-                if(array_key_exists('rows', $channel_analytics)){
-                    $oAccountInsights->gained_followers = $channel_analytics['rows'][0][8];
-                    $oAccountInsights->lost_followers = $channel_analytics['rows'][0][9];
-                    $oAccountInsights->total_views = $channel_analytics['rows'][0][0];
-                    $oAccountInsights->total_likes = $channel_analytics['rows'][0][2];
-                    $oAccountInsights->total_comments = $channel_analytics['rows'][0][1];
-                    $oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
-                    $oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
-                    $oAccountInsights->insights_json = $this->getInsightsJson();
-                }
-		$oAccountInsights->save();
-	}
+	$oAccountInsights->model_id = $model_id;
+	$oAccountInsights->followers = $channels['items'][0]['statistics']['subscriberCount'];
+	$oAccountInsights->number_of_posted_media = $channels['items'][0]['statistics']['videoCount'];
+        if(array_key_exists('rows', $channel_analytics)){
+            $oAccountInsights->gained_followers = $channel_analytics['rows'][0][8];
+            $oAccountInsights->lost_followers = $channel_analytics['rows'][0][9];
+            $oAccountInsights->total_views = $channel_analytics['rows'][0][0];
+            $oAccountInsights->total_likes = $channel_analytics['rows'][0][2];
+            $oAccountInsights->total_comments = $channel_analytics['rows'][0][1];
+            $oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
+            $oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
+            $oAccountInsights->insights_json = $this->getInsightsJson();
+        }
+	$oAccountInsights->save();
+    }
 	
     public function sortAnalyticsPerDevice($analytics){
-		$sources['mobile/tablet'] = ($analytics[0][2] + $analytics[2][2]);
-		$sources['desktop'] = $analytics[1][2];
-		$sources['other'] = ($analytics[3][2] + $analytics[4][2] + $analytics[5][2]);
-		return $sources;
-	}
+	$sources['mobile/tablet'] = ($analytics[0][2] + $analytics[2][2]);
+	$sources['desktop'] = $analytics[1][2];
+	$sources['other'] = ($analytics[3][2] + $analytics[4][2] + $analytics[5][2]);
+	return $sources;
+    }
 	
     public function getInsightsJson($since = null, $until = null){
         $since_str = (!$since) ? (date('Y-m-01', time())) : (date('Y-m-d', $since));
