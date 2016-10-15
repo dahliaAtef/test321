@@ -32,17 +32,17 @@ class SiteController extends \frontend\components\BaseController {
 
     public $defaultAction = 'home';
 
-    public function behaviors()
-    {
-        return [
-
-            'pageCache' => [
-                'class' => 'yii\filters\PageCache',
-                'only' => ['facebook','twitter','instagram','youtube','google-plus'],
-                'duration' => 60*60*12, // 12 h
-            ],
-        ];
-    }
+//    public function behaviors()
+//    {
+//        return [
+//
+//            'pageCache' => [
+//                'class' => 'yii\filters\PageCache',
+//                'only' => ['facebook','twitter','instagram','youtube','google-plus'],
+//                'duration' => 60*60*12, // 12 h
+//            ],
+//        ];
+//    }
 
 
         /**
@@ -175,10 +175,25 @@ class SiteController extends \frontend\components\BaseController {
     public function actionLinkedin(){
         $session = Yii::$app->session;
         $linkedin = new LinkedIn ();
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'linkedin']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                //check stored token
+                LinkedIn::setClient( unserialize($oAuthclient->source_data));
+                $ReturnData = $linkedin->getUserAttributes() ;
+                if( $ReturnData == null){
+                    $oAuthclient->source_data =null;
+                    $oAuthclient->save();
+                    LinkedIn::setClient( null);
+                }
+            }
+        }
+
         $client = $linkedin->getClient();
         $company_statistics = $linkedin->getCompanyStatistics();
         //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
         $oUserPagesForm = new UserPagesForm();
+
         if($session->has('linkedin')){
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $linkedin->getClient();
@@ -190,7 +205,6 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->save();
                 $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
             }
-            $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'linkedin']);
             if($oAuthclient){
                 $oModel = [];
                 $oModel = $oAuthclient->model;
