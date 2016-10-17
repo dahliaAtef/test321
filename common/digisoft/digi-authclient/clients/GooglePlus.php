@@ -20,7 +20,8 @@ class GooglePlus extends OAuth2
     /**
      * @inheritdoc
      */
-    public $authUrl = 'https://accounts.google.com/o/oauth2/auth';
+    public $authUrl = 'https://accounts.google.com/o/oauth2/auth?prompt=consent&access_type=offline';
+
     /**
      * @inheritdoc
      */

@@ -53,7 +53,7 @@ class Youtube extends OAuth2
     /**
      * @inheritdoc
      */
-    public $authUrl = 'https://accounts.google.com/o/oauth2/auth'; //?prompt=consent&access_type=offline';
+    public $authUrl = 'https://accounts.google.com/o/oauth2/auth?prompt=consent&access_type=offline';
     /**
      * @inheritdoc
      */
