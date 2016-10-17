@@ -52,7 +52,7 @@ class User extends Base implements IdentityInterface {
             [['email'], 'string', 'max' => 128],
             [['brand_name'], 'string', 'max' => 500],
             [['password', 'token', 'auth_key', 'sso_key'], 'string', 'max' => 123],
-            [['username', 'email', 'token', 'auth_key', 'sso_key'], 'unique'],
+            [['email', 'token', 'auth_key', 'sso_key'], 'unique'],
             [['token', 'token_type', 'last_login', 'created', 'updated'], 'safe'],
         ];
     }
