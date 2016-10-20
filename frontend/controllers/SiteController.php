@@ -189,12 +189,12 @@ class SiteController extends \frontend\components\BaseController {
             }
         }
 
-        $client = $linkedin->getClient();
-        $company_statistics = $linkedin->getCompanyStatistics();
-        //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
-        $oUserPagesForm = new UserPagesForm();
-
         if($session->has('linkedin')){
+            $client = $linkedin->getClient();
+            $company_statistics = $linkedin->getCompanyStatistics();
+            //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
+            $oUserPagesForm = new UserPagesForm();
+
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $linkedin->getClient();
                 $oAuthclient = new Authclient();
@@ -222,45 +222,7 @@ class SiteController extends \frontend\components\BaseController {
             return $this->render('/linkedin/linkedinAuth');
         }
     }
-    
-    public function actionFoursquare(){
-        $session = Yii::$app->session;
-        $foursquare = new Foursquare ();
-        $oUserPagesForm = new UserPagesForm();
-        if($session->has('foursquare')){
-            if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
-                $client = $foursquare->getClient();
-                $oAuthclient = new Authclient ();
-                $oAuthclient->user_id = /*Yii::$app->user->getId()*/75;
-                $oAuthclient->source = $client->name;
-                $oAuthclient->source_id = $client->getUserAttributes()['response']['user']['id'];
-                $oAuthclient->save();
-                $foursquare->firstTimeToLog($oAuthclient->id, $oUserPagesForm->id);
-            }
-            $oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'foursquare']);
-            if($oAuthclient){
-                $oModel = $oAuthclient->model[0];
-                if($oModel){
-                    $oInsights = Insights::find()->where(['model_id' => $oModel->id])->orderBy(['id' => 'SORT_DESC'])->one();
-                    $venue = $foursquare->getVenueData($oModel->entity_id);
-                    return $this->render('/foursquare/foursquare-venue', ['venueInsights' => $oInsights]);
-                }
-            }else{
-                $managed_venues = $foursquare->getManagedVenues();
-                return $this->render('/foursquare/foursquare', ['managed_venues' => $managed_venues, 'oUserPagesForm' => $oUserPagesForm]);
-            }
-        }else{
-            return $this->render('/foursquare/foursquareAuth');
-        }
-        
-    }
-    
-    public function actionFoursquareVenue($venue_id){
-        $client = Foursquare::getClient();
-        $venue = Foursquare::getVenueData($venue_id);
-        return $this->render('/foursquare/foursquare-venue', ['venue' => $venue]);
-    }
-    
+
     public function actionGooglePlus(){ 
         $session = Yii::$app->session;
         $gPlus = new GooglePlus();
