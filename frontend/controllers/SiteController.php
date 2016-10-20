@@ -79,18 +79,21 @@ class SiteController extends \frontend\components\BaseController {
     public function actionSubscribe() {
         $oSubscribeForm = new SubscribeForm();
         if($oSubscribeForm->load(Yii::$app->request->post()) && $oSubscribeForm->validate()){
-            if($oUser = $oSubscribeForm->subscribe()){
-                if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
-                    Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Check your email for further instructions.'));
-                    return $this->redirect(Url::to(['/']));
-                } else {
-                    Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error sending email.'));
-                    $oUser->delete();
-                }
-            }else
-                Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
-        }
-        return $this->render('subscribe', ['oUserForm' => $oSubscribeForm]);
+				if(Yii::$app->session['error']){
+					Yii::$app->session->remove('error');
+				}
+				$err = null;
+				if($oUser = $oSubscribeForm->subscribe()){
+					if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
+						$oSubscribeForm->verifySuccess = 'success';
+						return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'success']);
+					} else {
+						$oUser->delete();
+					}
+				}else
+					Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
+		}
+        return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'nop']);
     }
       
     /**
@@ -209,7 +212,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
-                    $since = strtotime('-10 months') * 1000;
+                    $since = strtotime('-12 months') * 1000;
                     $until = time() * 1000;
                     $statistics = $linkedin->statistics($oModel[0]);
                     $linkedin->saveAccountInsights($oModel[0], $since);

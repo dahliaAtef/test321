@@ -6,7 +6,7 @@
         $devices_json_table = Youtube::getDeviceTypeJsonTable($devices);
         if($devices_json_table){
             echo '<h3 class="internal-title youtube short">Youtube</h3>';
-            $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'views by device type', 'yt_view_by_device_type')", yii\web\View::POS_END);
+            $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'yg', 'yt_view_by_device_type')", yii\web\View::POS_END);
             echo '<div class="internal-content">';
             echo '<div id="yt_view_by_device_type"></div>';
             echo '</div>';

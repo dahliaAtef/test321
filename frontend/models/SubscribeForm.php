@@ -17,7 +17,7 @@ class SubscribeForm extends Model
     public $password;
     public $re_password;
     public $brand_name;
-    public $verifyCode;
+    public $verifySuccess;
 
     /**
      * @inheritdoc
@@ -27,11 +27,14 @@ class SubscribeForm extends Model
         return [
             [['username', 'email', 'password', 're_password', 'mobile', 'brand_name'], 'required'],
             [['email'], 'email'],
+			//[['email'], 'validateEmailExistance'],
+			['brand_name', 'validateBrandNameExistance'],
 			[['mobile'], 'integer', 'min' => 10],
             [['username'], 'string', 'min' => 3, 'max' => 64],
             [['email', 'password'], 'string', 'max' => 128],
             [['brand_name'], 'string', 'min' => 4, 'max' => 500],
             ['re_password', 'compare', 'compareAttribute'=>'password', 'skipOnEmpty' => false, 'message' => "Passwords don't match"],
+			
         ];
     }
 
@@ -52,6 +55,29 @@ class SubscribeForm extends Model
     }
 
     
+	public function validateEmailExistance($attribute, $params)
+    {
+		$oUser = User::findOne(['email' => $this->$attribute]);
+        if ($oUser) {
+            $this->addError($attribute, 'This email has already subscribed.');
+			$errors = Yii::$app->session['error'];
+			array_push($errors, 'This email has already subscribed.');
+			Yii::$app->session['error'] = $errors;
+			return false;
+        }
+    }
+	
+	public function validateBrandNameExistance($attribute, $params){
+		$oUser = User::findOne(['brand_name' => $this->$attribute]);
+        if ($oUser) {
+            $this->addError($attribute, 'This Brand Name has already subscribed.');
+			$errors = Yii::$app->session['error'];
+			array_push($errors, 'This Brand Name has already subscribed.');
+			Yii::$app->session['error'] = $errors;
+			return false;
+        }
+	}
+	
     /**
      * Signs user up.
      *
@@ -69,7 +95,9 @@ class SubscribeForm extends Model
             $oUser->brand_name = $this->brand_name;
             if($oUser->save()){
                 return $oUser;
-            }
+            }else{
+				echo '<pre>'; var_dump($oUser->getErrors()); echo '</pre>'; die;
+			}
         return null;
     }
     

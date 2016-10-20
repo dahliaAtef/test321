@@ -46,8 +46,20 @@ GoogleCharts.mainInit = function () {
  * @param div_id 
  * @author Dalia Atef (dahliaatef@hotmail.com)
  */
-GoogleCharts.drawCircle = function (jsonTable, title, divId) {
+GoogleCharts.drawCircle = function (jsonTable, color, divId) {
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
               //title: title,
@@ -58,8 +70,8 @@ GoogleCharts.drawCircle = function (jsonTable, title, divId) {
               height:400,
 			  pieSliceText: 'label',
               backgroundColor: 'transparent',
-			  colors : ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"],
-
+			  //colors : ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"],
+			  colors : clrs,
             };
         var chart = new google.visualization.PieChart(document.getElementById(divId));
         google.visualization.events.addListener(chart, 'ready', selectHandler);
@@ -73,15 +85,30 @@ GoogleCharts.drawCircle = function (jsonTable, title, divId) {
 
 
 
-GoogleCharts.drawColumns = function (jsonTable, title, divId) {
+GoogleCharts.drawColumns = function (jsonTable, color, divId) {
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
+            //title : title,
+            //width: 800,
+            //height: 400,
             bar: {groupWidth: "100%"},
             legend: { position: "none" },
-            colors : ["#194D86","#699A36","#FCBE8F"],
+            colors : clrs,
             backgroundColor: 'transparent',
-            height:360,
+			height:360,
             vAxis: {minValue:0, maxValue:100},
             animation:{
                 duration: 6000,
@@ -122,8 +149,20 @@ GoogleCharts.drawStackedColumns = function (jsonTable, title, divId) {
 
 
 
-GoogleCharts.drawBars = function (jsonTable, title, divId) {
+GoogleCharts.drawBars = function (jsonTable, color, divId) {
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
             //title : title,
@@ -131,7 +170,8 @@ GoogleCharts.drawBars = function (jsonTable, title, divId) {
             //height: 400,
             bar: {groupWidth: "25%"},
             legend: { position: "none" },
-            colors : ["#194D86","#699A36"],
+            //colors : ["#194D86","#699A36"],
+			colors : clrs,
             backgroundColor: 'transparent',
 			height:360,
 			vAxis: {minValue:0, maxValue:1000},
@@ -147,8 +187,20 @@ GoogleCharts.drawBars = function (jsonTable, title, divId) {
     });
 };
 
-GoogleCharts.drawLine = function (jsonTable, title, divId) {
+GoogleCharts.drawLine = function (jsonTable, color, divId) {
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
             //title : title,
@@ -156,6 +208,7 @@ GoogleCharts.drawLine = function (jsonTable, title, divId) {
             legend: { position: 'bottom' },
             backgroundColor: 'transparent',
 			height:360,
+			colors : clrs,
         };
         
         var chart = new google.visualization.LineChart(document.getElementById(divId));
@@ -163,12 +216,25 @@ GoogleCharts.drawLine = function (jsonTable, title, divId) {
     });
 };
 
-GoogleCharts.drawLineArea = function (jsonTable, title, divId) {
+GoogleCharts.drawLineArea = function (jsonTable, color, divId) {
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
             //title : title,
-            colors : ["#66648C", "#FCBE8F"],
+            //colors : ["#66648C", "#FCBE8F"],
+			colors : clrs,
             pointSize : 4,
             pointShape : 'diamond',
             backgroundColor: 'transparent',
@@ -182,13 +248,26 @@ GoogleCharts.drawLineArea = function (jsonTable, title, divId) {
     });
 };
 
-GoogleCharts.drawAnnotations = function (jsonTable, title, divId){
+GoogleCharts.drawAnnotations = function (jsonTable, color, divId){
     google.charts.load('current', {'packages':['annotationchart']});
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visulaization.DataTable(jsonTable);
         var options = {
             //title : title,
-            colors : ["#66648C", "#FCBE8F"],
+            //colors : ["#66648C", "#FCBE8F"],
+			colors : clrs,
             displayAnnotations: true,
             backgroundColor: 'transparent',
 			height:360,
@@ -199,8 +278,20 @@ GoogleCharts.drawAnnotations = function (jsonTable, title, divId){
     });
 };
 
-GoogleCharts.drawBubble = function (jsonTable, title, divId) {
+GoogleCharts.drawBubble = function (jsonTable, color, divId) {
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
             //title : title,
@@ -208,6 +299,7 @@ GoogleCharts.drawBubble = function (jsonTable, title, divId) {
             vAxis: {title: 'day'},
             backgroundColor: 'transparent',
 			height:360,
+			colors : clrs,
         };
         
         var chart = new google.visualization.BubbleChart(document.getElementById(divId));
@@ -216,12 +308,25 @@ GoogleCharts.drawBubble = function (jsonTable, title, divId) {
 };
 
 
-GoogleCharts.drawMap = function (jsonTable, title, divId){
+GoogleCharts.drawMap = function (jsonTable, color, divId){
     google.charts.setOnLoadCallback(function(){
+		var clrs;
+		if(color == 'fb'){
+			clrs = ['#314DA1', '#22356D', '#4066AB', '#25AAE1', '#70CAF2'];
+		}else if(color == 'tw'){
+			clrs = ['#22AAE2', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}else if(color == 'in'){
+			clrs = ['#6D51A2', '#A4479A', '#E32B70', '#EF5351', '#FDC151'];
+		}else if(color == 'yg'){
+			clrs = ['#A42828', '#C52729', '#DC2C27', '#FAAD6C', '#FDC151'];
+		}else if(color == 'ln'){
+			clrs = ['#0975B5', '#286398', '#2E83C2', '#4AA0D8', '#55CAEE'];
+		}
         var data = new google.visualization.DataTable(jsonTable);
         var options = {
 			backgroundColor:{fill:'transparent'},
 			height:480,
+			colors : clrs,
 			//colors : ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"],
         };
         

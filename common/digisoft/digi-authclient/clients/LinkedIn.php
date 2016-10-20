@@ -377,14 +377,14 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
             $sum_update_statistics['clicks'] += $value['clickCount'];
             $sum_update_statistics['impressions'] += $value['impressionCount'];
         }
-        $oUpdateModel->likes = $sum_update_statistics['likes'];
-        $oUpdateModel->comments = $sum_update_statistics['comments'];
-        $oUpdateModel->shares = $sum_update_statistics['shares'];
-        $oUpdateModel->clicks = $sum_update_statistics['clicks'];
-        $oUpdateModel->impressions = $sum_update_statistics['impressions'];
-        $oUpdateModel->interactions = $oUpdateModel->likes + $oUpdateModel->comments + $oUpdateModel->shares;
-        if(!$oUpdateModel->update()){
-            echo '<pre>'; var_dump($oUpdateModel->getErrors()); echo '</pre>'; die;
+        $oUpdate->likes = $sum_update_statistics['likes'];
+        $oUpdate->comments = $sum_update_statistics['comments'];
+        $oUpdate->shares = $sum_update_statistics['shares'];
+        $oUpdate->clicks = $sum_update_statistics['clicks'];
+        $oUpdate->impressions = $sum_update_statistics['impressions'];
+        $oUpdate->interactions = $oUpdate->likes + $oUpdate->comments + $oUpdate->shares;
+        if(!$oUpdate->update()){
+            echo '<pre>'; var_dump($oUpdate->getErrors()); echo '</pre>'; die;
         }
     }
     
@@ -454,7 +454,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     }
     
     public function statistics($oModel){
-        $since = strtotime('-10 months') * 1000;
+        $since = strtotime('-12 months') * 1000;
         $until = time() * 1000;
         $historical_statistics = $this->getHistoricalStatisticsInTime($oModel->entity_id, $since)['values'];
         $days = [];
@@ -652,7 +652,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         $updates = $this->getCompanyUpdates($parent_model->entity_id);
         foreach($updates['values'] as $update){
             $oUpdate = Model::findOne(['entity_id' => $update['updateKey']]);
-            if(!$oUpdate){
+            if($oUpdate){
                 $this->updateUpdateModel($parent_model->entity_id, $oUpdate, $since);
             }else{
                 $this->createUpdateModel($parent_model->entity_id, $parent_model->id, $parent_model->authclient_id, $update, $since);

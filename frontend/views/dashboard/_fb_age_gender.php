@@ -6,7 +6,7 @@
 		$fans_gender_age_json_table = Facebook::getFansByAgeGenderJsonTable($fans_gender_age);
 		if($fans_gender_age_json_table){
 		    echo '<h3 class="internal-title facebook short">Facebook</h3>';
-		    $this->registerJs("GoogleCharts.drawColumns(".$fans_gender_age_json_table.", 'Distribution of fans by gender and age ranges', 'fb_fans_age_gender')", yii\web\View::POS_END);
+		    $this->registerJs("GoogleCharts.drawColumns(".$fans_gender_age_json_table.", 'fb', 'fb_fans_age_gender')", yii\web\View::POS_END);
 		    echo '<div class="internal-content">';
 		    	echo '<div id="fb_fans_age_gender"></div>';
 		    echo '</div>';
