@@ -9,6 +9,7 @@ use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\helpers\GoogleChartHelper;
 use common\helpers\InstagramGoogleChartHelper;
+use yii\authclient\OAuthToken;
 use yii\base\Exception;
 
 
@@ -519,11 +520,54 @@ class GooglePlus extends OAuth2
 
         if (!is_object($accessToken) || !$accessToken->getIsValid()) {
 
-            return null ;
+            if( !$accessToken->getIsValid() ){
+                $accessToken = $this->refreshAccessToken($accessToken);
+                $this->setAccessToken($accessToken);
+            }else{
+                return null ;
+
+            }
            // throw new Exception('Invalid access token.');
         }
         return $this->apiInternal($accessToken, $url, $method, $params, $headers);
     }
+
+
+
+    //to fix the lib issues for request new token
+    public function refreshAccessToken(OAuthToken $token)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://accounts.google.com/o/oauth2/token",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "client_id=$this->clientId&client_secret=$this->clientSecret&refresh_token=".$token->getParams()['refresh_token']."&grant_type=refresh_token",
+            CURLOPT_HTTPHEADER => array(
+                "cache-control: no-cache",
+                "content-type: application/x-www-form-urlencoded"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            return "cURL Error #:" . $err;
+        } else {
+            $returnData= json_decode($response);
+            //  echo  $returnData->access_token.'dddd';die;
+            $token->setToken($returnData->access_token);
+            return $token;
+        }
+
+    }
+
+
 
 
 

@@ -233,9 +233,10 @@ class SiteController extends \frontend\components\BaseController {
                 GooglePlus::setClient( unserialize($oAuthclient->source_data));
                 $ReturnData =$gPlus->getAccountDetails();
                 if( $ReturnData == null){
-                   $oAuthclient->source_data =null;
-                   $oAuthclient->save();
-                   GooglePlus::setClient( null);
+                  // $oAuthclient->source_data =null;
+                    echo "dddddddddddddd";die;
+                  // $oAuthclient->save();
+                  // GooglePlus::setClient( null);
                 }
             }
         }
@@ -275,8 +276,8 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 //check stored token
                 Youtube::setClient( unserialize($oAuthclient->source_data));
-                $ReturnData = $youtube->getChannelData() ;
-                if( $ReturnData == null){
+              $ReturnData = $youtube->getChannelData() ;
+                if( $ReturnData == null){   // this case will hapen only when user revoke the access
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
                     Youtube::setClient( null);
@@ -297,6 +298,7 @@ class SiteController extends \frontend\components\BaseController {
         }else if($session['youtube']){
             $channels = $youtube->getChannelData();
             $channel_analytics = $youtube->getChannelAnalytics();
+
             if(!$oAuthclient){
                 $oAuthclient = $youtube->createNewAuthclient($channels);
             }else{
