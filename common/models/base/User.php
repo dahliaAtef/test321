@@ -104,6 +104,11 @@ class User extends Base implements IdentityInterface {
         return static::findOne(['username' => $username, 'status' => self::STATUS_VERIFIED]);
     }
 
+    public static function findByUserId($Id) {
+        return static::findOne(['id' => $Id]);
+    }
+
+
     /**
      * Finds user by verification reset token
      *

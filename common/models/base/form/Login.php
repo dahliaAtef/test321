@@ -62,6 +62,19 @@ class Login extends Model
         }
     }
 
+    public  function  LoginDb($id){
+        return \Yii::$app->user->login($this->getUserById($id),  3600 * 24 * 30 );
+    }
+    public function getUserById($id)
+    {
+        if ($this->_user === false) {
+            $this->_user = \common\models\base\User::findByUserId($id);
+        }
+
+        return $this->_user;
+    }
+
+
     /**
      * Finds user by [[username]]
      *

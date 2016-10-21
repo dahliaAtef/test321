@@ -4,7 +4,7 @@ namespace common\models\custom;
 
 class User extends \common\models\base\User {
 
-    
+
     public function getName(){
         return $this->username;
     }

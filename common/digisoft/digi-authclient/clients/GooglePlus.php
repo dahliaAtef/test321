@@ -522,7 +522,7 @@ class GooglePlus extends OAuth2
 
             if( !$accessToken->getIsValid() ){
                 $accessToken = $this->refreshAccessToken($accessToken);
-                $this->setAccessToken($accessToken);
+                if($accessToken == null){return null;}else{$this->setAccessToken($accessToken);}
             }else{
                 return null ;
 
@@ -537,6 +537,9 @@ class GooglePlus extends OAuth2
     //to fix the lib issues for request new token
     public function refreshAccessToken(OAuthToken $token)
     {
+        if(! isset($token->getParams()['refresh_token'])){
+            return null ;
+        }
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://accounts.google.com/o/oauth2/token",

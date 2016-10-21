@@ -32,17 +32,17 @@ class SiteController extends \frontend\components\BaseController {
 
     public $defaultAction = 'home';
 
-//    public function behaviors()
-//    {
-//        return [
-//
-//            'pageCache' => [
-//                'class' => 'yii\filters\PageCache',
-//                'only' => ['facebook','twitter','instagram','youtube','google-plus'],
-//                'duration' => 60*60*12, // 12 h
-//            ],
-//        ];
-//    }
+    public function behaviors()
+    {
+        return [
+
+            'pageCache' => [
+                'class' => 'yii\filters\PageCache',
+                'only' => ['facebook','twitter','instagram','youtube','google-plus','linkedin'],
+                'duration' => 60*60*12, // 12 h
+            ],
+        ];
+    }
 
 
         /**
@@ -183,7 +183,7 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 //check stored token
                 LinkedIn::setClient( unserialize($oAuthclient->source_data));
-                $ReturnData = $linkedin->getUserAttributes() ;
+                $ReturnData = $linkedin->getUserAdminCompanies() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
@@ -191,6 +191,13 @@ class SiteController extends \frontend\components\BaseController {
                 }
             }
         }
+
+//        if($session->has('linkedin')) {
+//            echo "<pre>";
+//            print_r($linkedin->getClient());
+//            echo "</pre>";
+//            die;
+//        }
 
         if($session->has('linkedin')){
             $client = $linkedin->getClient();
@@ -200,7 +207,7 @@ class SiteController extends \frontend\components\BaseController {
 
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $linkedin->getClient();
-                $oAuthclient = new Authclient();
+                $oAuthclient =  $oAuthclient ? $oAuthclient : new Authclient();
                 $oAuthclient->user_id = Yii::$app->user->getId();
                 $oAuthclient->source = $client->name;
                 $oAuthclient->source_data = serialize($client);
@@ -209,6 +216,11 @@ class SiteController extends \frontend\components\BaseController {
                 $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
             }
             if($oAuthclient){
+                if($oAuthclient->source_data == null){
+                    $oAuthclient->source_data =serialize($client);;
+                    $oAuthclient->save();
+                }
+
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
@@ -236,10 +248,9 @@ class SiteController extends \frontend\components\BaseController {
                 GooglePlus::setClient( unserialize($oAuthclient->source_data));
                 $ReturnData =$gPlus->getAccountDetails();
                 if( $ReturnData == null){
-                  // $oAuthclient->source_data =null;
-                    echo "dddddddddddddd";die;
-                  // $oAuthclient->save();
-                  // GooglePlus::setClient( null);
+                   $oAuthclient->source_data =null;
+                   $oAuthclient->save();
+                   GooglePlus::setClient( null);
                 }
             }
         }
