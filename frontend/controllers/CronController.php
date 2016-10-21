@@ -31,7 +31,7 @@ use frontend\models\CompetitorsForm;
 class CronController extends \frontend\components\BaseController {
 
     public function actionIndex() {
-
+        Yii::$app->user->logout();
         $id=77;
 
         $oLoginForm = new Login();
@@ -39,10 +39,10 @@ class CronController extends \frontend\components\BaseController {
 
         Yii::$app->runAction('site/twitter');
         Yii::$app->runAction('site/facebook');
-//        Yii::$app->runAction('site/linkedin');
-//        Yii::$app->runAction('site/googleplus');
-//        Yii::$app->runAction('site/youtube');
-//        Yii::$app->runAction('site/instagram');
+       Yii::$app->runAction('site/linkedin');
+       Yii::$app->runAction('site/google-plus');
+        Yii::$app->runAction('site/youtube');
+        Yii::$app->runAction('site/instagram');
 
         var_dump( Yii::$app->user->getId());
 
