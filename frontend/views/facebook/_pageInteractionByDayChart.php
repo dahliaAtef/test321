@@ -15,7 +15,7 @@
     <div class="col-md-12">
         <?php
         if($page_interaction_by_day_json_table){
-            $this->registerJs("GoogleCharts.drawColumns(".$page_interaction_by_day_json_table.", 'Daily Interactions', 'daily_interaction')", yii\web\View::POS_END);
+            $this->registerJs("GoogleCharts.drawColumns(".$page_interaction_by_day_json_table.", 'fb', 'daily_interaction')", yii\web\View::POS_END);
         	echo '<h3 class="internal-title noneBG">Daily Interactions</h3>';
             echo '<div class="internal-content">';
                 echo '<div id="daily_interaction"></div>';

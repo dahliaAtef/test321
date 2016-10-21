@@ -42,7 +42,9 @@ Frontend.onReady = function () {
 
     Frontend.globalEvents();
 
-    Frontend.formValdiation();
+    //Frontend.formValdiation();
+    Frontend.formValdiationSubscribe();
+
 
 };
 
@@ -281,7 +283,7 @@ Frontend.formValdiation = function(){
                 $("button" , this_form ).on("click" , function(){
                     function error_check(){
                         this_form.each(function(){
-                            if ( $(this).find(".has-error").length > 0) {
+                            if ( $(this).find(".has_err").length > 0) {
                                 $("button" , this_form ).removeClass().addClass("submit-error");
                             }
                             else{
@@ -299,7 +301,67 @@ Frontend.formValdiation = function(){
 
         };
 
+// Frontend.formValdiationSubscribe = function(){
 
+//                 $("#btn-subsc").on("click" , function(){
+//                     function error_check(){
+//                         if ($("input[type='hidden']").val() == "success") {
+//                             $("#btn-subsc").removeClass().addClass("submit-success");
+//                             $(".card").addClass("appear");
+//                         }
+//                         else{
+//                             $("#btn-subsc").removeClass().addClass("submit-error");
+//                         }
+//                         window.setTimeout(function(){
+//                             $("#btn-subsc").removeClass().addClass("btn");
+//                         }, 2000) 
+//                    };
+//                    window.setTimeout( error_check, 500 );
+//                     })
+                
+
+//         };
+Frontend.formValdiationSubscribe = function(){
+
+				if ($("input[type='hidden']").val() == "success") {
+                    $("#btn-subsc").removeClass().addClass("submit-success");
+                    $(".card").addClass("appear").delay(1500);
+                }
+                /*window.setTimeout(function(){
+                    $("#btn-subsc").removeClass().addClass("btn");
+                }, 2000)*/
+			/*$('subsc-form').on('pjax:success', function(event, data, status, xhr, options) {
+				  // run "custom_success" method passed to PJAX if it exists
+				  if(typeof options.custom_success === 'function'){
+					   $("button" , this_form).removeClass().addClass("submit-success");
+                       $(".card").addClass("appear").delay(1500);
+				  }
+			 });*/
+/*
+            $("form").each(function(){
+                var this_form = $(this);
+                $("button" , this_form ).on("click" , function(){
+                    function error_check(){
+                        this_form.each(function(){
+                            if ( $(this).find(".has-error").length == 0) {
+                                //alert("a700");
+                                $("button" , this_form).removeClass().addClass("submit-success");
+                                $(".card").addClass("appear").delay(3000);
+                            }
+                            else{
+                                $("button" , this_form ).removeClass().addClass("submit-error");
+                            }
+                        })
+                        window.setTimeout(function(){
+                            $("button" , this_form).removeClass().addClass("btn");
+                        }, 2000) 
+                   };
+                   window.setTimeout( error_check, 500 );
+                    })
+            })
+*/    
+
+        };
 
 
 
@@ -307,7 +369,18 @@ $(document).ready(function () {
 
     Frontend.onReady();
 
+                 $('inner-page').css("visibility","hidden");
+        
+
 });
+
+             $(window).load(function() {              
+
+                 $('inner-page').css("visibility","visible");
+
+                     $('#loadx').fadeOut(50);
+                     $('#loadWh').fadeOut(750);
+             });
 
 
 

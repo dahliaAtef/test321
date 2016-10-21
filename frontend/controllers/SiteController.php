@@ -79,18 +79,21 @@ class SiteController extends \frontend\components\BaseController {
     public function actionSubscribe() {
         $oSubscribeForm = new SubscribeForm();
         if($oSubscribeForm->load(Yii::$app->request->post()) && $oSubscribeForm->validate()){
-            if($oUser = $oSubscribeForm->subscribe()){
-                if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
-                    Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Check your email for further instructions.'));
-                    return $this->redirect(Url::to(['/']));
-                } else {
-                    Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error sending email.'));
-                    $oUser->delete();
-                }
-            }else
-                Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
-        }
-        return $this->render('subscribe', ['oUserForm' => $oSubscribeForm]);
+				if(Yii::$app->session['error']){
+					Yii::$app->session->remove('error');
+				}
+				$err = null;
+				if($oUser = $oSubscribeForm->subscribe()){
+					if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
+						$oSubscribeForm->verifySuccess = 'success';
+						return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'success']);
+					} else {
+						$oUser->delete();
+					}
+				}else
+					Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
+		}
+        return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'nop']);
     }
       
     /**
@@ -189,12 +192,12 @@ class SiteController extends \frontend\components\BaseController {
             }
         }
 
-        $client = $linkedin->getClient();
-        $company_statistics = $linkedin->getCompanyStatistics();
-        //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
-        $oUserPagesForm = new UserPagesForm();
-
         if($session->has('linkedin')){
+            $client = $linkedin->getClient();
+            $company_statistics = $linkedin->getCompanyStatistics();
+            //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
+            $oUserPagesForm = new UserPagesForm();
+
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $linkedin->getClient();
                 $oAuthclient = new Authclient();
@@ -209,7 +212,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
-                    $since = strtotime('-10 months') * 1000;
+                    $since = strtotime('-12 months') * 1000;
                     $until = time() * 1000;
                     $statistics = $linkedin->statistics($oModel[0]);
                     $linkedin->saveAccountInsights($oModel[0], $since);
@@ -222,45 +225,7 @@ class SiteController extends \frontend\components\BaseController {
             return $this->render('/linkedin/linkedinAuth');
         }
     }
-    
-    public function actionFoursquare(){
-        $session = Yii::$app->session;
-        $foursquare = new Foursquare ();
-        $oUserPagesForm = new UserPagesForm();
-        if($session->has('foursquare')){
-            if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
-                $client = $foursquare->getClient();
-                $oAuthclient = new Authclient ();
-                $oAuthclient->user_id = /*Yii::$app->user->getId()*/75;
-                $oAuthclient->source = $client->name;
-                $oAuthclient->source_id = $client->getUserAttributes()['response']['user']['id'];
-                $oAuthclient->save();
-                $foursquare->firstTimeToLog($oAuthclient->id, $oUserPagesForm->id);
-            }
-            $oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'foursquare']);
-            if($oAuthclient){
-                $oModel = $oAuthclient->model[0];
-                if($oModel){
-                    $oInsights = Insights::find()->where(['model_id' => $oModel->id])->orderBy(['id' => 'SORT_DESC'])->one();
-                    $venue = $foursquare->getVenueData($oModel->entity_id);
-                    return $this->render('/foursquare/foursquare-venue', ['venueInsights' => $oInsights]);
-                }
-            }else{
-                $managed_venues = $foursquare->getManagedVenues();
-                return $this->render('/foursquare/foursquare', ['managed_venues' => $managed_venues, 'oUserPagesForm' => $oUserPagesForm]);
-            }
-        }else{
-            return $this->render('/foursquare/foursquareAuth');
-        }
-        
-    }
-    
-    public function actionFoursquareVenue($venue_id){
-        $client = Foursquare::getClient();
-        $venue = Foursquare::getVenueData($venue_id);
-        return $this->render('/foursquare/foursquare-venue', ['venue' => $venue]);
-    }
-    
+
     public function actionGooglePlus(){ 
         $session = Yii::$app->session;
         $gPlus = new GooglePlus();
@@ -496,7 +461,6 @@ class SiteController extends \frontend\components\BaseController {
         $session = Yii::$app->session;
         $fb = new Facebook();
         $oUserPagesForm = new UserPagesForm();
-        
         //check if the saved access is working
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
         if($oAuthclient ){

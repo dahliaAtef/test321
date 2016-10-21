@@ -3,7 +3,7 @@
 $most_engaging_post_types_json_table = $fb->getMostEngagingPostTypesJsonTable($post_types);
 //echo '<pre>'; var_dump($post_types_json_table); echo '</pre>'; die;
 if($most_engaging_post_types_json_table){
-    $this->registerJs("GoogleCharts.drawCircle(".$most_engaging_post_types_json_table.", 'Most Engaging Post Types', 'most_engaging_post_types')", yii\web\View::POS_END);
+    $this->registerJs("GoogleCharts.drawCircle(".$most_engaging_post_types_json_table.", 'fb', 'most_engaging_post_types')", yii\web\View::POS_END);
 	echo '<h3 class="internal-title noneBG">Most Engaging Post Types</h3>';
     echo '<div class="internal-content">';   
     echo '<div id="most_engaging_post_types"></div>';

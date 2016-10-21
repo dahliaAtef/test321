@@ -1,6 +1,6 @@
 <?php
 if($country_json_table){
-    $this->registerJs("GoogleCharts.drawCircle(".$country_json_table.", 'Distribution of fans by Country', 'fans_country')", yii\web\View::POS_END);
+    $this->registerJs("GoogleCharts.drawCircle(".$country_json_table.", 'fb', 'fans_country')", yii\web\View::POS_END);
 ?>
 <h3 class="internal-title noneBG">Distribution of fans by Country</h3>
 	<div class="internal-content">

@@ -44,7 +44,7 @@ $days_count = count($statistics['days']);
                                 <li><span class="small-title">Interactions Total : </span><?= $statistics['interactions'] ?></li>
                                 <li><span class="small-title">New Updates Total : </span><?= count($statistics['updates']) ?></li>
                                 <li><span class="small-title">Interactions on New Updates : </span><?= $statistics['sums_of_all_updates_statistics']['interactions'] ?></li>
-                                <li><span class="small-title">Interactions per New Update : </span><?= round((($statistics['sums_of_all_updates_statistics']['interactions'])/$updates), 1) ?></li>
+                                <li><span class="small-title">Interactions per New Update : </span><?= ((count($statistics['updates']) != 0) ? round((($statistics['sums_of_all_updates_statistics']['interactions'])/$updates), 1) : 0) ?></li>
                             </div>
                         </ul>
                     </div>

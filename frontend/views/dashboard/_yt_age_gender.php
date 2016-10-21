@@ -8,7 +8,7 @@
 		//echo '<pre>'; var_dump($fans_gender_age_json_table); echo '</pre>'; die;
 		if($fans_gender_age_json_table){
 		    echo '<h3 class="internal-title youtube short">Youtube</h3>';
-		    $this->registerJs("GoogleCharts.drawColumns(".$fans_gender_age_json_table.", 'Youtube distribution of fans by gender and age ranges', 'yt_fans_age_gender')", yii\web\View::POS_END);
+		    $this->registerJs("GoogleCharts.drawColumns(".$fans_gender_age_json_table.", 'yg', 'yt_fans_age_gender')", yii\web\View::POS_END);
 		    echo '<div class="internal-content">';
 		    echo '<div id="yt_fans_age_gender"></div>';
 		    echo '</div>';

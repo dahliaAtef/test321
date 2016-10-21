@@ -1,6 +1,6 @@
 <?php
 if($most_engaging_post_types_json_table){
-    $this->registerJs("GoogleCharts.drawCircle(".$most_engaging_post_types_json_table.", 'Most Engaging Post Types', 'most_engaging_post_types')", yii\web\View::POS_END);
+    $this->registerJs("GoogleCharts.drawCircle(".$most_engaging_post_types_json_table.", 'in', 'most_engaging_post_types')", yii\web\View::POS_END);
 ?>
 	<h3 class="internal-title noneBG">Most Engaging Post Types</h3>
 	

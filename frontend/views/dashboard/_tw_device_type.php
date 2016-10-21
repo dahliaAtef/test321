@@ -6,7 +6,7 @@
         $devices_json_table = Twitter::getDeviceTypeJsonTable($devices);
         if($devices_json_table){
             echo '<h3 class="internal-title twitter short">Twitter</h3>';
-            $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'views by device type', 'tw_view_by_device_type')", yii\web\View::POS_END);
+            $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'tw', 'tw_view_by_device_type')", yii\web\View::POS_END);
             echo '<div class="internal-content">';
             echo '<div id="tw_view_by_device_type"></div>';
             echo '</div>';

@@ -2,7 +2,7 @@
     <?php
     //echo '<pre>'; var_dump($sharing_services); echo '</pre>'; die;
     if($sharing_services_json_table){
-        $this->registerJs("GoogleCharts.drawCircle(".$sharing_services_json_table.", 'Channel view per Sharing Service', 'sharing_services')", yii\web\View::POS_END);	
+        $this->registerJs("GoogleCharts.drawCircle(".$sharing_services_json_table.", 'yg', 'sharing_services')", yii\web\View::POS_END);	
         echo '<h3 class="internal-title noneBG">Channel view per Sharing Service</h3>';
         echo '<div class="internal-content adaptMargin34">';      
             echo '<div id="sharing_services"></div>';

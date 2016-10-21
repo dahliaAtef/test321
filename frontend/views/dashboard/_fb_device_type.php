@@ -6,7 +6,7 @@
             $devices_json_table = Facebook::getDeviceTypeJsonTable($devices);
             if($devices_json_table){
             echo '<h3 class="internal-title facebook short">Facebook</h3>';
-                $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'views by device type', 'fb_view_by_device_type')", yii\web\View::POS_END);
+                $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'fb', 'fb_view_by_device_type')", yii\web\View::POS_END);
                 echo '<div class="internal-content">';
                 echo '<div id="fb_view_by_device_type"></div>';
                 echo '</div>';

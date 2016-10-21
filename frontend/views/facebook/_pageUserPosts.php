@@ -26,7 +26,7 @@
     <div class="col-md-12">
         <?php
         if($page_user_posts_by_day_json_table){
-            $this->registerJs("GoogleCharts.drawColumns(".$page_user_posts_by_day_json_table.", 'User Posts', 'user_posts')", yii\web\View::POS_END);
+            $this->registerJs("GoogleCharts.drawColumns(".$page_user_posts_by_day_json_table.", 'fb', 'user_posts')", yii\web\View::POS_END);
             echo '<h3 class="internal-title noneBG">User Posts</h3>';
             echo '<div class="internal-content">';
                 echo '<div id="user_posts"></div>';
