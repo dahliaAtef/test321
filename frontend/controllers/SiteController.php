@@ -43,7 +43,7 @@ class SiteController extends \frontend\components\BaseController {
                 'duration' => 60*60*12, // 12 h
                     'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT source_data FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
                 ],
 
             ],
@@ -53,7 +53,7 @@ class SiteController extends \frontend\components\BaseController {
                 'duration' => 60*60*12, // 12 h
                 'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT source_data FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
                 ],
 
             ],
@@ -63,7 +63,7 @@ class SiteController extends \frontend\components\BaseController {
                 'duration' => 60*60*12, // 12 h
                 'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT source_data FROM authclient where source= "twitter" and user_id='.Yii::$app->user->getId(),
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "twitter" and user_id='.Yii::$app->user->getId(),
                 ],
 
             ],
@@ -73,7 +73,7 @@ class SiteController extends \frontend\components\BaseController {
                         'duration' => 60*60*12, // 12 h
                         'dependency' => [
                             'class' => 'yii\caching\DbDependency',
-                            'sql' => 'SELECT source_data FROM authclient where source= "instagram" and user_id='.Yii::$app->user->getId(),
+                            'sql' => 'SELECT COUNT( id ) FROM authclient where source= "instagram" and user_id='.Yii::$app->user->getId(),
                         ],
 
                     ],
@@ -83,7 +83,7 @@ class SiteController extends \frontend\components\BaseController {
                 'duration' => 60*60*12, // 12 h
                 'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT source_data FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
                 ],
 
             ],
@@ -93,7 +93,7 @@ class SiteController extends \frontend\components\BaseController {
                 'duration' => 60*60*12, // 12 h
                 'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT source_data FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
 
             ],
