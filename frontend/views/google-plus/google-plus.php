@@ -119,7 +119,7 @@ $this->title = 'Google+';
             <div class="row">
                 <div class="col-md-12">
                     <?php
-                    echo $this->render('_bestTimeToPostChart', ['best_time_to_post_json_table' => $googleP->getBestTimeToPostJsonTable()]);
+                    echo $this->render('_bestTimeToPostChart', ['best_time_to_post_json_table' => $googleP->getBestTimeToPostJsonTable($oAccountModel->id)]);
                     ?>
                 </div>
             </div>

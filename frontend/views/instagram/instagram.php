@@ -148,14 +148,6 @@ $this->title = 'Instagram';
 			</div>
 		</div>
 
-        <div class="row">
-			<div class="col-md-12">
-			<?php
-				echo $this->render('_sourceOfEngagementChart', ['source_of_engagement_json_table' => $insta->getSourceOfEngagementJsonTable($statistics['source_of_engagement'])]);
-            ?>
-			</div>
-		</div>
-
         <!-- sperated line -->  
         <div class="row">
             <div class="col-md-12">
