@@ -31,24 +31,31 @@ use frontend\models\CompetitorsForm;
 class CronController extends \frontend\components\BaseController {
 
     public function actionIndex() {
-        Yii::$app->user->logout();
-        $id=77;
+       //get all verified users
+        $users = User::find()
+            ->where("status=".User::STATUS_VERIFIED)
+            ->all();
 
-        $oLoginForm = new Login();
-        $oLoginForm->LoginDb($id);
+        foreach ($users as $user){
+            Yii::$app->user->logout();
+            $oLoginForm = new Login();
+            $oLoginForm->LoginDb($user->id);
+            $facebook = Authclient::findOne(['user_id' => $user->id, 'source' => 'facebook']);
+            $twitter = Authclient::findOne(['user_id' => $user->id, 'source' => 'twitter']);
+            $linkedin = Authclient::findOne(['user_id' => $user->id, 'source' => 'linkedin']);
+            $google_plus = Authclient::findOne(['user_id' => $user->id, 'source' => 'google-plus']);
+            $youtube = Authclient::findOne(['user_id' => $user->id, 'source' => 'youtube']);
+            $instagram = Authclient::findOne(['user_id' => $user->id, 'source' => 'instagram']);
 
-        Yii::$app->runAction('site/twitter');
-        Yii::$app->runAction('site/facebook');
-       Yii::$app->runAction('site/linkedin');
-       Yii::$app->runAction('site/google-plus');
-        Yii::$app->runAction('site/youtube');
-        Yii::$app->runAction('site/instagram');
-
-        var_dump( Yii::$app->user->getId());
+            if($twitter) Yii::$app->runAction('site/twitter');
+            if($facebook)  Yii::$app->runAction('site/facebook');
+            if($linkedin) Yii::$app->runAction('site/linkedin');
+            if($google_plus) Yii::$app->runAction('site/google-plus');
+            if($youtube) Yii::$app->runAction('site/youtube');
+            if($instagram) Yii::$app->runAction('site/instagram');
+        }
 
         echo "Done";
         die;
-
-
     }
 }

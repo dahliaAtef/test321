@@ -550,7 +550,7 @@ class SiteController extends \frontend\components\BaseController {
                 }
             }else{
                 $client = Facebook::getClient();
-                $client->getUserAttributes() ;
+                //$client->getUserAttributes() ;
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->save();
             }
