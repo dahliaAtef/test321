@@ -414,7 +414,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         return $company_statistics;
     }
     
-    public function firstTimeToLog($company_id, $authclient_id){
+    public function firstTimeToLog($company_id, $authclient_id, $since){
         $company_data = $this->getCompanyData($company_id);
         $oAccountModel = $this->createCompanyModel($company_data, $authclient_id);
         $company_updates = $this->getCompanyUpdates($company_id);
@@ -571,7 +571,9 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     public function getCountry($followers_country_statistics){
         $country_statistics = [];
         foreach($followers_country_statistics as $value){
-            $country_statistics[$this->country[$value['entryKey']]] = $value['entryValue'];
+            if(array_key_exists($value['entryKey'], $this->country)){
+                $country_statistics[$this->country[$value['entryKey']]] = $value['entryValue'];
+            }
         }
         return $country_statistics;
     }

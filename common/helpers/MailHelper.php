@@ -59,7 +59,7 @@ class MailHelper {
      */
     public static function sendSubscriptionResponse($oUser) {
 
-        return Yii::$app->mailer->compose(['html' => 'successfulSubscriptionResponse-html'])
+      return Yii::$app->mailer->compose(['html' => 'successfulSubscriptionResponse-html'])
                         ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
                         ->setTo($oUser->email)
                         ->setSubject(Yii::$app->name.' insights subscription')

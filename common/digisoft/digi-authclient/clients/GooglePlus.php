@@ -238,11 +238,11 @@ class GooglePlus extends OAuth2
         }
     }
     
-    public function firstTimeToLog($user_data){
+    public function firstTimeToLog($user_data, $authclient_id){
         $oAuthclient = Authclient::findOne(['source_id' => $user_data['id']]);
         if($oAuthclient){
             $oAccountModel = new Model();
-            $oAccountModel->authclient_id = 18;
+            $oAccountModel->authclient_id = $authclient_id;
             $oAccountModel->entity_id = $user_data["id"];
             $oAccountModel->type = self::ACCOUNT;
             $oAccountModel->name = $user_data["displayName"];
@@ -310,15 +310,15 @@ class GooglePlus extends OAuth2
         }
     }
     
-    public function getTimeBasedAccountInsights($model_id = 144, $since = null, $until = null){
+    public function getTimeBasedAccountInsights($model_id, $since = null, $until = null){
         ($since)? '' : ($since = strtotime(date('Y-m', time()).'-1'));
         ($until)? '' : ($until = time());
-        $this->account_insights_in_range = Insights::find()->where(['model_id' => 144])->andWhere(['>=', 'created', $since])/*->andWhere(['<=', 'created', $until])*/->all();
+        $this->account_insights_in_range = Insights::find()->where(['model_id' => $model_id])->andWhere(['>=', 'created', $since])/*->andWhere(['<=', 'created', $until])*/->all();
         return $this->account_insights_in_range;
     }
     
     public function getFollowersGrowth(){
-        $follower_growth_array = array();
+        $followers_growth_array = array();
         foreach($this->account_insights_in_range as $insights){
             $followers_growth_array[date('d M, y', strtotime($insights->created))] = $insights->followers;
         }
@@ -330,15 +330,16 @@ class GooglePlus extends OAuth2
         return $followers_growth_json_table;
     }
     
-    public function getTimeBasedPosts($parent_id = 144, $since = null, $until = null){
+    public function getTimeBasedPosts($parent_id, $since = null, $until = null){
         ($since)? '' : ($since = strtotime(date('2015-5-1')));
         ($until)? '' : ($until = time());
-        $this->posts_in_range = Model::find()->where(['parent_id' => 144])->andWhere(['>=', 'creation_time', $since])->andWhere(['<=', 'creation_time', $until])->all();
+        $this->posts_in_range = Model::find()->where(['parent_id' => $parent_id])->andWhere(['>=', 'creation_time', $since])->andWhere(['<=', 'creation_time', $until])->all();
         
         return $this->posts_in_range;
     }
     
     public function getTopPostsByEngagement(){
+        $top_posts_by_eng = [];
         if($this->posts_in_range){
             $post_array = array();
             //echo '<pre>'; var_dump($this->posts_in_range); echo '</pre>'; die;
@@ -360,9 +361,9 @@ class GooglePlus extends OAuth2
         return $top_posts_by_eng;
     }
     
-    public function getEngagementStatistics(){
+    public function getEngagementStatistics($model_id){
         $this->getDaysInRange();
-        $this->getTimeBasedPosts(144);
+        $this->getTimeBasedPosts($model_id);
         
         $this->statistics['top_posts_by_engagement'] = $this->getTopPostsByEngagement();
         $this->statistics['total_posts'] = $this->statistics['total_post_likes'] = $this->statistics['total_post_comments'] = 
@@ -413,11 +414,11 @@ class GooglePlus extends OAuth2
             }
         }
         
-        $this->statistics['avg_likes_per_post'] = (($this->statistics['total_post_likes'])/($this->statistics['total_posts']));
-        $this->statistics['avg_comments_per_post'] = (($this->statistics['total_post_comments'])/($this->statistics['total_posts']));
-        $this->statistics['avg_shares_per_post'] = (($this->statistics['total_post_shares'])/($this->statistics['total_posts']));
+        $this->statistics['avg_likes_per_post'] = (($this->statistics['total_posts'] != 0) ? (($this->statistics['total_post_likes'])/($this->statistics['total_posts'])) : 0);
+        $this->statistics['avg_comments_per_post'] = (($this->statistics['total_posts'] != 0) ? (($this->statistics['total_post_comments'])/($this->statistics['total_posts'])) : 0);
+        $this->statistics['avg_shares_per_post'] = (($this->statistics['total_posts'] != 0) ? (($this->statistics['total_post_shares'])/($this->statistics['total_posts'])) : 0);
         $this->statistics['total_interaction'] = $this->statistics['total_post_likes'] + $this->statistics['total_post_comments'] + $this->statistics['total_post_shares'];
-        $this->statistics['avg_interaction_per_post'] = (($this->statistics['total_interaction'])/($this->statistics['days_with_engagement']));
+        $this->statistics['avg_interaction_per_post'] = (($this->statistics['days_with_engagement'] != 0) ? (($this->statistics['total_interaction'])/($this->statistics['days_with_engagement'])) : 0);
         $this->statistics['avg_post_engagement_rate'] = ($this->statistics['days_with_engagement'] != 0) ? ($this->statistics['total_post_engagement_rate']/$this->statistics['days_with_engagement']) : 0;
         $this->statistics['avg_profile_engagement_rate'] = ($this->statistics['days_with_engagement'] != 0) ? ($this->statistics['total_profile_engagement_rate']/$this->statistics['days_with_engagement']) : 0;
         return $this->statistics;
@@ -443,24 +444,18 @@ class GooglePlus extends OAuth2
         return $profile_engagement_per_day_json_table;
     }
     
-    public function bestTimeToPost(){
+    public function bestTimeToPost($model_id){
         $this->getHoursArray(); 
-        $this->getTimeBasedPosts();
+        $this->getTimeBasedPosts($model_id);
         $hour = $this->hours;
         foreach($this->posts_in_range as $post){
             $hour[date('ga', $post->creation_time)][date('D', $post->creation_time)] += ($post->likes + $post->comments + $post->shares);
         }
-//        $hour['1pm']['Mon'] = 5;
-//        $hour['1pm']['Fri'] = 1;
-//        $hour['1pm']['Sun'] = 3;
-//        $hour['1pm']['Sat'] = 4;
-//        $hour['1pm']['Tue'] = 3;
-//        $hour['1pm']['Thu'] = 2;
         return $hour;
     }
     
-    public function getBestTimeToPostJsonTable(){
-        $best_time_to_post = $this->bestTimeToPost();
+    public function getBestTimeToPostJsonTable($model_id){
+        $best_time_to_post = $this->bestTimeToPost($model_id);
         $best_time_to_post_json_table = GoogleChartHelper::getBestTimeToPost($best_time_to_post);
         return $best_time_to_post_json_table;
     }

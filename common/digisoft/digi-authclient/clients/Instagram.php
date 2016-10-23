@@ -532,7 +532,7 @@ class Instagram extends OAuth2
         if(!empty($this->media_in_range)){
             $this->clearStatistics();
             $this->statistics['top_posts_by_engagement'] = $this->getTopPostsByEngagement();
-            $this->statistics['source_of_engagement'] = $this->sourceOfEngagement();
+            //$this->statistics['source_of_engagement'] = $this->sourceOfEngagement();
             
             foreach($days_in_range as $day){
                 $day_formated = date('M d', $day);
@@ -712,7 +712,7 @@ class Instagram extends OAuth2
         $this->statistics['max_profile_engagement_rate'] = $this->statistics['total_posts_by_type']['photo'] =
         $this->statistics['total_posts_by_type']['video'] = $this->statistics['total_post_engagement_rate'] = 
         $this->statistics['days_with_engagement'] = $this->statistics['total_profile_engagement_rate'] = 0;
-        $this->statistics['top_posts_by_engagement'] = $this->statistics['source_of_engagement'] = null;
+        //$this->statistics['top_posts_by_engagement'] = $this->statistics['source_of_engagement'] = null;
     }
     
     public function getRelationship($user_id){
