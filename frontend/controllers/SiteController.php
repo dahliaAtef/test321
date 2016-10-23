@@ -36,7 +36,7 @@ class SiteController extends \frontend\components\BaseController {
     public function behaviors()
     {
         return [
-
+/*
             'pageCache' => [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['linkedin'],
@@ -98,8 +98,9 @@ class SiteController extends \frontend\components\BaseController {
 
             ],
 
-
+ */
         ];
+
     }
 
 
@@ -137,20 +138,20 @@ class SiteController extends \frontend\components\BaseController {
     public function actionSubscribe() {
         $oSubscribeForm = new SubscribeForm();
         if($oSubscribeForm->load(Yii::$app->request->post()) && $oSubscribeForm->validate()){
-				if(Yii::$app->session['error']){
-					Yii::$app->session->remove('error');
-				}
-				$err = null;
-				if($oUser = $oSubscribeForm->subscribe()){
-					if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
-						$oSubscribeForm->verifySuccess = 'success';
-						return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'success']);
-					} else {
-						$oUser->delete();
-					}
-				}else
-					Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
+            if(Yii::$app->session['error']){
+		Yii::$app->session->remove('error');
+            }
+            $err = null;
+            if($oUser = $oSubscribeForm->subscribe()){
+		if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
+                    $oSubscribeForm->verifySuccess = 'success';
+                    return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'success']);
+		} else {
+                    $oUser->delete();
 		}
+            }else
+		Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
+        }
         return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'nop']);
     }
       
@@ -271,7 +272,8 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
-                $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
+                $since = strtotime('-12 months') * 1000;
+                $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id, $since);
             }
             if($oAuthclient){
                 if($oAuthclient->source_data == null){
@@ -324,15 +326,19 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
+                $account = $gPlus->getAccountDetails();
+                $gPlus->firstTimeToLog($account);
             }
+            $oAccountModel = Model::findOne(['authclient_id' => $oAuthclient->id, 'parent_id' => null]);
             //echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
             $account = $gPlus->getAccountDetails();
-            $gPlus->getTimeBasedAccountInsights();
+            $gPlus->getTimeBasedAccountInsights($oAccountModel->id);
             return $this->render('/google-plus/google-plus', [
                 'account' => $account,
-                'googleP' => $gPlus, 
+                'googleP' => $gPlus,
+                'oAccountModel' => $oAccountModel,
                 'followers_growth' => $gPlus->getFollowersGrowth(),
-                'statistics' => $gPlus->getEngagementStatistics()
+                'statistics' => $gPlus->getEngagementStatistics($oAccountModel->id)
                     ]);
         }else{
             return $this->render('/google-plus/google-plusAuth');

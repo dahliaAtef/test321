@@ -103,7 +103,7 @@ return [
                     'class' => 'digi\authclient\clients\Instagram',
                     'clientId' => '1218802bd69f4bc9badfa80006bc0df9',
                     'clientSecret' => 'c4ec92c53a8b493f9c62c48c167b0ade',
-                    'scope' => 'basic follower_list public_content',
+                    'scope' => 'basic',
                 ],
                 'youtube' => [
                     'class' => 'digi\authclient\clients\Youtube',

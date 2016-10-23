@@ -158,9 +158,9 @@ class Dashboard extends \common\models\base\Base
     
     public function getGooglePlusKpiOverviewPerMonth($since, $until){
         //$oInsights = Insights::find()->Where(['model_id' => $session['dashboard_accounts']['google_plus']['model_id']])->orderBy(['id' => SORT_DESC])->one();
-        $gp_insights['followers'] = Insights::find()->Where(['model_id' => 144])->orderBy(['id' => SORT_DESC])->one()->followers;
+        $gp_insights['followers'] = Insights::find()->Where(['model_id' => Yii::$app->session['dashboard_accounts']['google_plus']['model_id']])->orderBy(['id' => SORT_DESC])->one()->followers;
         //$oPosts = Model::find()->Where(['parent_id' => Yii::$app->session['dashboard_accounts']['google_plus']['model_id']])->andWhere(['between', 'creation_time', $since, $until])->all();
-        $posts = Model::find()->Where(['parent_id' => 144])->andWhere(['between', 'created', $since, $until])->all();
+        $posts = Model::find()->Where(['parent_id' => Yii::$app->session['dashboard_accounts']['google_plus']['model_id']])->andWhere(['between', 'created', $since, $until])->all();
         $gp_insights['number_of_posted_media'] = count($posts);
         $gp_insights['likes'] = $gp_insights['comments'] = $gp_insights['shares'] = 0;
         foreach($posts as $oPost){
