@@ -46,13 +46,14 @@ class CronController extends \frontend\components\BaseController {
             $google_plus = Authclient::findOne(['user_id' => $user->id, 'source' => 'google-plus']);
             $youtube = Authclient::findOne(['user_id' => $user->id, 'source' => 'youtube']);
             $instagram = Authclient::findOne(['user_id' => $user->id, 'source' => 'instagram']);
-
-            if($twitter) Yii::$app->runAction('site/twitter');
-            if($facebook)  Yii::$app->runAction('site/facebook');
-            if($linkedin) Yii::$app->runAction('site/linkedin');
-            if($google_plus) Yii::$app->runAction('site/google-plus');
-            if($youtube) Yii::$app->runAction('site/youtube');
-            if($instagram) Yii::$app->runAction('site/instagram');
+            if($user->id >1) {
+                if ($twitter) Yii::$app->runAction('site/twitter');
+                if ($facebook) Yii::$app->runAction('site/facebook');
+                if ($linkedin) Yii::$app->runAction('site/linkedin');
+                if ($google_plus) Yii::$app->runAction('site/google-plus');
+                if ($youtube) Yii::$app->runAction('site/youtube');
+                if ($instagram) Yii::$app->runAction('site/instagram');
+            }
         }
 
         echo "Done";
