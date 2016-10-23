@@ -542,7 +542,7 @@ class SiteController extends \frontend\components\BaseController {
             if($oAuthclient->source_data != null){
                 Facebook::setClient( unserialize($oAuthclient->source_data));
                $client = $fb->getClient();
-               $ReturnData = $client->getUserPages() ;
+               $ReturnData = $client->getUserAttributes() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
