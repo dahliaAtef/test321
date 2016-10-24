@@ -2,6 +2,7 @@
 
 namespace digi\authclient\clients;
 
+use Omnipay\Common\Exception\InvalidResponseException;
 use Yii;
 use common\helpers\GoogleChartHelper;
 use common\helpers\InstagramGoogleChartHelper;
@@ -694,10 +695,10 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         }
         if (strncmp($responseHeaders['http_code'], '20', 2) !== 0) {
             $error= json_decode($response, TRUE);
-            //            echo "<pre>";
-//            print_r($error['error']['message']);
-//            echo "</pre>";
-//            die;
+                        echo "<pre>";
+            print_r($error['error']['message']);
+            echo "</pre>";
+            die;
             if( $error['error']['message']  == "Unable to verify access token") {
                 return null;
             }else{
