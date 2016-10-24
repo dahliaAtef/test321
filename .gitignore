@@ -4,6 +4,7 @@ node_modules
 backend/runtime/*
 partners/runtime/*
 frontend/runtime/*
+frontend/web/assets/*
 nbproject
 nbproject/*
 uploads/*
