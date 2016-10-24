@@ -4,13 +4,10 @@ node_modules
 backend/runtime/*
 partners/runtime/*
 frontend/runtime/*
-frontend/assets/*
-frontend/web/assets/
 nbproject
 nbproject/*
 uploads/*
 backend/uploads/*
-assets/*
 backend/assets/*
 common/config/main-local.php
 common/config/params-local.php

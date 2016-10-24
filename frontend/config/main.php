@@ -12,7 +12,7 @@ $params = array_merge(
 
 return [
     'id' => 'app-frontend',
-    'name' => 'Social Insights',
+    'name' => 'Hype',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',

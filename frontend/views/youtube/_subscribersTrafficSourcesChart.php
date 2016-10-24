@@ -3,7 +3,7 @@
     if($traffic_sources_json_table){
         $this->registerJs("GoogleCharts.drawCircle(".$traffic_sources_json_table.", 'yg', 'traffic_sources_views')", yii\web\View::POS_END);
     	echo '<h3 class="internal-title noneBG">Channel view per Traffic Source</h3>';
-        echo '<div class="internal-content adaptMargin34">';      
+        echo '<div class="internal-content circleChart adaptMargin34">';      
             echo '<div id="traffic_sources_views"></div>';
         echo '</div>'; 
     }

@@ -4,7 +4,7 @@ if($most_engaging_post_types_json_table){
 ?>
 	<h3 class="internal-title noneBG">Most Engaging Post Types</h3>
 	
-	<div class="internal-content">	    
+	<div class="internal-content circleChart">	    
 	    <div id="most_engaging_post_types">
 		</div>
 	</div>

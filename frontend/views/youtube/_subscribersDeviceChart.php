@@ -3,7 +3,7 @@
     if($device_types_json_table){
         $this->registerJs("GoogleCharts.drawCircle(".$device_types_json_table.", 'yg', 'device_views')", yii\web\View::POS_END);
     	echo '<h3 class="internal-title noneBG">Channel view per Device Type</h3>';
-        echo '<div class="internal-content adaptMargin34">';
+        echo '<div class="internal-content circleChart adaptMargin34">';
             echo '<div id="device_views"></div>';
         echo '</div>';
     }

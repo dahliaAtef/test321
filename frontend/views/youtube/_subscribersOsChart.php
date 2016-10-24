@@ -4,7 +4,7 @@
     if($os_json_table){
         $this->registerJs("GoogleCharts.drawCircle(".$os_json_table.", 'yg', 'OS_views')", yii\web\View::POS_END);
     	echo '<h3 class="internal-title noneBG">Channel view per Operating System</h3>';
-        echo '<div class="internal-content adaptMargin34">';    
+        echo '<div class="internal-content circleChart adaptMargin34">';    
             echo '<div id="OS_views"></div>';
         echo '</div>'; 
     }
