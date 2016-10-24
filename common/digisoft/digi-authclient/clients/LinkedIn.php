@@ -695,11 +695,11 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         }
         if (strncmp($responseHeaders['http_code'], '20', 2) !== 0) {
             $error= json_decode($response, TRUE);
-                        echo "<pre>";
-            print_r($error);
-            echo "</pre>";
-            die;
-            if( $error['error']['message']  == "Unable to verify access token") {
+//                        echo "<pre>";
+//            print_r($error);
+//            echo "</pre>";
+//            die;
+            if( $error['message']  == "Unable to verify access token") {
                 return null;
             }else{
                 throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
