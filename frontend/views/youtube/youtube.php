@@ -12,20 +12,29 @@ $this->title = 'Youtube';
 
 
 
-$device_types = $youtube->getAnalyticsPerDevice($start_date = null, $end_date = null);
+$device_types = $youtube->getAnalyticsPerDevice($start_date, $end_date);
 
-$os = $youtube->getAnalyticsPerOs($start_date = null, $end_date = null);
+$os = $youtube->getAnalyticsPerOs($start_date, $end_date);
 
-$traffic_sources = $youtube->getAnalyticsPerTrafficSource($start_date = null, $end_date = null);
+$traffic_sources = $youtube->getAnalyticsPerTrafficSource($start_date, $end_date);
 
-$sharing_services = $youtube->getAnalyticsPerSharingService($start_date = null, $end_date = null);
+$sharing_services = $youtube->getAnalyticsPerSharingService($start_date, $end_date);
 
-$locations = $youtube->getAnalyticsPerLocation($start_date = null, $end_date = null);
+$locations = $youtube->getAnalyticsPerLocation($start_date, $end_date);
 
 ?>
 
 <div class="page-content inside youtube">
-
+  <?php if(strtotime('+4 days', strtotime($model->created)) > time()){ ?>
+ <div class="warning-msg">
+  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
+</div><!-- warning msg -->
+  <?php } ?>
+  <div id="loadWh">
+    <div id="loadx">
+      <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
+    </div>
+  </div><!-- loader -->
     <div class="container">
 
 	<div class="inner-page">
@@ -41,7 +50,7 @@ $locations = $youtube->getAnalyticsPerLocation($start_date = null, $end_date = n
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
-                        <h2 class="internal-title sec-title"><?= $channels["items"][0]["snippet"]["title"] ?> KPIs Overview</h2>
+                        <h2 class="internal-title sec-title">KPIs Overview</h2>
                         <div class="line-box"></div>
                     </div>
                 </div>
@@ -81,11 +90,16 @@ $locations = $youtube->getAnalyticsPerLocation($start_date = null, $end_date = n
 
             
             ?>
+			<!-- sperated line -->  
+            <?php
+                echo $this->render('_comparison', ['comparison' => $youtube->getComparison($model->id)]);
+            ?>
 
+            <!-- sperated line -->  
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
-                        <h2 class="internal-title sec-title"><?= $channels["items"][0]["snippet"]["title"] ?> Top Ten Viewed Videos</h2>
+                        <h2 class="internal-title sec-title">Top Ten Viewed Videos</h2>
                         <div class="line-box"></div>
                     </div>
                 </div>

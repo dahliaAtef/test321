@@ -12,7 +12,7 @@ use yii\helpers\Url;
 <div class="row">
     <div class="col-md-12">
         <div class="title-box">
-            <h2 class="internal-title sec-title"><?= $channels["items"][0]["snippet"]["title"] ?> KPIs Overview</h2>
+            <h2 class="internal-title sec-title"><?= $channels["items"][0]["snippet"]["title"] ?>-Overview</h2>
             <div class="line-box"></div>
         </div>
     </div>

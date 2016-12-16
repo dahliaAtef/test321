@@ -56,3 +56,5 @@ cgi-bin
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 amer
+backend/web/assets
+shared/

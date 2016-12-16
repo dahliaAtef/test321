@@ -2,6 +2,7 @@
     <div class="col-md-12">
         <h3 class="internal-title sec-title"><!--?= $page_name ?--> Top 10 Posts</h3>
     </div>
+  
     <?php
         if($top_updates){
             $top_ten_updates = array_slice($top_updates, 0, 10);
@@ -37,6 +38,8 @@
     </div>
         <?php    
             }
-               }
+               }else{ ?>
+        <div class="waiting-text col-md-12""><p>You haven't posted anything within this month.</p></div>
+        <?php }
         ?>
 </div>        

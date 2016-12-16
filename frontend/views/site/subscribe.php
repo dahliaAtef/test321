@@ -14,6 +14,12 @@ $this->title = Yii::t('app', 'Subscribe');
             <div class="row">
 		<div class="col-md-6 col-md-offset-3">
                     <div class="subsc-title">Subscirbe</div>
+          			<?php
+          				if($success === 'success'){
+                        	$this->registerJs("$('#btn-subsc').removeClass().addClass('submit-success');
+                    $('.card').addClass('appear').delay(1500);", yii\web\View::POS_END);
+                        }
+          			?>
 					<?php Pjax::begin([]); ?>
                     <?php $form = ActiveForm::begin(['id' => 'subsc-form', 'enableClientValidation' => true]); ?>
 						
@@ -46,7 +52,7 @@ $this->title = Yii::t('app', 'Subscribe');
                                     <p>Re-Password</p>
 									<?= $form->field($oUserForm, 're_password')->passwordInput()->label(false) ?>
 				</div>
-				<?= $form->field($oUserForm, 'verifySuccess')->hiddenInput(['value'=> $success])->label(false) ?>
+				<?= $form->field($oUserForm, 'verifySuccess')->hiddenInput()->label(false) ?>
                             </div>
 							<?php
 								if(Yii::$app->session['error']){ ?>
@@ -65,12 +71,12 @@ $this->title = Yii::t('app', 'Subscribe');
       	<div class="row">
 			<div class="col-md-6 col-md-offset-3">
 				<div class="logo-home-success">
-					<img src="<?= Url::to('@frontThemeUrl/images/logo-home.png', true) ?>">
+					<img src="<?= Url::to('@frontThemeUrl/images/logo-home-succes.png', true) ?>">
 				</div>
 				<div class="about-hype-success">
 					<p class="welcome-success">WELCOME TO HYPE</p>
 					<p class="thanks-success">Thank you for signing up with us</p>
-					<p class="stutas-success">Your account will be activated with 72 hours</p>
+					<p class="stutas-success">Your account will be activated within 72 hours</p>
 				</div>
 			</div>
 		</div>

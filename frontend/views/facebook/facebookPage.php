@@ -1,30 +1,39 @@
-
-
 <?php
 
 use yii\helpers\Html;
 
 use yii\helpers\Url;
 
+use yii\widgets\ActiveForm;
+
 use digi\authclient\clients\Facebook;
 
 $client = $fb->getClient();
+//var_dump($page['id']); die;
 $statistics = $fb->statistics($page['id'], $page['likes'], $since, $until);
 $top_fifteen_cities = $fb->getFansByCityFifteenCities($statistics['fans_by_city']);
 $colors = ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"];
 $this->title = 'Facebook';
 $session = Yii::$app->session;
 ?>
-
 <div class="page-content inside facebook">
-
+  <?php if(strtotime('+4 days', strtotime($model->created)) > time()){ ?>
+ <div class="warning-msg">
+  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
+</div><!-- warning msg -->
+  <?php } ?>
+  <div id="loadWh">
+    <div id="loadx">
+      <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
+    </div>
+  </div><!-- loader -->
     <div class="container">
 
 	<div class="inner-page">
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $page['name'] ?></h2>
+                    <h2 class="internal-title sec-title"><?= $page['name'] ?>-Overview</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
@@ -35,14 +44,14 @@ $session = Yii::$app->session;
 		<div class="internal-content">
                     <ul>
 			<div class="row">
-                            <li class="col-md-5"><span class="small-title">Total page fans : </span><?= $page['likes'] ?></li>
-                            <li class="col-md-5"><span class="small-title">Change In Fans : </span><?= $statistics['change_in_fans'] ?></li>
-                            <li class="col-md-5"><span class="small-title">Page Posts : </span><?= $statistics['posts_by_day_statistics']['total_posts_count'] ?></li>
-                            <li class="col-md-5"><span class="small-title">Total Interactions : </span><?= $statistics['posts_by_day_statistics']['total_interactions_count'] ?></li>
-                            <li class="col-md-5"><span class="small-title">Likes : </span><?= $statistics['posts_by_day_statistics']['total_reactions_count'] ?></li>
-                            <li class="col-md-5"><span class="small-title">Comments : </span><?= $statistics['posts_by_day_statistics']['total_comments_count'] ?></li>
-                            <li class="col-md-5"><span class="small-title">Shares : </span><?= $statistics['posts_by_day_statistics']['total_shares_count'] ?></li>
-                            <li class="col-md-5"><span class="small-title">User Posts : </span><?= array_sum($statistics['user_posts_per_day']) ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Total page fans : </span><?= $page['likes'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Change In Fans : </span><?= $statistics['change_in_fans'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Page Posts : </span><?= $statistics['posts_by_day_statistics']['total_posts_count'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Total Interactions : </span><?= $statistics['posts_by_day_statistics']['total_interactions_count'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Likes : </span><?= $statistics['posts_by_day_statistics']['total_reactions_count'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Comments : </span><?= $statistics['posts_by_day_statistics']['total_comments_count'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">Shares : </span><?= $statistics['posts_by_day_statistics']['total_shares_count'] ?></li>
+                            <li class="col-lg-5 col-md-6"><span class="small-title">User Posts : </span><?= array_sum($statistics['user_posts_per_day']) ?></li>
 			</div>
                     </ul>
 		</div>
@@ -65,7 +74,7 @@ $session = Yii::$app->session;
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $page['name'] ?> Audience</h2>
+                    <h2 class="internal-title sec-title">Audience</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
@@ -87,7 +96,7 @@ $session = Yii::$app->session;
         <div class="row">
             <div class="col-md-12">
 		<?php
-                    echo $this->render('_fansGrowth', ['page_fans_growth_json_table' => $fb->getFanGrowthJsonTable($statistics['fans_growth'])]);
+                    echo $this->render('_fansGrowth', ['sum' => array_sum($statistics['fans_growth']), 'page_fans_growth_json_table' => $fb->getFanGrowthJsonTable($statistics['fans_growth'])]);
 		?>
             </div>
 	</div>
@@ -98,10 +107,13 @@ $session = Yii::$app->session;
 		?>
             </div>
 	</div>
+      
 	<div class="row">
             <div class="col-md-12">
 		<?php
+				if($statistics['fans_by_country_table']){
                     echo $this->render('_fansByCountryTable', ['fans_by_country_table' => $statistics['fans_by_country_table']]); 
+                }
 		?>
             </div>
 	</div>
@@ -136,7 +148,7 @@ $session = Yii::$app->session;
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $page['name'] ?> Engagement</h2>
+                    <h2 class="internal-title sec-title">Engagement</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
@@ -152,17 +164,17 @@ $session = Yii::$app->session;
 		<div class="row">
 			<div class="col-md-12">
 				<?php
-                    echo $this->render('_pagePostsByDayChart', ['page_posts_by_day_json_table' => $fb->getPagePostsJsonTable($statistics['posts_by_day_statistics']['posts_by_day'])]);
+                    echo $this->render('_pagePostsByDayChart', ['total_posts' => $statistics['posts_by_day_statistics']['total_posts_count'], 'page_posts_by_day_json_table' => $fb->getPagePostsJsonTable($statistics['posts_by_day_statistics']['posts_by_day'])]);
 				?>
 			</div>
 		</div>
         <div class="row">
-			<div class="col-md-6">
+			<div class="col-lg-6 col-md-12">
 				<?php
                     echo $this->render('_postTypes', ['post_types' => $statistics['posts_by_day_statistics']['post_types'], 'fb' => $fb, 'total_posts' => $statistics['posts_by_day_statistics']['total_posts_count']]);
 				?>					
             </div>
-			<div class="col-md-6">
+			<div class="col-lg-6 col-md-12">
 				<?php
                     echo $this->render('_mostEngagingPostTypes', ['post_types' => $statistics['posts_by_day_statistics']['post_types'], 'fb' => $fb, 'total_interactions' => $statistics['posts_by_day_statistics']['total_interactions_count']]);
 				?>
@@ -171,7 +183,7 @@ $session = Yii::$app->session;
 		<div class="row">
 			<div class="col-md-12">
 				<?php
-                    echo $this->render('_pageEngagementByDayChart', ['page_engagement_by_day_json_table' => $fb->getPageEngagementJsonTable($statistics['posts_by_day_statistics']['posts_by_day'])]);
+                    echo $this->render('_pageEngagementByDayChart', ['total_posts' => $statistics['posts_by_day_statistics']['total_posts_count'], 'page_engagement_by_day_json_table' => $fb->getPageEngagementJsonTable($statistics['posts_by_day_statistics']['posts_by_day'])]);
 				?>
 			</div>
 		</div>
@@ -207,7 +219,7 @@ $session = Yii::$app->session;
 	        <div class="row">
 	            <div class="col-md-12">
 	                <div class="title-box">
-	                    <h2 class="internal-title sec-title"><?= $page['name'] ?> Optimization</h2>
+	                    <h2 class="internal-title sec-title">Optimization</h2>
 	                    <div class="line-box"></div>
 	                </div>
 	            </div>

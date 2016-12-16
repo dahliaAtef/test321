@@ -29,6 +29,12 @@ return [
         'request' => [
             'baseUrl' => $baseUrl,
         ],
+      /**
+         * Yii authManager
+         */
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager', // or use 'yii\rbac\PhpManager'
+        ],
         'user' => [
             'class' => 'digi\web\User',
             'identityClass' => 'common\models\custom\User',
@@ -60,6 +66,9 @@ return [
                 //'<_m:[\w \-]+>/<_c:[\w \-]+>/<_a:[\w \-]+>' => '<_m>/<_c>/<_a>',
                 //'<_m:[\w \-]+>/<_c:[\w \-]+>/<_a:[\w \-]+>/<id:\d+>' => '<_m>/<_c>/<_a>',
                 // custom rules
+              'update-competitor/<id:\d+>' => 'site/update-competitor',
+              	'competitors/update/<id:\d+>' => 'competitors/update',
+              	'delete-competitor/<id:\d+>' => 'site/delete-competitor',
                 'mobile-login' => 'site/mobile-login',
                 'contact-us' => 'site/contact-us',
                 'support' => 'site/support',
@@ -77,6 +86,7 @@ return [
                 'signup' => 'user/signup',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
+              	'change-password' => 'user/change-password',
             ],
         ],
         'metaTags' => [

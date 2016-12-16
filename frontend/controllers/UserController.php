@@ -5,8 +5,10 @@ namespace frontend\controllers;
 use Yii;
 use yii\helpers\Url;
 use common\models\base\form\Login;
+use common\models\base\form\ChangePassword;
 use common\models\custom\User;
 use common\models\custom\Profile;
+use common\models\custom\Users;
 use common\models\custom\Authclient;
 use frontend\models\RequestPasswordResetForm;
 use frontend\models\ResetPasswordForm;
@@ -43,7 +45,7 @@ class UserController extends \frontend\components\BaseController {
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'change-password'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -93,7 +95,25 @@ class UserController extends \frontend\components\BaseController {
                     'oSignupForm' => $oSignupForm,
         ]);
     }
+	
+    public function actionChangePassword()
+    {
+        $oChangePassword = new ChangePassword();
+        if ($oChangePassword->load(Yii::$app->request->post()) && $oChangePassword->validate()) {
+            $oUser = User::findOne(Yii::$app->user->getId());
+            if ($oUser->resetPassword($oChangePassword->new_password)) {
+                Yii::$app->getSession()->setFlash('success', Yii::t('app', 'Your password has been reset.'));
+                return $this->goHome();
+            } else {
+                Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, we are unable to reset your password.'));
+            }
+        }
 
+        return $this->render('changePassword', [
+                    'oChangePassword' => $oChangePassword,
+        ]);
+    }
+    
     public function actionVerify($token) {
 
         $oUser = User::findByVerificationToken($token);

@@ -1,4 +1,3 @@
-
 <?php
 use yii\helpers\Url;
 use digi\authclient\clients\Youtube;
@@ -34,6 +33,9 @@ if(array_key_exists('rows', $top_ten_viewed_videos)){
 
         <?php }  ?>
         </div>
-        <?php } ?>
+        <?php }else{
+		<div class="waiting-text col-md-12""><p>You have no videos.</p></div>
+	
+	<?php } ?>
 
 

@@ -25,7 +25,7 @@ if(array_key_exists('rows', $os)){
     foreach($os['rows'] as $single_os){
     ?>
     <tr>
-        <td><?= $single_os[0] ?></td>
+        <td><?= ucwords(strtolower($single_os[0])) ?></td>
         <td><?= $single_os[1] ?></td>
         <td><?= $single_os[2] ?></td>
     </tr>

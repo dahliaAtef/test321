@@ -23,7 +23,7 @@
         foreach($device_types['rows'] as $device){
         ?>
         <tr>
-            <td><?= $device[0] ?></td>
+            <td><?= ucwords(strtolower($device[0])) ?></td>
             <td><?= $device[1] ?></td>
             <td><?= $device[2] ?></td>
         </tr>

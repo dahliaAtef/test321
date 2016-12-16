@@ -7,6 +7,7 @@ use common\helpers\GoogleChartHelper;
 use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\UserPosts;
+use common\models\custom\Authclient;
 
 class Facebook extends \yii\authclient\clients\Facebook
 {
@@ -64,7 +65,6 @@ class Facebook extends \yii\authclient\clients\Facebook
     public function getAllFans($page_id, $since, $until){
         $client = $this->getClient();
         $all_fans = $client->api($page_id."/insights/page_fans?since=".$since."&until=".$until)["data"];
-        //echo '<pre>'; var_dump($all_fans); echo '</pre>'; die;
         return $all_fans;
     }
     
@@ -91,11 +91,21 @@ class Facebook extends \yii\authclient\clients\Facebook
         $fans_country = $client->api($page_id."/insights/page_fans_country/lifetime?since=".$since."&until=".$until, 'GET');
         return $fans_country;
     }
+  
+  public function getFansByCountryValues($page_id, $since, $until){
+  	$fans_country = $this->getFansByCountry($page_id, $since, $until)['data'][0]['values'];
+    	$count = $this->checkAndGetValueIndex($fans_country);
+        if(array_key_exists('value', $fans_country[$count])){
+            arsort($fans_country[$count]["value"]);
+          	return $fans_country[$count]["value"];
+        }else{
+            return null;
+        }
+  }
     
     public function getFansLanguage($page_id, $since, $until){
        $client = $this->getClient();
        $fans_language = $client->api($page_id."/insights/page_fans_locale?since=".$since."&until=".$until, 'GET')['data'];
-       //echo '<pre>'; var_dump($fans_language); echo '</pre>'; die;
        return $fans_language;
     }
     
@@ -107,19 +117,31 @@ class Facebook extends \yii\authclient\clients\Facebook
 		}
 		return $languages_eng;
 	}
+  
+  public function getFansLanguageValues($page_id, $since, $until){
+  	$fans_language = $this->getFansLanguage($page_id, $since, $until)[0]['values'];
+    $count = $this->checkAndGetValueIndex($fans_language);
+        if(array_key_exists('value', $fans_language[$count])){
+          	$fans_language_english = $this->getLanguageInEnglish($fans_language[$count]["value"]);
+            arsort($fans_language_english);
+          	return $fans_language_english;
+        }else{
+            return null;
+        }
+  }
+    
 	
     public function getFansByLanguageJsonTable($fans_language){
-        $count = count($fans_language[0]['values']);
-        while(($count != 0) && (!array_key_exists('value', $fans_language[0]['values'][$count - 1]))){
-            $count--;
-        }
-        if($count != 0){
-            arsort($fans_language[0]['values'][$count - 1]["value"]);
-			$languages_eng = $this->getLanguageInEnglish($fans_language[0]['values'][$count - 1]["value"]);
-            $fans_language_json_table = GoogleChartHelper::getDataTable('language', 'value', $languages_eng);
-        }else{
-            $fans_language_json_table = '';
-        }
+      if($fans_language){
+          $count = $this->checkAndGetValueIndex($fans_language[0]['values']);
+          if(array_key_exists('value', $fans_language[0]['values'][$count])){
+              arsort($fans_language[0]['values'][$count]["value"]);
+              $languages_eng = $this->getLanguageInEnglish($fans_language[0]['values'][$count]["value"]);
+              $fans_language_json_table = GoogleChartHelper::getDataTable('language', 'value', $languages_eng);
+          }else{
+              $fans_language_json_table = '';
+          }
+        }else $fans_language_json_table = '';
         return $fans_language_json_table;
     }
     
@@ -134,29 +156,24 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
     
     public function getFansByCountryJsonTable($fans_country){
-        $count = count($fans_country['data'][0]['values']);
-        //echo '<pre>'; var_dump($fans_country['data']); echo '</pre>'; die;
-        while(($count != 0) && (!array_key_exists('value', $fans_country['data'][0]['values'][$count - 1]))){
-            $count--;
-        }
-        if($count != 0){
-            arsort($fans_country['data'][0]['values'][$count - 1]["value"]);
-            $countries_names = $this->getCountryName($fans_country['data'][0]['values'][$count - 1]["value"]);
-            $fans_country_json_table = GoogleChartHelper::getDataTable('country', 'percentage', $countries_names);
-        }else{
-            $fans_country_json_table = '';
-        }
+      if($fans_country){
+        $count = $this->checkAndGetValueIndex($fans_country['data'][0]['values']);
+          if(array_key_exists('value', $fans_country['data'][0]['values'][$count])){
+              arsort($fans_country['data'][0]['values'][$count]["value"]);
+              $countries_names = $this->getCountryName($fans_country['data'][0]['values'][$count]["value"]);
+              $fans_country_json_table = GoogleChartHelper::getDataTable('country', 'percentage', $countries_names);
+          }else{
+              $fans_country_json_table = '';
+          }
+      }else $fans_country_json_table = null;
         return $fans_country_json_table;
     }
     
     public function getFansByCountryTableTest($fans_by_country, $fans_by_country_before, $total_fans){
         $fans_country = $fans_by_country['data'][0]['values'];
         $fans_country_before = $fans_by_country_before['data'][0]['values'][0];
-        $count = count($fans_country);
         $countries = [];
-        while(!array_key_exists('value', $fans_country[$count - 1])){
-            $count--;
-        }
+      $count = $this->checkAndGetValueIndex($fans_country);
         foreach($fans_country[$count - 1]['value'] as $country => $value){
             $countries[$country]['fans'] = $value;
             $countries[$country]['percentage'] = ((($value)/($total_fans))*100);
@@ -172,31 +189,29 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
     
     public function getFansByCountryTable($fans_by_country, $fans_by_country_before, $total_fans){
-        $fans_country = $fans_by_country['data'][0]['values'];
-        $fans_country_before = $fans_by_country_before['data'][0]['values'][0]['value'];
-        
-        $count = count($fans_country);
-        $countries = [];
-        while(!array_key_exists('value', $fans_country[$count - 1])){
-            $count--;
-        }
-		arsort($fans_country[$count - 1]['value']);
-		$top_fifteen_countries = array_slice($fans_country[$count - 1]['value'], 0, 15);
-		$countries_json = '{"BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria", "BA": "Bosnia and Herzegovina", "BB": "Barbados", "WF": "Wallis and Futuna", "BL": "Saint Barthelemy", "BM": "Bermuda", "BN": "Brunei", "BO": "Bolivia", "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BT": "Bhutan", "JM": "Jamaica", "BV": "Bouvet Island", "BW": "Botswana", "WS": "Samoa", "BQ": "Bonaire, Saint Eustatius and Saba ", "BR": "Brazil", "BS": "Bahamas", "JE": "Jersey", "BY": "Belarus", "BZ": "Belize", "RU": "Russia", "RW": "Rwanda", "RS": "Serbia", "TL": "East Timor", "RE": "Reunion", "TM": "Turkmenistan", "TJ": "Tajikistan", "RO": "Romania", "TK": "Tokelau", "GW": "Guinea-Bissau", "GU": "Guam", "GT": "Guatemala", "GS": "South Georgia and the South Sandwich Islands", "GR": "Greece", "GQ": "Equatorial Guinea", "GP": "Guadeloupe", "JP": "Japan", "GY": "Guyana", "GG": "Guernsey", "GF": "French Guiana", "GE": "Georgia", "GD": "Grenada", "GB": "United Kingdom", "GA": "Gabon", "SV": "El Salvador", "GN": "Guinea", "GM": "Gambia", "GL": "Greenland", "GI": "Gibraltar", "GH": "Ghana", "OM": "Oman", "TN": "Tunisia", "JO": "Jordan", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary", "HK": "Hong Kong", "HN": "Honduras", "HM": "Heard Island and McDonald Islands", "VE": "Venezuela", "PR": "Puerto Rico", "PS": "Palestinian Territory", "PW": "Palau", "PT": "Portugal", "SJ": "Svalbard and Jan Mayen", "PY": "Paraguay", "IQ": "Iraq", "PA": "Panama", "PF": "French Polynesia", "PG": "Papua New Guinea", "PE": "Peru", "PK": "Pakistan", "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PM": "Saint Pierre and Miquelon", "ZM": "Zambia", "EH": "Western Sahara", "EE": "Estonia", "EG": "Egypt", "ZA": "South Africa", "EC": "Ecuador", "IT": "Italy", "VN": "Vietnam", "SB": "Solomon Islands", "ET": "Ethiopia", "SO": "Somalia", "ZW": "Zimbabwe", "SA": "Saudi Arabia", "ES": "Spain", "ER": "Eritrea", "ME": "Montenegro", "MD": "Moldova", "MG": "Madagascar", "MF": "Saint Martin", "MA": "Morocco", "MC": "Monaco", "UZ": "Uzbekistan", "MM": "Myanmar", "ML": "Mali", "MO": "Macao", "MN": "Mongolia", "MH": "Marshall Islands", "MK": "Macedonia", "MU": "Mauritius", "MT": "Malta", "MW": "Malawi", "MV": "Maldives", "MQ": "Martinique", "MP": "Northern Mariana Islands", "MS": "Montserrat", "MR": "Mauritania", "IM": "Isle of Man", "UG": "Uganda", "TZ": "Tanzania", "MY": "Malaysia", "MX": "Mexico", "IL": "Israel", "FR": "France", "IO": "British Indian Ocean Territory", "SH": "Saint Helena", "FI": "Finland", "FJ": "Fiji", "FK": "Falkland Islands", "FM": "Micronesia", "FO": "Faroe Islands", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway", "NA": "Namibia", "VU": "Vanuatu", "NC": "New Caledonia", "NE": "Niger", "NF": "Norfolk Island", "NG": "Nigeria", "NZ": "New Zealand", "NP": "Nepal", "NR": "Nauru", "NU": "Niue", "CK": "Cook Islands", "XK": "Kosovo", "CI": "Ivory Coast", "CH": "Switzerland", "CO": "Colombia", "CN": "China", "CM": "Cameroon", "CL": "Chile", "CC": "Cocos Islands", "CA": "Canada", "CG": "Republic of the Congo", "CF": "Central African Republic", "CD": "Democratic Republic of the Congo", "CZ": "Czech Republic", "CY": "Cyprus", "CX": "Christmas Island", "CR": "Costa Rica", "CW": "Curacao", "CV": "Cape Verde", "CU": "Cuba", "SZ": "Swaziland", "SY": "Syria", "SX": "Sint Maarten", "KG": "Kyrgyzstan", "KE": "Kenya", "SS": "South Sudan", "SR": "Suriname", "KI": "Kiribati", "KH": "Cambodia", "KN": "Saint Kitts and Nevis", "KM": "Comoros", "ST": "Sao Tome and Principe", "SK": "Slovakia", "KR": "South Korea", "SI": "Slovenia", "KP": "North Korea", "KW": "Kuwait", "SN": "Senegal", "SM": "San Marino", "SL": "Sierra Leone", "SC": "Seychelles", "KZ": "Kazakhstan", "KY": "Cayman Islands", "SG": "Singapore", "SE": "Sweden", "SD": "Sudan", "DO": "Dominican Republic", "DM": "Dominica", "DJ": "Djibouti", "DK": "Denmark", "VG": "British Virgin Islands", "DE": "Germany", "YE": "Yemen", "DZ": "Algeria", "US": "United States", "UY": "Uruguay", "YT": "Mayotte", "UM": "United States Minor Outlying Islands", "LB": "Lebanon", "LC": "Saint Lucia", "LA": "Laos", "TV": "Tuvalu", "TW": "Taiwan", "TT": "Trinidad and Tobago", "TR": "Turkey", "LK": "Sri Lanka", "LI": "Liechtenstein", "LV": "Latvia", "TO": "Tonga", "LT": "Lithuania", "LU": "Luxembourg", "LR": "Liberia", "LS": "Lesotho", "TH": "Thailand", "TF": "French Southern Territories", "TG": "Togo", "TD": "Chad", "TC": "Turks and Caicos Islands", "LY": "Libya", "VA": "Vatican", "VC": "Saint Vincent and the Grenadines", "AE": "United Arab Emirates", "AD": "Andorra", "AG": "Antigua and Barbuda", "AF": "Afghanistan", "AI": "Anguilla", "VI": "U.S. Virgin Islands", "IS": "Iceland", "IR": "Iran", "AM": "Armenia", "AL": "Albania", "AO": "Angola", "AQ": "Antarctica", "AS": "American Samoa", "AR": "Argentina", "AU": "Australia", "AT": "Austria", "AW": "Aruba", "IN": "India", "AX": "Aland Islands", "AZ": "Azerbaijan", "IE": "Ireland", "ID": "Indonesia", "UA": "Ukraine", "QA": "Qatar", "MZ": "Mozambique"}';
-        $countries_arr = json_decode($countries_json, true);
-        foreach($top_fifteen_countries as $country_code => $value){
-			$country_name = (array_key_exists($country_code, $countries_arr)) ? ($countries_arr[$country_code]) : $country_code;
-            $countries[$country_name]['fans'] = $value;
-            $countries[$country_name]['percentage'] = ((($value)/($total_fans))*100);
-            if($fans_country_before && array_key_exists($country_code, $fans_country_before)){
-                $countries[$country_name]['growth'] = (($value) - ($fans_country_before[$country_code]));
-                $countries[$country_name]['growth_percentage'] = ((($countries[$country_name]['growth'])/($value))*100);
-            }else{
-                $countries[$country_name]['growth'] = $value;
-                $countries[$country_name]['growth_percentage'] = 0;
-            }   
-        }
-        return $countries;
+      	if($fans_by_country){
+          $fans_country = $fans_by_country['data'][0]['values'];
+          $fans_country_before = ($fans_by_country_before) ? $fans_by_country_before['data'][0]['values'][0]['value'] : null;
+          $countries = [];
+          $count = $this->checkAndGetValueIndex($fans_country);
+          arsort($fans_country[$count]['value']);
+          $top_fifteen_countries = array_slice($fans_country[$count]['value'], 0, 15);
+          $countries_json = '{"BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria", "BA": "Bosnia and Herzegovina", "BB": "Barbados", "WF": "Wallis and Futuna", "BL": "Saint Barthelemy", "BM": "Bermuda", "BN": "Brunei", "BO": "Bolivia", "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BT": "Bhutan", "JM": "Jamaica", "BV": "Bouvet Island", "BW": "Botswana", "WS": "Samoa", "BQ": "Bonaire, Saint Eustatius and Saba ", "BR": "Brazil", "BS": "Bahamas", "JE": "Jersey", "BY": "Belarus", "BZ": "Belize", "RU": "Russia", "RW": "Rwanda", "RS": "Serbia", "TL": "East Timor", "RE": "Reunion", "TM": "Turkmenistan", "TJ": "Tajikistan", "RO": "Romania", "TK": "Tokelau", "GW": "Guinea-Bissau", "GU": "Guam", "GT": "Guatemala", "GS": "South Georgia and the South Sandwich Islands", "GR": "Greece", "GQ": "Equatorial Guinea", "GP": "Guadeloupe", "JP": "Japan", "GY": "Guyana", "GG": "Guernsey", "GF": "French Guiana", "GE": "Georgia", "GD": "Grenada", "GB": "United Kingdom", "GA": "Gabon", "SV": "El Salvador", "GN": "Guinea", "GM": "Gambia", "GL": "Greenland", "GI": "Gibraltar", "GH": "Ghana", "OM": "Oman", "TN": "Tunisia", "JO": "Jordan", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary", "HK": "Hong Kong", "HN": "Honduras", "HM": "Heard Island and McDonald Islands", "VE": "Venezuela", "PR": "Puerto Rico", "PS": "Palestinian Territory", "PW": "Palau", "PT": "Portugal", "SJ": "Svalbard and Jan Mayen", "PY": "Paraguay", "IQ": "Iraq", "PA": "Panama", "PF": "French Polynesia", "PG": "Papua New Guinea", "PE": "Peru", "PK": "Pakistan", "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PM": "Saint Pierre and Miquelon", "ZM": "Zambia", "EH": "Western Sahara", "EE": "Estonia", "EG": "Egypt", "ZA": "South Africa", "EC": "Ecuador", "IT": "Italy", "VN": "Vietnam", "SB": "Solomon Islands", "ET": "Ethiopia", "SO": "Somalia", "ZW": "Zimbabwe", "SA": "Saudi Arabia", "ES": "Spain", "ER": "Eritrea", "ME": "Montenegro", "MD": "Moldova", "MG": "Madagascar", "MF": "Saint Martin", "MA": "Morocco", "MC": "Monaco", "UZ": "Uzbekistan", "MM": "Myanmar", "ML": "Mali", "MO": "Macao", "MN": "Mongolia", "MH": "Marshall Islands", "MK": "Macedonia", "MU": "Mauritius", "MT": "Malta", "MW": "Malawi", "MV": "Maldives", "MQ": "Martinique", "MP": "Northern Mariana Islands", "MS": "Montserrat", "MR": "Mauritania", "IM": "Isle of Man", "UG": "Uganda", "TZ": "Tanzania", "MY": "Malaysia", "MX": "Mexico", "IL": "Israel", "FR": "France", "IO": "British Indian Ocean Territory", "SH": "Saint Helena", "FI": "Finland", "FJ": "Fiji", "FK": "Falkland Islands", "FM": "Micronesia", "FO": "Faroe Islands", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway", "NA": "Namibia", "VU": "Vanuatu", "NC": "New Caledonia", "NE": "Niger", "NF": "Norfolk Island", "NG": "Nigeria", "NZ": "New Zealand", "NP": "Nepal", "NR": "Nauru", "NU": "Niue", "CK": "Cook Islands", "XK": "Kosovo", "CI": "Ivory Coast", "CH": "Switzerland", "CO": "Colombia", "CN": "China", "CM": "Cameroon", "CL": "Chile", "CC": "Cocos Islands", "CA": "Canada", "CG": "Republic of the Congo", "CF": "Central African Republic", "CD": "Democratic Republic of the Congo", "CZ": "Czech Republic", "CY": "Cyprus", "CX": "Christmas Island", "CR": "Costa Rica", "CW": "Curacao", "CV": "Cape Verde", "CU": "Cuba", "SZ": "Swaziland", "SY": "Syria", "SX": "Sint Maarten", "KG": "Kyrgyzstan", "KE": "Kenya", "SS": "South Sudan", "SR": "Suriname", "KI": "Kiribati", "KH": "Cambodia", "KN": "Saint Kitts and Nevis", "KM": "Comoros", "ST": "Sao Tome and Principe", "SK": "Slovakia", "KR": "South Korea", "SI": "Slovenia", "KP": "North Korea", "KW": "Kuwait", "SN": "Senegal", "SM": "San Marino", "SL": "Sierra Leone", "SC": "Seychelles", "KZ": "Kazakhstan", "KY": "Cayman Islands", "SG": "Singapore", "SE": "Sweden", "SD": "Sudan", "DO": "Dominican Republic", "DM": "Dominica", "DJ": "Djibouti", "DK": "Denmark", "VG": "British Virgin Islands", "DE": "Germany", "YE": "Yemen", "DZ": "Algeria", "US": "United States", "UY": "Uruguay", "YT": "Mayotte", "UM": "United States Minor Outlying Islands", "LB": "Lebanon", "LC": "Saint Lucia", "LA": "Laos", "TV": "Tuvalu", "TW": "Taiwan", "TT": "Trinidad and Tobago", "TR": "Turkey", "LK": "Sri Lanka", "LI": "Liechtenstein", "LV": "Latvia", "TO": "Tonga", "LT": "Lithuania", "LU": "Luxembourg", "LR": "Liberia", "LS": "Lesotho", "TH": "Thailand", "TF": "French Southern Territories", "TG": "Togo", "TD": "Chad", "TC": "Turks and Caicos Islands", "LY": "Libya", "VA": "Vatican", "VC": "Saint Vincent and the Grenadines", "AE": "United Arab Emirates", "AD": "Andorra", "AG": "Antigua and Barbuda", "AF": "Afghanistan", "AI": "Anguilla", "VI": "U.S. Virgin Islands", "IS": "Iceland", "IR": "Iran", "AM": "Armenia", "AL": "Albania", "AO": "Angola", "AQ": "Antarctica", "AS": "American Samoa", "AR": "Argentina", "AU": "Australia", "AT": "Austria", "AW": "Aruba", "IN": "India", "AX": "Aland Islands", "AZ": "Azerbaijan", "IE": "Ireland", "ID": "Indonesia", "UA": "Ukraine", "QA": "Qatar", "MZ": "Mozambique"}';
+          $countries_arr = json_decode($countries_json, true);
+          foreach($top_fifteen_countries as $country_code => $value){
+              $country_name = (array_key_exists($country_code, $countries_arr)) ? ($countries_arr[$country_code]) : $country_code;
+              $countries[$country_name]['fans'] = $value;
+              $countries[$country_name]['percentage'] = ((($value)/($total_fans))*100);
+              if($fans_country_before && array_key_exists($country_code, $fans_country_before)){
+                  $countries[$country_name]['growth'] = (($value) - ($fans_country_before[$country_code]));
+                  $countries[$country_name]['growth_percentage'] = ((($countries[$country_name]['growth'])/($value))*100);
+              }else{
+                  $countries[$country_name]['growth'] = $value;
+                  $countries[$country_name]['growth_percentage'] = 0;
+              }   
+          }
+          return $countries;
+        } return null;
     }
     
     public function getFansByCity($page_id, $since, $until){
@@ -207,13 +222,11 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
     
 	public function getFansByCityFifteenCities($fans_by_city){
-		$count = count($fans_by_city);
-        while(($count != 0) && (!array_key_exists('value', $fans_by_city[$count - 1]))){
-            $count--;
-        }
-        if($count != 0){
-            arsort($fans_by_city[$count - 1]["value"]);
-			$top_fifteen_cities = (count($fans_by_city[$count - 1]["value"]) > 15) ? (array_slice($fans_by_city[$count - 1]["value"], 0, 15)) : ($fans_by_city[$count - 1]["value"]);
+      if($fans_by_city){
+		$count = $this->checkAndGetValueIndex($fans_by_city);
+        if(array_key_exists('value', $fans_by_city[$count])){
+            arsort($fans_by_city[$count]["value"]);
+			$top_fifteen_cities = (count($fans_by_city[$count]["value"]) > 15) ? (array_slice($fans_by_city[$count]["value"], 0, 15)) : ($fans_by_city[$count]["value"]);
 			foreach($top_fifteen_cities as $city => $value){
 				$city_exploaded = explode(', ', $city);
 				$top_fifteen_cities_exploaded[$city_exploaded[0].', '.$city_exploaded[2]] = $value;
@@ -221,6 +234,7 @@ class Facebook extends \yii\authclient\clients\Facebook
 		}else{
 			$top_fifteen_cities_exploaded = null;
 		}
+      }else $top_fifteen_cities_exploaded = null;
 		return $top_fifteen_cities_exploaded;
 	}
 	
@@ -238,19 +252,22 @@ class Facebook extends \yii\authclient\clients\Facebook
         $fans_gender_age = $client->api($page_id."/insights/page_fans_gender_age/lifetime?since=".$since."&until=".$until, 'GET')['data'];
         return $fans_gender_age;
     }
-    
+  
+  	public function getViewsByGenderAge($page_id, $since, $until){
+        $client = $this->getClient();
+        $views_gender_age = $client->api($page_id."/insights/page_views_by_age_gender_logged_in_unique/day?since=".$since."&until=".$until, 'GET')['data'];
+      return $views_gender_age;
+    }
+  
     public function getFansByAgeGenderArrays($id, $since, $until){
         $fans_gender_age = $this->getFansByGenderAge($id, $since, $until);
         if($fans_gender_age){
-            $count = count($fans_gender_age[0]["values"]);
+          	$count = $this->checkAndGetValueIndex($fans_gender_age[0]["values"]);
             $age_gender_array = array();
             $age_gender_array["female"] = $age_gender_array["male"] = $age_gender_array["age_ranges"] = array();
             $age_gender_array["female_count"] = $age_gender_array["male_count"] = 0;
-            while(($count != 0) && (!array_key_exists('value', $fans_gender_age[0]["values"][$count-1]))){
-                $count--;
-            }
-            if($count != 0){
-               foreach($fans_gender_age[0]["values"][$count-1]["value"] as $key => $value){
+            if(array_key_exists('value', $fans_gender_age[0]["values"][$count])){
+               foreach($fans_gender_age[0]["values"][$count]["value"] as $key => $value){
                     if(preg_match("/F./", $key)){
                         $age_gender_array["female_count"] += $value;
                         $index = trim($key, "F.");
@@ -262,12 +279,6 @@ class Facebook extends \yii\authclient\clients\Facebook
                         $age_gender_array["male"][$index] = $value;
                         (!in_array($index, $age_gender_array["age_ranges"])) ? ($age_gender_array["age_ranges"][] = $index) : '';
                     }
-					/*else{
-                        $age_gender_array["unisex_count"] += $value;
-                        $index = trim($key, "U.");
-                        $age_gender_array["unisex"][$index] = $value;
-                        (!in_array($index, $age_gender_array["age_ranges"])) ? ($age_gender_array["age_ranges"][] = $index) : '';
-                    }*/
                 }
                 sort($age_gender_array["age_ranges"]);
             }else{
@@ -278,7 +289,57 @@ class Facebook extends \yii\authclient\clients\Facebook
         }
         return $age_gender_array = null;
     }
+      
+      public function getPageReachByAgeGenderArrays($id, $since, $until){
+        $fans_gender_age = $this->getPageReachByAgeGender($id, $since, $until);
+        if($fans_gender_age){
+            $age_gender_array = array();
+            $age_gender_array["female"] = $age_gender_array["male"] = $age_gender_array["age_ranges"] = array();
+            $age_gender_array["female_count"] = $age_gender_array["male_count"] = 0;
+               foreach($fans_gender_age as $key => $value){
+                    if(preg_match("/F./", $key)){
+                        $age_gender_array["female_count"] += $value;
+                        $index = trim($key, "F.");
+                        $age_gender_array["female"][$index] = $value;
+                        (!array_key_exists($index, $age_gender_array["age_ranges"])) ? ($age_gender_array["age_ranges"][$index] = $value) : ($age_gender_array["age_ranges"][$index] += $value);
+                    }elseif(preg_match("/M./", $key)){
+                        $age_gender_array["male_count"] += $value;
+                        $index = trim($key, "M.");
+                        $age_gender_array["male"][$index] = $value;
+                        (!array_key_exists($index, $age_gender_array["age_ranges"])) ? ($age_gender_array["age_ranges"][$index] = $value) : ($age_gender_array["age_ranges"][$index] += $value);
+                    }
+                }
+            
+            return $age_gender_array;
+        }
+        return $age_gender_array = null;
+    }
     
+  	
+    public function getViewsByAgeGenderArrays($id, $since, $until){
+        $views_gender_age = $this->getViewsByGenderAge($id, $since, $until);
+        if($views_gender_age){
+          	$count = $this->checkAndGetValueIndex($views_gender_age[0]["values"]);
+            $age_gender_array = array();
+            $age_gender_array["female"] = $age_gender_array["male"] = $age_gender_array["age_ranges"] = [];
+            $age_gender_array["female_count"] = $age_gender_array["male_count"] = 0;
+            if(array_key_exists('value', $views_gender_age[0]["values"][$count])){
+               foreach($views_gender_age[0]["values"][$count]["value"] as $key => $value){
+                  $age_gender_array["female_count"] += $value['F'];
+                  $age_gender_array["female"][$key] = $value['F'];
+                 $age_gender_array["male_count"] += $value['M'];
+                  $age_gender_array["male"][$key] = $value['M'];
+                 (!array_key_exists($key, $age_gender_array["age_ranges"])) ? ($age_gender_array["age_ranges"][$key] = array_sum($value)) : ($age_gender_array["age_ranges"][$key] += array_sum($value));
+                }
+            }else{
+                $age_gender_array = '';
+            }
+            return $age_gender_array;
+        }
+        return $age_gender_array = null;
+    }
+    
+  
     public function getFansByAgeGenderJsonTable($age_gender_array){
         //echo '<pre>'; var_dump($age_gender_array); echo '</pre>'; die;
         $fans_gender_age_json_table = ($age_gender_array) ? GoogleChartHelper::getGenderAgesDataTable($age_gender_array["age_ranges"], $age_gender_array["male"], $age_gender_array["female"]) : '';
@@ -394,13 +455,13 @@ class Facebook extends \yii\authclient\clients\Facebook
     public function getPagePosts($page_id, $since, $until){
         $client = $this->getClient();
         $page_posts = $client->api($page_id."/posts?since=".$since."&until=".$until."&limit=100&fields=name,full_picture,link,type,message,story,picture,sharedposts,created_time,source,attachments{media}", 'GET');
-        //echo '<pre>'; var_dump($page_posts); echo '</pre>'; die;
         return $page_posts;
     }
     
-    public function getPageTaggedPosts($page_id, $since, $until){
+    public function getPageFeed($page_id, $since, $until){
         $client = $this->getClient();
-        $page_posts = $client->api($page_id."/tagged?limit=100&since=".$since.'&until='.$until, 'GET');
+        //$page_posts = $client->api($page_id."/tagged?limit=100&since=".strtotime($since)."&until=".strtotime($until), 'GET');
+      	$page_posts = $client->api($page_id."/feed?limit=100&since=".$since."&until=".$until, 'GET');
         return $page_posts;
     }
     
@@ -537,8 +598,8 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getAllFanAdds($page_id, $since, $until){
         $client = $this->getClient();
-        $all_fans = $client->api($page_id."/insights/page_fan_adds?since=".$since."&until=".$until)["data"];
-        return $all_fans;
+        $all_fans = $client->api($page_id."/insights/page_fan_adds?since=".$since."&until=".$until)["data"][0]['values'];
+      	return $all_fans;
     }
     
     /**
@@ -546,8 +607,8 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getAllFanRemoves($page_id, $since, $until){
         $client = $this->getClient();
-        $all_fans = $client->api($page_id."/insights/page_fan_removes?since=".$since."&until=".$until)["data"];
-        return $all_fans;
+        $all_fans = $client->api($page_id."/insights/page_fan_removes?since=".$since."&until=".$until)["data"][0]['values'];
+      	return $all_fans;
     }
     
     /**
@@ -555,8 +616,8 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getFansAddsAndRemoves($page_id, $since, $until){
         $fan = [];
-        $fan['adds'] = $this->getAllFanAdds($page_id, $since, $until)[0]['values'];
-        $fan['removes'] = $this->getAllFanRemoves($page_id, $since, $until)[0]['values'];
+        $fan['adds'] = $this->getAllFanAdds($page_id, $since, $until);
+        $fan['removes'] = $this->getAllFanRemoves($page_id, $since, $until);
         return $fan;
     }
     
@@ -568,8 +629,12 @@ class Facebook extends \yii\authclient\clients\Facebook
         $counter = 0;
         $fan = $this->getFansAddsAndRemoves($page_id, $since, $until);
         foreach($fan['adds'] as $fan_add){
-            $date = (date('d', strtotime($fan_add['end_time'])) != '01') ?  date('d', strtotime($fan_add['end_time'])) : date('M d', strtotime($fan_add['end_time']));
-            $net[$date] = ($fan_add['value'] - $fan['removes'][$counter]['value']);
+          $date = (date('d', strtotime($fan_add['end_time'])) != '01') ?  date('d', strtotime($fan_add['end_time'])) : date('M d', strtotime($fan_add['end_time']));
+          if(array_key_exists('value', $fan_add) && array_key_exists('value', $fan['removes'][$counter])){
+          	$net[$date] = ($fan_add['value'] - $fan['removes'][$counter]['value']);
+          }else{
+            $net[$date] = null;
+          }
             $counter++;
         }
         return $net;
@@ -588,7 +653,10 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Calculate net change in fans in the specified range of time
      **/
     public function getChangeInFans($fans_in_range){
-        $change_in_fans = ($fans_in_range[count($fans_in_range)-1]['value']) - ($fans_in_range[0]['value']);
+      	$count = $this->checkAndGetValueIndex($fans_in_range);
+      	if($count > 0 || array_key_exists('value', $fans_in_range[0])){
+        	$change_in_fans = ($fans_in_range[$count]['value']) - ($fans_in_range[0]['value']);
+        }else $change_in_fans = 'N/A';
         return $change_in_fans;
     }
     
@@ -747,11 +815,9 @@ class Facebook extends \yii\authclient\clients\Facebook
         $oAccountModel->name = $page_data["name"];
         $oAccountModel->media_url = $page_data["picture"]["data"]["url"];
         if($oAccountModel->save()){
-            //echo'<pre>'; var_dump($oAccountModel); echo '</pre>'; die("Model saved");
-            $since = date('Y-m-d', strtotime("-3 months"));
+            $since = date('Y-m-d', strtotime("first day of this month"));
             $until = date('Y-m-d', time());
             $all_posts = $this->getAllPagePosts($id, $since, $until);
-            //echo '<pre>'; var_dump($all_posts); echo '</pre>'; die;
             $total_likes = $total_comments = $total_reactions = $total_shares = $total_reactions = $total_interactions = 0;
             if($all_posts){
                 $followers_by_day = array();
@@ -793,32 +859,41 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Get fans posts in database
      **/
     public function getAllUserPosts($id, $since, $until){
-        $all_posts = [];
-        $posts = $this->getPageTaggedPosts($id, $since, $until);
-        
+      	$all_posts = [];
+        $posts = $this->getPageFeed($id, $since, $until);
         while($posts['data']){
             $all_posts = array_merge($all_posts, $posts['data']);
             $posts = json_decode(file_get_contents($posts['paging']['next']), true);
         }
+      	$all_posts = array_merge($all_posts, $posts['data']);
         return $all_posts;
     }
-    
+  
+  	/**
+     * Get User Post
+     **/
+    public function getUserPost($id){
+		$client = $this->getClient();
+		$post_details = $client->api($id);
+        return $post_details;
+    }
+	
     /**
      * Save fans posts in database
      **/
     public function saveUserPosts($page_id, $page_model_id, $since, $until){
         $all_user_posts = $this->getAllUserPosts($page_id, $since, $until);
-        //echo '<pre>'; var_dump($all_user_posts); echo '</pre>'; die;
         foreach($all_user_posts as $user_post){
-            $oUserPost = UserPosts::findOne(['post_id' => $user_post['id']]);
-            if(!$oUserPost){
-                $oUserPost = new UserPosts();
-                $oUserPost->page_model_id = $page_model_id;
-                $oUserPost->post_id = $user_post['id'];
-                //$oUserPost->message = (array_key_exists('message', $user_post)) ? $user_post['message'] : $user_post['story'];
-                $oUserPost->creation_time = strtotime($user_post['created_time']);
-                $oUserPost->save();
-            }
+          	if(! Model::findOne(['parent_id' => $page_model_id, 'entity_id' => $user_post['id']])){
+            	$oUserPost = UserPosts::findOne(['post_id' => $user_post['id']]);
+              if(!$oUserPost){
+                  $oUserPost = new UserPosts();
+                  $oUserPost->page_model_id = $page_model_id;
+                  $oUserPost->post_id = $user_post['id'];
+                  $oUserPost->creation_time = strtotime($user_post['created_time']);
+                  $oUserPost->save();
+              }
+           }
         }
     }
     
@@ -869,7 +944,6 @@ class Facebook extends \yii\authclient\clients\Facebook
     public function getPostsInRange($page_id, $since, $until){
         $parent_id = Model::findOne(['entity_id' => $page_id])->id;
         $posts_in_range = Model::find()->Where(['parent_id' => $parent_id])->andWhere(['between', 'creation_time', $since, $until])->orderBy(['interactions' => SORT_DESC])->all();
-        //echo '<pre>'; var_dump($posts_in_range); echo '</pre>'; die;
         return $posts_in_range;
     }
     
@@ -877,10 +951,12 @@ class Facebook extends \yii\authclient\clients\Facebook
      * get array of days in the specified range of days 
      **/
     public function getDaysInRange($from, $to){
-        $days_in_range[] = $from;
+        $days_in_range = [];
         $current = $from/*strtotime('+1 days', $from)*/;
+      	//$days_in_range_date = [];
         while($current <= $to){
             array_push($days_in_range, $current);
+          	//array_push($days_in_range_date, date('d M', $current));
             $current = strtotime('+1 days', $current);
         }
         return $days_in_range;
@@ -992,18 +1068,19 @@ class Facebook extends \yii\authclient\clients\Facebook
         $statistics['age_gender_array'] = $this->getFansByAgeGenderArrays($id, $since, $until);
         $statistics['fans_growth'] = $this->getFanGrowth($id, $since, $until);
         $statistics['fans_in_range'] = $this->getAllFans($id, $since, $until);
-        $statistics['change_in_fans'] = $this->getChangeInFans($statistics['fans_in_range'][0]['values']);
-        $statistics['max_change_in_fans'] = $this->getMaxChangeInFans($statistics['fans_in_range'][0]['values']);
-        $statistics['avg_fan_change_per_day'] = round((($statistics['change_in_fans'])/(count($statistics['fans_in_range'][0]['values']))), 2);
-        $statistics['fans_by_country'] = $this->getFansByCountry($id, $since, $until);
-        $statistics['fans_by_country_before'] = $this->getFansByCountryBefore($id, $since);
-        $statistics['fans_by_country_table'] = $this->getFansByCountryTable($statistics['fans_by_country'], $statistics['fans_by_country_before'], $total_fans);
-        $statistics['fans_by_city'] = $this->getFansByCity($id, $since, $until);
+        $statistics['change_in_fans'] = ($statistics['fans_in_range']) ? $this->getChangeInFans($statistics['fans_in_range'][0]['values']) : 0;
+        $statistics['max_change_in_fans'] = ($statistics['fans_in_range']) ? $this->getMaxChangeInFans($statistics['fans_in_range'][0]['values']) : 0;
+        $statistics['avg_fan_change_per_day'] = ($statistics['change_in_fans'] != 'N/A') ? round((($statistics['change_in_fans'])/(count($statistics['fans_in_range'][0]['values']))), 2) : 0;
+        $fans_by_country = $this->getFansByCountry($id, $since, $until);
+      	$fans_by_country_before = $this->getFansByCountryBefore($id, $since);
+      	$statistics['fans_by_country'] = ($fans_by_country['data']) ? $fans_by_country : null;
+        $statistics['fans_by_country_before'] = ($fans_by_country_before['data']) ? $fans_by_country_before : null;
+      	$statistics['fans_by_city'] = $this->getFansByCity($id, $since, $until);
         $statistics['posts_in_range'] = $this->getPostsInRange($id, $since, $until);
+        $statistics['fans_by_country_table'] = $this->getFansByCountryTable($statistics['fans_by_country'], $statistics['fans_by_country_before'], $total_fans);
         $statistics['posts_by_day_statistics'] = $this->getPostsByDayStatistics($days_in_range, $statistics['posts_in_range']);
         $statistics['user_posts_per_day'] = $this->getUserPostsByDay($days_in_range, $id, $since, $until);
         $statistics['user_posts_per_day_json_table'] = $this->getUserPostsByDayJsonTable($statistics['user_posts_per_day']);
-        
         return $statistics;
     }
     
@@ -1117,7 +1194,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
 	
     public function getAccountInsightsInRange($account_model_id, $since, $until){
-	$since_str = date('Y-m-d H:i:s', $since);
+	$since_str = date('Y-m-d H:i:s', strtotime('last day of last monyh'));
 	$until_str = date('Y-m-d H:i:s', $until);
 	$account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since_str, $until_str])->all();
 	return $account_insights;
@@ -1125,19 +1202,20 @@ class Facebook extends \yii\authclient\clients\Facebook
 
     public function saveAccountInsights($oAccountModel, $followers){
 	$since = date('Y-m-d', strtotime('first day of this month'));
-	$until = date('Y-m-d', strtotime('+2days', time()));
+	$until = date('Y-m-d', strtotime('+1days', time()));
 	$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until);
 	$total_likes = $total_comments = $total_reactions = $total_shares = $total_reactions = $total_interactions = 0;
 	foreach($posts as $post){
             $oPost = Model::findOne(['entity_id' => $post['id'],'parent_id' => $oAccountModel->id]);
             if(!$oPost){
-		$oPostModel = $this->firstLogNewPostModel($oAccountModel, $post, $followers);
+				$oPostModel = $this->firstLogNewPostModel($oAccountModel, $post, $followers);
                 $total_likes += $oPostModel->likes;
                 $total_comments += $oPostModel->comments;
                 $total_shares += $oPostModel->shares;
                 $total_reactions += $oPostModel->reactions;
                 $total_interactions += $oPostModel->interactions;
             }else{
+
 		$oPostModel = $this->updatePostModel($oPost);
 		$total_likes += $oPostModel->likes;
                 $total_comments += $oPostModel->comments;
@@ -1156,12 +1234,25 @@ class Facebook extends \yii\authclient\clients\Facebook
         $oAccountInsights->total_reactions = $total_reactions;
         $oAccountInsights->total_interactions = $total_interactions;
 	$oAccountInsights->insights_json = $this->getInsightsJson($oAccountModel->entity_id, $since, $until);
-	$oAccountInsights->save();
+      
         if($oAccountInsights->save()){
             $this->saveUserPosts($oAccountModel->entity_id, $oAccountModel->id, $since, $until);
         }
     }
 	
+  	public function getPageFansLikeSource($id, $since, $until){
+    	$client = $this->getClient();
+        $fans_by_source = $client->api($id.'/insights/page_fans_by_like_source?since='.$since.'&until='.$until)['data'][0]['values'];
+            foreach($fans_by_source as $day){
+                if(array_key_exists('value', $day)){
+                  foreach($day['value'] as $key => $value){
+                    (array_key_exists($key, $fans_by_source_array)) ? ($fans_by_source_array[$key] = $value) : ($fans_by_source_array[$key] += $value);
+                  }
+                }
+            }
+        return $fans_by_source_array;
+    }
+  
     public function getPageViewsByDevice($id, $since, $until){
         $client = $this->getClient();
         $views_by_device_array = ['desktop' => 0, 'mobile/tablet' => 0, 'other' => 0];
@@ -1197,16 +1288,59 @@ class Facebook extends \yii\authclient\clients\Facebook
     public function getPageReachByCountry($page_id, $since, $until){
         $client = $this->getClient();
         $reach_by_country = $client->api($page_id.'/insights/page_impressions_by_country_unique/day?since='.$since.'&until='.$until)['data'][0]['values'];
-        $counter = count($reach_by_country) -1;
-        while(($counter > 0) && !(array_key_exists('value', $reach_by_country[$counter]))){
-            $counter--;
+      	$counter = $this->checkAndGetValueIndex($reach_by_country);
+      	if(array_key_exists('value', $reach_by_country[$count])){
+        	return ((array_key_exists('value', $reach_by_country[$counter])) ? $reach_by_country[$counter]['value'] : null);
+        }else{
+        	return null;
         }
-        return ((array_key_exists('value', $reach_by_country[$counter])) ? $reach_by_country[$counter]['value'] : null);
     }
+  
+  public function getPageReachByAgeGender($page_id, $since, $until){
+        $client = $this->getClient();
+        $reach_by_gender_age = $client->api($page_id.'/insights/page_impressions_by_age_gender_unique/day?since='.$since.'&until='.$until)['data'][0]['values'];
+        $counter = $this->checkAndGetValueIndex($reach_by_gender_age);
+    	if(array_key_exists('value', $reach_by_gender_age[$count])){
+        	return ((array_key_exists('value', $reach_by_gender_age[$counter])) ? $reach_by_gender_age[$counter]['value'] : null);
+        }else{
+        	return null;
+        }
+    }
+  
+  public function getPageReachByLanguage($page_id, $since, $until){
+        $client = $this->getClient();
+        $reach_by_lang = $client->api($page_id.'/insights/page_impressions_by_locale_unique/day?since='.$since.'&until='.$until)['data'][0]['values'];
+    	$counter = $this->checkAndGetValueIndex($reach_by_lang);
+    	if(array_key_exists('value', $reach_by_lang[$count])){
+        	return ((array_key_exists('value', $reach_by_lang[$counter])) ? $reach_by_lang[$counter]['value'] : null);
+        }else{
+        	return null;
+        }
+    }
+  
+  public function getPageReachByLanguageInEnglish($page_id, $since, $until){
+  	$reach_by_language= $this->getPageReachByLanguage($page_id, $since, $until);
+    $languages_lib = ["af_ZA" => "Afrikaans (South Africa)", "ak_GH" => "Akan (Ghana)", "am_ET" => "Amharic (Ethiopia)", "ar_AR" => "Arabic", "as_IN" => "Assamese (India)", "ay_BO" => "Aymara (Bolivia)", "az_AZ" => "Azerbaijani (Azerbaijan (latin))", "be_BY" => "Belarusian (Belarus)", "bg_BG" => "Bulgarian (Bulgaria)", "bn_IN" => "Bengali (India)", "br_FR" => "Breton (France)", "bs_BA" => "Bosnian (Bosnia)", "ca_ES" => "Catalan (Spain)", "cb_IQ" => "Sorani Kurdish", "ck_US" => "Cherokee (USA)", "co_FR" => "Corsican", "cs_CZ" => "Czech", "cx_PH" => "Cebuano", "cy_GB" => "Welsh (Britain)", "da_DK" => "Danish (Denmark)", "de_DE" => "German (Germany)", "el_GR" => "Greek (Greece)", "en_GB" => "English (UK)", "en_IN" => "English (India)", "en_PI" => "English (Pirate)", "en_UD" => "English (Upside Down)", "en_US" => "English (USA)", "eo_EO" => "Esperanto", "es_CL" => "Spanish (Chile)", "es_CO" => "Spanish (Colombia)", "es_ES" => "Spanish (Spain)", "es_LA" => "Spanish", "es_MX" => "Spanish (Mexico)", "es_VE" => "Spanish (Venezuela)", "et_EE" => "Estonian (Estonia)", "eu_ES" => "Basque (Spain)", "fa_IR" => "Persian (Iran)", "fb_LT" => "Leet Speak", "ff_NG" => "Fulah", "fi_FI" => "Finnish (Finland)", "fo_FO" => "Faroese (Faroe Islands)", "fr_CA" => "French (Canada)", "fr_FR" => "French (France)", "fy_NL" => "Frisian (Netherlands)", "ga_IE" => "Irish (Ireland)", "gl_ES" => "Galician (Spain)", "gn_PY" => "Guarani (Paraguay)", "gu_IN" => "Gujarati (India)", "gx_GR" => "Greek (Greece)", "ha_NG" => "Hausa (Nigeria)", "he_IL" => "Hebrew (Israel)", "hi_IN" => "Hindi (India)", "hr_HR" => "Croatian (Croatia)", "ht_HT" => "Haitian (Haiti)", "hu_HU" => "Hungarian (Hungary)", "hy_AM" => "Armenian (Armenia)", "id_ID" => "Indonesian (Indonesia)", "ig_NG" => "Igbo (Nigeria)", "is_IS" => "Icelandic (Iceland)", "it_IT" => "Italian (Italy)", "ja_JP" => "Japanese (Japan)", "ja_KS" => "Japanese (Kansai)", "jv_ID" => "Javanese", "ka_GE" => "Georgian (Georgia)", "kk_KZ" => "Kazakh (Kazakhstan)", "km_KH" => "Khmer (Cambodia)", "kn_IN" => "Kannada (India)", "ko_KR" => "Korean (Korea)", "ku_TR" => "Kurdish-Latin (Turkey)", "ky_KG" => "Kyrgyz (Kyrgyzstan)", "la_VA" => "Latin", "lg_UG" => "Ganda (Uganda)", "li_NL" => "Limburgish (Netherlands)", "ln_CD" => "Lingala (Congo)", "lo_LA" => "Lao (Laos)", "lt_LT" => "Lithuanian (Lithuania)", "lv_LV" => "Latvian (Latvia)", "mg_MG" => "Malagasy (Madagascar)", "mi_NZ" => "Māori (New Zealand)", "mk_MK" => "Macedonian (Macedonia)", "ml_IN" => "Malayalam (India)", "mn_MN" => "Mongolian (Mongolia)", "mr_IN" => "Marathi (India)", "ms_MY" => "Malay (Malaysia)", "mt_MT" => "Maltese (Malta)", "my_MM" => "Burmese (Myanmar)", "nb_NO" => "Norwegian-bokmal (Norway)", "nd_ZW" => "Ndebele", "ne_NP" => "Nepali (Nepal)", "nl_BE" => "Dutch (Belgium)", "nl_NL" => "Dutch (Netherlands)", "nn_NO" => "Norwegian-nynorsk (Norway)", "ny_MW" => "Chewa", "or_IN" => "Oriya (India)", "pa_IN" => "Punjabi (India)", "pl_PL" => "Polish", "ps_AF" => "Pashto (Afghanistan)", "pt_BR" => "Portuguese (Brazil)", "pt_PT" => "Portuguese (Portugal)", "qc_GT" => "Quiché", "qu_PE" => "Quechua", "rm_CH" => "Romansh", "ro_RO" => "Romanian (Romania)", "ru_RU" => "Russian (Russia)" ,"rw_RW" => "Kinyarwanda (Rwanda)", "sa_IN" => "Sanskrit (India)", "sc_IT" => "Sardinian (Italy)", "se_NO" => "Northern Sámi (Norway)", "si_LK" => "Sinhala (Sri Lanka)", "sk_SK" => "Slovak (Slovak)", "sl_SI" => "Slovenian (Slovenia)", "sn_ZW" => "Shona", "so_SO" => "Somali (Somalia)", "sq_AL" => "Albanian (Albania)", "sr_RS" => "Serbian (Serbia)", "sv_SE" => "Swedish (Sweden)", "sw_KE" => "Swahili (Kenya)", "sy_SY" => "Syriac", "sz_PL" => "Silesian", "ta_IN" => "Tamil (India)", "te_IN" => "Telugu (India)", "tg_TJ" => "Tajik (Tajikistan)", "th_TH" => "Thai (Thailand)", "tk_TM" => "Turkmen (Turkmenistan)", "tl_PH" => "Filipino (Philippines)", "tl_ST" => "Klingon", "tr_TR" => "Turkish (Turky)", "tt_RU" => "Tatar (Russia)", "tz_MA" => "Tamazight (Morocco)", "uk_UA" => "Ukrainian (Ukraine)", "ur_PK" => "Urdu (Pakistan)", "uz_UZ" => "Uzbek (Uzbekistan)", "vi_VN" => "Vietnamese (Vietnam)", "wo_SN" => "Wolof (Senegal)", "xh_ZA" => "Xhosa (South Africa)", "yi_DE" => "Yiddish (Germany)", "yo_NG" => "Yoruba (Nigeria)", "zh_CN" => "Chinese (China)", "zh_HK" => "Chinese (Hong Kong)", "zh_TW" => "Chinese (Taiwan)", "zu_ZA" => "Zulu (South Africa)", "zz_TR" => "Zazaki (Turkey)"];
+    if($reach_by_language){
+      //echo '<pre>'; var_dump($reach_by_language); echo '</pre>'; die;
+      foreach($reach_by_language as $lang => $value){
+          $reach_by_language_array[$languages_lib[$lang]] = $value;
+      }
+      return $reach_by_language_array;
+    }else{
+    	return null;
+    }
+  }
     
     public function getInsightsJson($page_id, $since, $until){
         $insights['gender_age'] = $this->getFansByAgeGenderArrays($page_id, $since, $until);
+      	$insights['country'] = $this->getFansByCountryValues($page_id, $since, $until);
+      	$insights['language'] = $this->getFansLanguageValues($page_id, $since, $until);
+      	$insights['page_views_gender_age'] = $this->getViewsByAgeGenderArrays($page_id, $since, $until);
         $insights['page_views'] = $this->getPageViewsByDevice($page_id, $since, $until);
+      	$insights['fans_like_source'] = $this->getPageFansLikeSource($page_id, $since, $until);
+      	$insights['reach_by_age_gender'] = $this->getPageReachByAgeGenderArrays($page_id, $since, $until);
+      	$insights['reach_by_language'] = $this->getPageReachByLanguageInEnglish($page_id, $since, $until);
         $insights['page_reach'] = $this->getPageReachArray($page_id, $since, $until);
 	$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
 	$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTable($page_id, $since, $until);
@@ -1254,11 +1388,39 @@ class Facebook extends \yii\authclient\clients\Facebook
             }
 	}
     }
-	
+  
+  	
+  	public function checkClientSession(){
+    	if(Yii::$app->session['facebook']){
+        	return $this->getClient();
+        }else{
+        	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
+          	if($oAuthclient ){
+              if($oAuthclient->source_data != null){
+                 Facebook::setClient( unserialize($oAuthclient->source_data));
+                 $client = $this->getClient();
+                 $ReturnData = $client->getUserAttributes() ;
+                  if( $ReturnData == null){
+                      $oAuthclient->source_data =null;
+                      $oAuthclient->save();
+                      Facebook::setClient( null);
+                  }
+                return $this->getClient();
+              }else{
+                  $client = Facebook::getClient();
+                  //$client->getUserAttributes() ;
+                  $oAuthclient->source_data = serialize($client);
+                  $oAuthclient->save();
+                return $client;
+              }
+          }
+        }
+    }
+  
     public function getPageNameAndIdUsingPageUrl($url){
-        $client = $this->getClient();
-	$page_name_id = $client->api("?id=".$url);
-	return $page_name_id;
+      $client = $this->checkClientSession();
+      $page_name_id = $client->api("?id=".$url);
+      return $page_name_id;
     }
 	
     public function getCompetitorData($url){
@@ -1275,4 +1437,34 @@ class Facebook extends \yii\authclient\clients\Facebook
 	return $page;
     }
     
+  
+  	public function getFansDemographicsDashboard($insights){
+      	$facebook = [];
+      	$followers = $insights['gender_age']['male_count'] + $insights['gender_age']['female_count'];
+    	$facebook['gender'] = (($insights['gender_age']['male_count'] != 0) && $insights['gender_age']['male_count'] >= $insights['gender_age']['female_count']) ? ('males '.round(((($insights['gender_age']['male_count'])/$followers)*100),1).'%') : (($insights['gender_age']['male_count'] < $insights['gender_age']['female_count']) ? ('females '.round(((($insights['gender_age']['female_count'])/$followers)*100), 2).'%') : 'N/A');
+      	foreach($insights['gender_age']['age_ranges'] as $age){
+        	$ages[$age] = $insights['gender_age']['male'][$age] + $insights['gender_age']['female'][$age];
+        }
+      	$max_age_value = max($ages);
+      	$max_age_index = array_keys($ages, $max_age_value)[0];
+      	$facebook['age'] = $max_age_index.' '.round((($max_age_value)/$followers), 1).'%';
+      
+        $max_country_value = max($insights['country']);
+        $max_country_index = array_keys($insights['country'], $max_country_value)[0];
+        $facebook['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['country']))*100), 1).'%';
+        $max_language_value = max($insights['language']);
+        $max_language_index = array_keys($insights['language'], $max_language_value)[0];
+        $facebook['language'] = $max_language_index.' '.round(((($max_language_value)/array_sum($insights['language']))*100), 1).'%';
+      	$facebook['device'] = $facebook['industry'] = $facebook['seniority'] = '...';
+      return $facebook;
+    }
+  
+  	public function checkAndGetValueIndex($array){
+  		$count = count($array) - 1;
+        while(($count != 0) && (!array_key_exists('value', $array[$count]))){
+            $count--;
+        }
+      return $count;
+  	}
+  
 }

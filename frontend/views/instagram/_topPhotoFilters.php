@@ -1,14 +1,18 @@
 <?php
+use yii\helpers\Url;
+?>
+
+<h3 class="internal-title noneBG">Top Photo Filters</h3>
+	<div class="internal-content circleChart">
+<?php
 if($top_photo_filters_json_table){
     $this->registerJs("GoogleCharts.drawCircle(".$top_photo_filters_json_table.", 'in', 'top_photo_filters')", yii\web\View::POS_END);	
 ?>
-<h3 class="internal-title noneBG">Top Photo Filters</h3>
-	<div class="internal-content circleChart">
-		<div id="top_photo_filters">
-		</div>
-	</div>
+		<div id="top_photo_filters"></div>
+	
 <?php
-}else{
-    echo '<h4>Top Photo Filters</h4><br/><p>No data to display</p>';
-}
+}else{ ?>
+      <div id="top_photo_filters"><div class="dummy_chart"><img src="<?= Url::to('@frontThemeUrl') ?>/images/pie_no.png" /></div></div>
+<?php }
 ?>
+</div>

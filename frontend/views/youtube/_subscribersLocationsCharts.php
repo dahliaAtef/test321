@@ -1,13 +1,13 @@
-
-
 <?php
     echo '<div class="row"><div class="col-md-6">';
     echo $this->render('_subscribersPerLocationsViewsChart', ['locations_views_json_table' => $youtube->getAnalyticsPerLocationsViewsJsonTable($locations)]);
     echo '</div><div class="col-md-6">';
     echo $this->render('_subscribersPerLocationsMinutesWatchedChart', ['locations_minutes_watched_json_table' => $youtube->getAnalyticsPerLocationsMinutesWatchedJsonTable($locations)]);
-    echo '</div><div class="col-md-6">';
+    echo '</div></div>';
+	echo '<div class="row"><div class="col-md-12">';
     echo $this->render('_subscribersPerLocationsViewDurationPercentageChart', ['locations_view_duration_percentage_json_table' => $youtube->getAnalyticsPerLocationsViewDurationPercentageJsonTable($locations)]);
-    echo '</div></div>';    
+    echo '</div></div>';
+	
 ?>
 
 
@@ -27,11 +27,11 @@ if($locations && array_key_exists('rows', $locations)){
 
         <th>Views</th>
 
-        <th>Estimated Minutes Watched</th>
+        <th>EST. Minutes Watched</th>
 
-        <th>Average View Duration</th>
+        <th>AVG View Duration</th>
 
-        <th>Average View Percentage</th>
+        <th>AVG View Percentage</th>
 
         <th>Subscriber Gained</th>
 

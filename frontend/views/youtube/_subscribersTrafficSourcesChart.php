@@ -23,7 +23,7 @@ if(array_key_exists('rows', $traffic_sources)){
     foreach($traffic_sources['rows'] as $traffic_source){
     ?>
     <tr>
-        <td><?= $traffic_source[0] ?></td>
+        <td><?= ucwords(strtolower($traffic_source[0])) ?></td>
         <td><?= $traffic_source[1] ?></td>
         <td><?= $traffic_source[2] ?></td>
     </tr>

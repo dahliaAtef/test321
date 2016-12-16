@@ -1,4 +1,5 @@
 <?php
+	if($top_posts_by_engagement){
     foreach($top_posts_by_engagement as $post){ ?>
     <div class="col-md-3 col-sm-6">
         <div class="post-item">
@@ -14,4 +15,8 @@
 	    	</div>
 	    </div>
 	</div>
-    <?php } ?>
+    <?php } 
+    }else{ ?>
+    	<div class="waiting-text col-md-12""><p>You haven't posted anything within this month.</p></div>
+    <?php }
+?>

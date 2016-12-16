@@ -1,7 +1,12 @@
 <?php
+use yii\helpers\Url;
 
-    $this->registerJs("GoogleCharts.drawColumns(".$number_of_posts_json_table.", 'yg', 'posts_per_day')", yii\web\View::POS_END);	
     echo '<h3 class="internal-title noneBG">Number of Posts</h3>';
     echo '<div class="internal-content">';
-    	echo '<div id="posts_per_day"></div>';
-	echo '</div>';
+if($number_of_posts_json_table && $total_posts){
+	$this->registerJs("GoogleCharts.drawColumns(".$number_of_posts_json_table.", 'yg', 'posts_per_day')", yii\web\View::POS_END);	
+    echo '<div id="posts_per_day"></div>';
+}else{
+	echo '<div id="posts_per_day"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/bar_2_no.png"/></div></div>';
+}
+echo '</div>';

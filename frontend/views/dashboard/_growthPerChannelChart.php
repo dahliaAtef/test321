@@ -32,7 +32,7 @@ use common\models\custom\Dashboard;
 					<div style="display:block;margin:auto" class="img"><img  width="100%" src="<?= Url::to('@frontThemeUrl') ?>/images/social/<?= $social ?>.png"></div>
 				</div>
 				<div class="growth">
-					<p class="account-name"><?= $social ?></p>
+					<p class="account-name"><?= ucwords($social) ?></p>
 					<p class="account-growth"><?= abs($growth) ?></p>
 				</div>
 			</div>

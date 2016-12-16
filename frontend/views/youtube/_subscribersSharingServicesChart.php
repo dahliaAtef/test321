@@ -23,7 +23,7 @@ if(array_key_exists('rows', $sharing_services)){
     foreach($sharing_services['rows'] as $sharing_service){
     ?>
     <tr>
-        <td><?= $sharing_service[0] ?></td>
+        <td><?= ucwords(strtolower($sharing_service[0])) ?></td>
         <td><?= $sharing_service[1] ?></td>
     </tr>
     <?php } ?>
