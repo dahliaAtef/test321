@@ -4,7 +4,6 @@ node_modules
 backend/runtime/*
 partners/runtime/*
 frontend/runtime/*
-frontend/assets/*
 frontend/web/assets/*
 nbproject
 nbproject/*
@@ -17,6 +16,7 @@ common/config/params-local.php
 common/config/main.php
 images/medium
 .idea/*
+backend/web/assets
 
 /index.php
 .sass-cache/*
