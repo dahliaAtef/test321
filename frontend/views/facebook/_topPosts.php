@@ -1,13 +1,18 @@
 <div class="row">
     <div class="col-md-12">
-        <h3 class="internal-title sec-title"><?= $page_name ?> Top 10 Posts</h3>
+        <h3 class="internal-title sec-title">Top 10 Posts</h3>
     </div>
+</div>
+
     <?php
         if($top_posts){
             $top_ten_posts = array_slice($top_posts, 0, 10);
+          ?>
+          <div class="row" style="margin:0">
+            <?php
             foreach($top_ten_posts as $post){
     ?> 
-    
+  
     <div class="col-lg-3 col-md-4 col-sm-6">
         <div class="post-item">
             <div class="date-time">
@@ -37,6 +42,11 @@
     </div>
         <?php    
             }
-               }
+          ?>
+            </div>   
+<?php
+               }else{ ?>
+        <div class="waiting-text col-md-12""><p>You haven't posted anything within this month.</p></div>
+        <?php }
         ?>
-</div>        
+     

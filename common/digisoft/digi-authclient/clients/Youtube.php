@@ -126,8 +126,37 @@ class Youtube extends OAuth2
         return $channels;
     }
     
+  	
+  	public function checkClientSession(){
+    	if(Yii::$app->session['youtube']){
+        	return $this->getClient();
+        }else{
+        	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
+          	if($oAuthclient ){
+              if($oAuthclient->source_data != null){
+                 Youtube::setClient( unserialize($oAuthclient->source_data));
+                 $ReturnData = $this->getChannelData() ;
+                  if( $ReturnData == null){
+                      $oAuthclient->source_data =null;
+                      $oAuthclient->save();
+                      Youtube::setClient( null);
+                  }
+                  return $this->getClient();
+              }else{
+                  /*
+                  $client = Facebook::getClient();
+                  //$client->getUserAttributes() ;
+                  $oAuthclient->source_data = serialize($client);
+                  $oAuthclient->save();
+                  */
+              }
+          }
+        }
+    }
+  
+  
 	public function getChannelDataByUserName($username){
-		$client = $this->getClient();
+		$client = $this->checkClientSession();
         $channel = $client->api("/youtube/v3/channels?part=id,snippet,statistics&id=".$username, 'GET');
 		if(!($channel['items'])){
 			$channel = $client->api("/youtube/v3/channels?part=id,snippet,statistics&forUsername=".$username, 'GET');
@@ -152,13 +181,10 @@ class Youtube extends OAuth2
 	
     public function getChannelAnalytics($start_date = null, $end_date = null){
         $client = $this->getClient();
-        ($start_date) ? '' : ($start_date = date('Y-m-01', time())) ;
+        ($start_date) ? '' : ($start_date = date('Y-m-d', strtotime('- 3 days'))) ;
         ($end_date) ? '' : ($end_date = date('Y-m-d', strtotime('-1 days', time())));
         //$channel_analytics = $client->api("/youtube/analytics/v1/reports?ids=channel==MINE&start-date=".$start_date."&end-date=".$end_date."&metrics=views,comments,likes,dislikes,shares,favoritesAdded,favoritesRemoved,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost");
-      echo $start_date .' + '.$end_date ;
-      //  die;
         $channel_analytics = $client->api("/youtube/analytics/v1/reports?ids=channel==MINE&start-date=".$start_date."&end-date=".$end_date."&metrics=views,comments,likes,dislikes,shares,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained,subscribersLost");
-        
         return $channel_analytics;
     }
     
@@ -466,7 +492,7 @@ class Youtube extends OAuth2
     }
 
     public function getAccountInsightsInRange($account_model_id, $since = null, $until = null){
-        $since = date('Y-m-d H:i:s', $since);
+        $since = date('Y-m-d H:i:s', strtotime('last day of last month'));
         $until = date('Y-m-d H:i:s', $until);
     	$account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since, $until])->all();
     	return $account_insights;
@@ -539,6 +565,7 @@ class Youtube extends OAuth2
 	public function firstTimeToLog($authclient_id){
 		$channels = $this->getChannelData();
 		$channel_analytics = $this->getChannelAnalytics();
+      //echo '<pre>'; var_dump($oAccountInsights->insights_json); echo '</pre>'; die;
 		$oAccountModel = new Model();
         $oAccountModel->authclient_id = $authclient_id;
         $oAccountModel->entity_id = $channels['items'][0]['id'];
@@ -559,6 +586,7 @@ class Youtube extends OAuth2
                 $oAccountInsights->total_dislikes = $channel_analytics['rows'][0][3];
                 $oAccountInsights->total_shares = $channel_analytics['rows'][0][4];
                 $oAccountInsights->insights_json = $this->getInsightsJson();
+              //echo '<pre>'; var_dump($oAccountInsights->insights_json); echo '</pre>'; die;
             }
             $oAccountInsights->save();
             $this->getAndSaveChannelVideosInRange($channels['items'][0]['contentDetails']['relatedPlaylists']['uploads'], $oAccountModel->id);
@@ -570,7 +598,7 @@ class Youtube extends OAuth2
     public function saveAccountInsights($model_id, $start_date = null){
         $client = $this->getClient();
         $channels = $this->getChannelData();
-        $channel_analytics = $this->getChannelAnalytics();
+        $channel_analytics = $this->getChannelAnalytics($start_date);
         ($start_date) ? '' : ($start_date = strtotime('first day of last month')) ;
         $end_date = time();
         $videos = $client->api("/youtube/v3/playlistItems?part=contentDetails,snippet&maxResults=50&playlistId=".$channels['items'][0]['contentDetails']['relatedPlaylists']['uploads'], 'GET')['items'];
@@ -607,7 +635,7 @@ class Youtube extends OAuth2
     }
 	
     public function getInsightsJson($since = null, $until = null){
-        $since_str = (!$since) ? (date('Y-m-01', time())) : (date('Y-m-d', $since));
+        $since_str = (!$since) ? (date('Y-m-d', strtotime('first day of this month'))) : (date('Y-m-d', $since));
         $until_str = (!$until) ? (date('Y-m-d', time())) : (date('Y-m-d', $until));
         $insights['gender_age'] = $this->getAnalyticsPerGenderAge($since_str, $until_str)['rows'];
         $insights['device'] = $this->sortAnalyticsPerDevice($this->getAnalyticsPerDevice($since_str, $until_str)['rows']);
@@ -740,5 +768,82 @@ class Youtube extends OAuth2
 
     }
 
+  public function getFansDemographics($insights){
+  	$males = $females = 0; $age = []; $youtube =[];
+	foreach($insights['gender_age'] as $value){
+    	(array_key_exists($value[0], $age)) ? ($age[$value[0]] += $value[2]) : ($age[$value[0]] = $value[2]);
+        ($value[1] == 'male') ? ($males += $value[2]) : ($females += $value[2]);
+    }
+	$viweres = $males + $females;
+	$males_percentage = (round(($males/$viweres),1)*100);
+	$females_percentage = (round(($females/$viweres),1)*100);
+	if($males_percentage >= $$females_percentage){
+    	$max_gender_type = 'males';
+     	 $max_gender_value = $males_percentage;
+    }else{
+    	$max_gender_type = 'females';
+     	 $max_gender_value = $females_percentage;
+    }
+    $youtube['gender'] = $max_gender_type.' '.$max_gender_value.'% ';
+	$max_age_range = array_keys($age, max($age))[0];
+	$max_age_range_value = ($viweres != 0) ? (round((($age[$max_age_range])/$viweres), 1)*100) : 0;
+    $youtube['age'] = substr($max_age_range,3).' '.$max_age_range_value.'% ';
+	$devices_sum = array_sum($insights['device']);
+	$max_device_type = array_keys($insights['device'], max($insights['device']))[0];
+	$max_device_value = ($devices_sum != 0) ? (round((($insights['device'][$max_device_type])/$devices_sum), 1)*100) : 0;
+    $youtube['device'] = $max_device_type.' '.$max_device_value.'% ';
+    foreach($insights['location'] as $value){
+    	$country[$value[0]] = $value[1];
+    }
+	$countries_sum = array_sum($country);
+	$max_country_type = array_keys($country, max($country))[0];
+	$max_country_value = ($countries_sum != 0) ? (round((($country[$max_country_type])/$countries_sum), 1)*100) : 0;
+    $youtube['country'] = $max_country_type.' '.$max_country_value.'% ';
+    $youtube['language'] = $youtube['industry'] = $youtube['seniority'] = '...';
+    return $youtube;
+  }
 
+  
+	public function getComparison($model_id){
+          if(date('d', time()) == '01' || date('d', time()) == '02'){
+              $first_day_last_month = date('Y-m-d', strtotime('-2 months'));
+              $first_day_this_month = date('Y-m-d', strtotime('-1 months'));
+              $last_day_this_month = date('Y-m-d', strtotime('last day of last month'));
+          }else{
+              $first_day_last_month = date('Y-m-d', strtotime('first day of last month'));
+              $first_day_this_month = date('Y-m-d', strtotime('first day of this month'));
+              $last_day_this_month = date('Y-m-d', strtotime('last day of this month'));
+          }
+          
+		  $last_month_analytics = $this->getChannelAnalytics($first_day_last_month, $first_day_this_month);
+		  $this_month_analytics = $this->getChannelAnalytics($first_day_this_month, $last_day_this_month);
+      
+          $statistics['last_month']['gained_followers'] = $last_month_analytics['rows'][0][8];
+		  $statistics['this_month']['gained_followers'] = $this_month_analytics['rows'][0][8];
+		  	
+          $statistics['last_month']['lost_followers'] = $last_month_analytics['rows'][0][9];
+		  $statistics['this_month']['lost_followers'] = $this_month_analytics['rows'][0][9];
+		  	
+          $statistics['last_month']['net_followers'] = $last_month_analytics['rows'][0][8] - $last_month_analytics['rows'][0][9];
+		  $statistics['this_month']['net_followers'] = $this_month_analytics['rows'][0][8] - $this_month_analytics['rows'][0][9];
+		  	
+          $statistics['last_month']['views'] = $last_month_analytics['rows'][0][0];
+		  $statistics['this_month']['views'] = $this_month_analytics['rows'][0][0];
+		  	
+          $statistics['last_month']['likes'] = $last_month_analytics['rows'][0][2];
+		  $statistics['this_month']['likes'] = $this_month_analytics['rows'][0][2];
+		  	
+          $statistics['last_month']['dislikes'] = $last_month_analytics['rows'][0][3];
+		  $statistics['this_month']['dislikes'] = $this_month_analytics['rows'][0][3];
+		  
+		  $statistics['last_month']['comments'] = $last_month_analytics['rows'][0][1];
+		  $statistics['this_month']['comments'] = $this_month_analytics['rows'][0][1];
+		  
+		  $statistics['last_month']['shares'] = $last_month_analytics['rows'][0][4];
+          $statistics['this_month']['shares'] = $this_month_analytics['rows'][0][4];
+
+          return $statistics;
+    }
+    
+  
 }

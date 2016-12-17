@@ -19,10 +19,10 @@ $session = Yii::$app->session;
                         $pages[$user_page['id']] = $user_page["name"];
                     }
                     if(!empty($pages)){
-                    $form = ActiveForm::begin(['id' => 'userPagesForm']);
+                    $form = ActiveForm::begin(['id' => 'userPagehsForm']);
                 ?>
                 <?= $form->field($oUserPagesForm, 'id')->dropDownList($pages)->label('Please Select the page you need to manage with Hype') ?>
-                <?= Html::submitButton(Yii::t('app', 'Submit'), ['id' => 'submit_contact', 'name' => 'submit']) ?>
+                <?= Html::submitButton(Yii::t('app', 'Submit'), ['id' => 'submit_fb_pages', 'name' => 'submit']) ?>
                 <?php
                 ActiveForm::end();
                     }else{

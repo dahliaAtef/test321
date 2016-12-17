@@ -42,17 +42,17 @@ class CronController extends \frontend\components\BaseController {
             $oLoginForm->LoginDb($user->id);
             $facebook = Authclient::findOne(['user_id' => $user->id, 'source' => 'facebook']);
             $twitter = Authclient::findOne(['user_id' => $user->id, 'source' => 'twitter']);
-            $linkedin = Authclient::findOne(['user_id' => $user->id, 'source' => 'linkedin']);
-            $google_plus = Authclient::findOne(['user_id' => $user->id, 'source' => 'google-plus']);
-            $youtube = Authclient::findOne(['user_id' => $user->id, 'source' => 'youtube']);
             $instagram = Authclient::findOne(['user_id' => $user->id, 'source' => 'instagram']);
+            $youtube = Authclient::findOne(['user_id' => $user->id, 'source' => 'youtube']);
+            $google_plus = Authclient::findOne(['user_id' => $user->id, 'source' => 'google-plus']);
+            $linkedin = Authclient::findOne(['user_id' => $user->id, 'source' => 'linkedin']);
             if($user->id >1) {
-                if ($twitter) Yii::$app->runAction('site/twitter');
-                if ($facebook) Yii::$app->runAction('site/facebook');
-                if ($linkedin) Yii::$app->runAction('site/linkedin');
+                if ($facebook) Yii::$app->runAction('save/facebook');
+                if ($twitter) Yii::$app->runAction('save/twitter');
+                if ($instagram) Yii::$app->runAction('save/instagram');
+                if ($youtube) Yii::$app->runAction('save/youtube');
                 if ($google_plus) Yii::$app->runAction('site/google-plus');
-                if ($youtube) Yii::$app->runAction('site/youtube');
-                if ($instagram) Yii::$app->runAction('site/instagram');
+                if ($linkedin) Yii::$app->runAction('save/linkedin');
             }
         }
 

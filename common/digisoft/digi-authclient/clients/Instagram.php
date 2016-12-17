@@ -5,6 +5,7 @@ namespace digi\authclient\clients;
 use Yii;
 use yii\authclient\InvalidResponseException;
 use yii\authclient\OAuth2;
+use yii\base\Exception;
 use common\helpers\GoogleChartHelper;
 use common\helpers\InstagramGoogleChartHelper;
 use common\models\custom\Authclient;
@@ -176,7 +177,7 @@ class Instagram extends OAuth2
     
     public function getTheRestOfUserMedia($max_id){
         $client = $this->getClient();
-        $media = $client->api("users/self/media/recent?count=100&max_id".$max_id, 'GET');
+        $media = $client->api("users/self/media/recent?count=100&max_id=".$max_id, 'GET');
         return $media;
     }
     
@@ -297,7 +298,7 @@ class Instagram extends OAuth2
         $all_media = $media_data["data"];
         while((($all_media[count($all_media)-1]['created_time']) >= $since) && $media_data["pagination"]){
             $media_data = $this->getTheRestOfUserMedia($media_data["pagination"]["next_max_id"]);
-            $media += $media_data["data"];
+            $all_media += $media_data["data"];
         }
         return $all_media;
     }
@@ -320,7 +321,7 @@ class Instagram extends OAuth2
         $oMediaModel->parent_id = $oAccountModel->id;
         $oMediaModel->entity_id = $media["id"];
         $oMediaModel->type = self::POST;
-        $oMediaModel->media_url = $media["images"]["thumbnail"]["url"];
+        $oMediaModel->media_url = $media["images"]["low_resolution"]["url"];
         $oMediaModel->post_type = ($media['type'] == 'image') ? (self::IMAGE) : (self::VIDEO); 
         $oMediaModel->likes = $media["likes"]["count"];
         $oMediaModel->comments = $media["comments"]["count"];
@@ -347,7 +348,7 @@ class Instagram extends OAuth2
         $oMediaModel->parent_id = $oAccountModel->id;
         $oMediaModel->entity_id = $media["id"];
         $oMediaModel->type = self::POST;
-        $oMediaModel->media_url = $media["images"]["thumbnail"]["url"];
+        $oMediaModel->media_url = $media["images"]["low_resolution"]["url"];
         $oMediaModel->post_type = ($media['type'] == 'image') ? (self::IMAGE) : (self::VIDEO); 
         $oMediaModel->likes = $media["likes"]["count"];
         $oMediaModel->comments = $media["comments"]["count"];
@@ -426,7 +427,6 @@ class Instagram extends OAuth2
             $oAccountInsights->total_comments = $total_photo_comments + $total_video_comments;
             $oAccountInsights->save();
         }
-        $this->saveRecentFollowers($oAccountModel->id, $oAccountModel->entity_id);
         $this->account_insights_in_range = $oAccountInsights;
         
         return $oAccountModel;
@@ -466,7 +466,7 @@ class Instagram extends OAuth2
     public function getTimeBasedAccountInsights($id, $since, $until){
 		$since_str = date('Y-m-d H:i:s', $since);
 		$until_str = date('Y-m-d H:i:s', $until);
-        $this->account_insights_in_range = Insights::find()->Where(['model_id' => $id])->andWhere(['between', 'created', $since_str, $until_str])->orderBy(['id' => SORT_DESC])->all();
+        $this->account_insights_in_range = Insights::find()->Where(['model_id' => $id])->andWhere(['between', 'created', $since_str, $until_str])->all();
 		return $this->account_insights_in_range;
     }
     
@@ -503,20 +503,25 @@ class Instagram extends OAuth2
     public function getFollowersGrowth($days_in_range){
         $followers_growth = array();
         foreach($days_in_range as $day){
+          	$day_formated = date('M d, y', $day);
+            $date_day = date('M d', $day);
+            $refine_date = date('d', $day);
+            $date = ($refine_date != '01') ?  $refine_date : $date_day;
+                
             if(is_array($this->account_insights_in_range)){
                 foreach($this->account_insights_in_range as $account_insights){
                     //var_dump($account_insights->created); die;
-                    if(date('M d', strtotime($account_insights->created)) == date('M d', $day)){
-                       $followers_growth[date('M d', $day)] = $account_insights->followers;
+                    if(date('M d, y', strtotime($account_insights->created)) == $day_formated){
+                       $followers_growth[$date] = ($account_insights->followers) ? $account_insights->followers : 0;
                     }
                 } 
             }else{
-                if(date('M d', strtotime($this->account_insights_in_range->created)) == date('M d', $day)){
-                       $followers_growth[date('M d', $day)] = $this->account_insights_in_range->followers;
+                if(date('M d, y', strtotime($this->account_insights_in_range->created)) == $day_formated){
+                       $followers_growth[$date] = ($this->account_insights_in_range->followers) ? $this->account_insights_in_range->followers : 0;
                     }
             }
-            if(!array_key_exists(date('M d', $day), $followers_growth)){
-                $followers_growth[date('M d', $day)] = null;
+            if(!array_key_exists($date, $followers_growth)){
+                $followers_growth[$date] = 0;
             }
         }
         return $followers_growth;
@@ -535,19 +540,21 @@ class Instagram extends OAuth2
             //$this->statistics['source_of_engagement'] = $this->sourceOfEngagement();
             
             foreach($days_in_range as $day){
-                $day_formated = date('M d', $day);
+                $day_formated = date('M d, y', $day);
+                $date_day = date('M d', $day);
+              	$refine_date = date('d', $day);
+              	$date = ($refine_date != '01') ?  $refine_date : $date_day;
                 
                 foreach($this->media_in_range as $media){
                     
-                    if(date('M d', $media->creation_time) == $day_formated){
-                        
-                        if(!array_key_exists($day_formated, $this->statistics['profile'])){
-                            $this->statistics["profile"][$day_formated]["amount"] = 1;
-                            $this->statistics["profile"][$day_formated]["interaction"] = ($media->likes + $media->comments);
-                            $this->statistics['profile'][$day_formated]['followers'] = $media->followers;
+                    if(date('M d, y', $media->creation_time) == $day_formated){
+                        if(!array_key_exists($date, $this->statistics['profile'])){
+                            $this->statistics["profile"][$date]["amount"] = 1;
+                            $this->statistics["profile"][$date]["interaction"] = ($media->likes + $media->comments);
+                            $this->statistics['profile'][$date]['followers'] = $media->followers;
                         }else{
-                            $this->statistics["profile"][$day_formated]["amount"]++;
-                            $this->statistics["profile"][$day_formated]["interaction"] += ($media->likes + $media->comments); 
+                            $this->statistics["profile"][$date]["amount"]++;
+                            $this->statistics["profile"][$date]["interaction"] += ($media->likes + $media->comments); 
                         }
                         if($media->post_type == self::IMAGE){
                             if(array_key_exists($media->filter, $this->statistics['photo_filter'])){
@@ -558,15 +565,15 @@ class Instagram extends OAuth2
                                 $this->statistics['photo_filter'][$media->filter]['interactions'] = ($media->likes + $media->comments);
                             }
                             
-                            if(array_key_exists($day_formated , $this->statistics['image'])){
-                                $this->statistics['image'][$day_formated]["amount"]++;
-                                $this->statistics['image'][$day_formated]["interaction"] += ($media->likes + $media->comments);
+                            if(array_key_exists($date , $this->statistics['image'])){
+                                $this->statistics['image'][$date]["amount"]++;
+                                $this->statistics['image'][$date]["interaction"] += ($media->likes + $media->comments);
                             }else{
-                                $this->statistics['image'][$day_formated]["amount"] = 1;
-                                $this->statistics['image'][$day_formated]["interaction"] = ($media->likes + $media->comments);
-                                if(!array_key_exists($day_formated, $this->statistics['video'])){
-                                    $this->statistics['video'][$day_formated ]["amount"] = 0;
-                                    $this->statistics['video'][$day_formated]["interaction"] = 0;
+                                $this->statistics['image'][$date]["amount"] = 1;
+                                $this->statistics['image'][$date]["interaction"] = ($media->likes + $media->comments);
+                                if(!array_key_exists($date, $this->statistics['video'])){
+                                    $this->statistics['video'][$date]["amount"] = 0;
+                                    $this->statistics['video'][$date]["interaction"] = 0;
                                 }
                             }
                             $this->statistics['total_posts_by_type']['photo']++;
@@ -580,15 +587,15 @@ class Instagram extends OAuth2
                                 $this->statistics['video_filter'][$media->filter]['amount'] = 1;
                                 $this->statistics['video_filter'][$media->filter]['interactions'] = ($media->likes + $media->comments);
                             }
-                            if(array_key_exists($day_formated, $this->statistics['video'])){
-                                $this->statistics['video'][$day_formated]["amount"]++;
-                                $this->statistics['video'][$day_formated]["interaction"] += ($media->likes + $media->comments);
+                            if(array_key_exists($date, $this->statistics['video'])){
+                                $this->statistics['video'][$date]["amount"]++;
+                                $this->statistics['video'][$date]["interaction"] += ($media->likes + $media->comments);
                             }else{
-                                $this->statistics['video'][$day_formated]["amount"] = 1;
-                                $this->statistics['video'][$day_formated]["interaction"] = ($media->likes + $media->comments);
-                                if(!array_key_exists($day_formated, $this->statistics['image'])){
-                                    $this->statistics['image'][$day_formated]["amount"] = 0;
-                                    $this->statistics['image'][$day_formated]["interaction"] = 0;
+                                $this->statistics['video'][$date]["amount"] = 1;
+                                $this->statistics['video'][$date]["interaction"] = ($media->likes + $media->comments);
+                                if(!array_key_exists($date, $this->statistics['image'])){
+                                    $this->statistics['image'][$date]["amount"] = 0;
+                                    $this->statistics['image'][$date]["interaction"] = 0;
                                 }
                             }
                             $this->statistics['total_posts_by_type']['video']++;
@@ -597,20 +604,20 @@ class Instagram extends OAuth2
                         }
                     }
                 }
-                if(!array_key_exists($day_formated, $this->statistics['profile'])){
-                    $this->statistics['image'][$day_formated]['amount'] = $this->statistics['video'][$day_formated]['amount'] = 
-                    $this->statistics['image'][$day_formated]['interaction'] = $this->statistics['video'][$day_formated]['interaction'] =
-                    $this->statistics["profile"][$day_formated]["amount"] = $this->statistics["profile"][$day_formated]["interaction"] =
-                    $this->statistics['profile'][$day_formated]['followers'] = $this->statistics['profile'][$day_formated]["profile_engagement"] =
-                    $this->statistics['profile'][$day_formated]["post_engagement"] = 0;
+                if(!array_key_exists($date, $this->statistics['profile'])){
+                    $this->statistics['image'][$date]['amount'] = $this->statistics['video'][$date]['amount'] = 
+                    $this->statistics['image'][$date]['interaction'] = $this->statistics['video'][$date]['interaction'] =
+                    $this->statistics["profile"][$date]["amount"] = $this->statistics["profile"][$date]["interaction"] =
+                    $this->statistics['profile'][$date]['followers'] = $this->statistics['profile'][$date]["profile_engagement"] =
+                    $this->statistics['profile'][$date]["post_engagement"] = 0;
                 }else{
-                    (($this->statistics['profile'][$day_formated]['interaction']) != 0) ? $this->statistics['days_with_engagement']++ : '';
-                    $this->statistics["profile"][$day_formated]["profile_engagement"] = ((($this->statistics['profile'][$day_formated]['followers'] != 'N/A') && ($this->statistics['profile'][$day_formated]['followers'] != 0)) ? round(((($this->statistics["profile"][$day_formated]['interaction'])/($this->statistics['profile'][$day_formated]['followers']))*100), 2) : 0);
-                    $this->statistics['profile'][$day_formated]["post_engagement"] = ((($this->statistics['profile'][$day_formated]['followers'] != 'N/A') && ($this->statistics['profile'][$day_formated]['followers'] != 0)) ? round(((($this->statistics["profile"][$day_formated]['interaction'])/($this->statistics['profile'][$day_formated]['amount'])/($this->statistics['profile'][$day_formated]['followers']))*100),2) : 0);
-                    $this->statistics['total_post_engagement_rate'] += $this->statistics['profile'][$day_formated]["post_engagement"];
-                    ($this->statistics['profile'][$day_formated]["post_engagement"] > $this->statistics['max_post_engagement_rate']) ? ($this->statistics['max_post_engagement_rate'] = $this->statistics['profile'][$day_formated]["post_engagement"]) : '';
-                    $this->statistics['total_profile_engagement_rate'] += $this->statistics['profile'][$day_formated]["profile_engagement"];
-                    ($this->statistics['profile'][$day_formated]["profile_engagement"] > $this->statistics['max_profile_engagement_rate']) ? ($this->statistics['max_profile_engagement_rate'] = $this->statistics['profile'][$day_formated]["profile_engagement"]) : '';
+                    (($this->statistics['profile'][$date]['interaction']) != 0) ? $this->statistics['days_with_engagement']++ : '';
+                    $this->statistics["profile"][$date]["profile_engagement"] = ((($this->statistics['profile'][$date]['followers'] != 'N/A') && ($this->statistics['profile'][$date]['followers'] != 0)) ? round(((($this->statistics["profile"][$date]['interaction'])/($this->statistics['profile'][$date]['followers']))*100), 2) : 0);
+                    $this->statistics['profile'][$date]["post_engagement"] = ((($this->statistics['profile'][$date]['followers'] != 'N/A') && ($this->statistics['profile'][$date]['followers'] != 0)) ? round(((($this->statistics["profile"][$date]['interaction'])/($this->statistics['profile'][$date]['amount'])/($this->statistics['profile'][$date]['followers']))*100),2) : 0);
+                    $this->statistics['total_post_engagement_rate'] += $this->statistics['profile'][$date]["post_engagement"];
+                    ($this->statistics['profile'][$date]["post_engagement"] > $this->statistics['max_post_engagement_rate']) ? ($this->statistics['max_post_engagement_rate'] = $this->statistics['profile'][$date]["post_engagement"]) : '';
+                    $this->statistics['total_profile_engagement_rate'] += $this->statistics['profile'][$date]["profile_engagement"];
+                    ($this->statistics['profile'][$date]["profile_engagement"] > $this->statistics['max_profile_engagement_rate']) ? ($this->statistics['max_profile_engagement_rate'] = $this->statistics['profile'][$date]["profile_engagement"]) : '';
                 }
             } 
             $this->statistics['total_posts'] = $this->statistics['total_posts_by_type']['photo'] + $this->statistics['total_posts_by_type']['video'];
@@ -814,9 +821,38 @@ class Instagram extends OAuth2
 		return $name;
 	}
 	
+  	
+  	public function checkClientSession(){
+    	if(Yii::$app->session['instagram']){
+        	return $this->getClient();
+        }else{
+        	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
+          	if($oAuthclient ){
+              if($oAuthclient->source_data != null){
+                 Instagram::setClient( unserialize($oAuthclient->source_data));
+                 $ReturnData = $this->getUserData() ;
+                  if( $ReturnData == null){
+                      $oAuthclient->source_data =null;
+                      $oAuthclient->save();
+                      Instagram::setClient( null);
+                  }
+                return $this->getClient();
+              }else{
+                  /*
+                  $client = Facebook::getClient();
+                  //$client->getUserAttributes() ;
+                  $oAuthclient->source_data = serialize($client);
+                  $oAuthclient->save();
+                  */
+              }
+          }
+        }
+    }
+  
+  
 	public function getUserByUrl($url){
 		$name = $this->getUserIdUsingUserUrl($url);
-		$client = $this->getClient();
+		$client = $this->checkClientSession();
 		$search = $client->api("users/search", 'GET', ["q" => $name]);
 		$user_data = $this->getUserDataById($search["data"][0]["id"]);
 		return $user_data;
@@ -830,4 +866,62 @@ class Instagram extends OAuth2
 		return $page;
 	}
 	
+  	
+	public function getComparison($model_id){
+          if(date('d', time()) == '01'){
+              $last_month = date('m', strtotime('-2 months'));
+              $first_day_last_month = date('Y-m-d 02:00:00', strtotime('-2 months'));
+              $first_day_this_month = date('Y-m-d 02:00:00', strtotime('-1 months'));
+              $last_day_this_month = date('Y-m-d 02:00:00', strtotime('last day of last month'));
+            
+            $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
+            $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
+            $statistics['last_month']['followers'] = $insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers;
+            $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
+            
+            $media_last_month = Model::find()->where(['parent_id' => $model_id])->andWhere(['between', 'creation_time', strtotime('-2 months'), strtotime('-1 month')])->all();
+            $media_this_month = Model::find()->where(['parent_id' => $model_id])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
+
+            $statistics['last_month']['media'] = count($media_last_month);
+            $statistics['this_month']['media'] = count($media_this_month);
+
+          }else{
+              $first_day_last_month = date('Y-m-d 02:00:00', strtotime('first day of last month'));
+              $first_day_this_month = date('Y-m-d 02:00:00', strtotime('first day of this month'));
+              $last_day_this_month = date('Y-m-d 02:00:00', strtotime('last day of this month'));
+            
+            $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
+            $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
+            $statistics['last_month']['followers'] = $insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers;
+            $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
+            
+            $media_last_month = Model::find()->where(['parent_id' => $model_id])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
+            $media_this_month = Model::find()->where(['parent_id' => $model_id])->andWhere(['between', 'creation_time', strtotime('first day of this month'), strtotime('last day of this month')])->all();
+
+            $statistics['last_month']['media'] = count($media_last_month);
+            $statistics['this_month']['media'] = count($media_this_month);
+
+          }
+          
+          $statistics['last_month']['likes'] = $statistics['last_month']['comments'] = $statistics['last_month']['shares'] = 0;
+          $statistics['this_month']['likes'] = $statistics['this_month']['comments'] = $statistics['this_month']['shares'] = 0;
+          
+          foreach($media_last_month as $media){
+          	$statistics['last_month']['likes'] += $media->likes;
+            $statistics['last_month']['comments'] += $media->comments;
+            $statistics['last_month']['shares'] += $media->shares;
+          }
+		  $statistics['last_month']['interactions'] = $statistics['last_month']['likes'] + $statistics['last_month']['comments'] + $statistics['last_month']['shares'];
+		  
+          foreach($media_this_month as $media){
+          	$statistics['this_month']['likes'] += $media->likes;
+            $statistics['this_month']['comments'] += $media->comments;
+            $statistics['this_month']['shares'] += $media->shares;
+          }
+          $statistics['this_month']['interactions'] = $statistics['this_month']['likes'] + $statistics['this_month']['comments'] + $statistics['this_month']['shares'];
+		  
+          return $statistics;
+    }
+    
+  
 }

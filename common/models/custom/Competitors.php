@@ -68,4 +68,12 @@ class Competitors extends \common\models\base\Base
     {
         return $this->hasOne(BaseUser::className(), ['id' => 'user_id']);
     }
+  
+  public function deleteCompetitors($ids){
+    $ids_array = explode(",", $ids);
+    foreach($ids_array as $id){
+  		Competitors::findOne($id)->delete();
+    }
+  }
+  
 }

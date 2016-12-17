@@ -2,16 +2,26 @@
 use yii\helpers\Url;
 use digi\authclient\clients\Twitter;
 
-$this->title = 'Twitter';
+$this->title = "Twitter";
 
 ?>
 <div class="page-content inside twitter">
+  <?php if(strtotime('+4 days', strtotime($model->created)) > time()){ ?>
+ <div class="warning-msg">
+  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
+</div><!-- warning msg -->
+  <?php } ?>
+   <div id="loadWh">
+    <div id="loadx">
+      <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
+    </div>
+  </div><!-- loader -->
     <div class="container">
 	<div class="inner-page">
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $user['name'] ?> Audience</h2>
+                    <h2 class="internal-title sec-title"><?= $user['name'] ?>-Audience</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
@@ -118,7 +128,7 @@ $this->title = 'Twitter';
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $user['name'] ?> Content</h2>
+                    <h2 class="internal-title sec-title">Content</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
@@ -146,7 +156,7 @@ $this->title = 'Twitter';
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $user['name'] ?> Engagement</h2>
+                    <h2 class="internal-title sec-title">Engagement</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
@@ -171,11 +181,11 @@ $this->title = 'Twitter';
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6 col-md-12">
                 <?php
                 echo $this->render('_distributionOfInteractionsChart', ['interactions_by_type' => $statistics['interactions'], 'total_interactions' => $statistics['total_interaction'], 'interactions_by_type_json_table' => $twitter->getInteractionsByTypeJsonTable($statistics['interactions'])]);
                 ?>
-            </div><div class="col-md-6">
+            </div><div class="col-lg-6 col-md-12">
                 <?php
                 echo $this->render('_distributionOfInteractionsTable', ['interactions_by_type' => $statistics['interactions'], 'total_interactions' => $statistics['total_interaction'], 'interactions_by_type_json_table' => $twitter->getInteractionsByTypeJsonTable($statistics['interactions'])]);
                 ?>
@@ -186,15 +196,15 @@ $this->title = 'Twitter';
             <h3 class="internal-title twitter ">Mentions Overview</h3>
             <div class="internal-content">
                 <ul>
-                    <li><span class="small-title">Total Mentions : </span><?= $statistics['mentions_per_day']['total_mentions'] ?></li>
-                    <li><span class="small-title">Avg Mentions per day : </span><?= $statistics['mentions_per_day']['avg_mentions_per_day'] ?></li>
+                    <li><span class="small-title">Total Mentions : </span><?= (($statistics['mentions_per_day']['total_mentions']) ? $statistics['mentions_per_day']['total_mentions'] : 0) ?></li>
+                    <li><span class="small-title">Avg Mentions per day : </span><?= (($statistics['mentions_per_day']['avg_mentions_per_day']) ? $statistics['mentions_per_day']['avg_mentions_per_day'] : 0) ?></li>
                 </ul>
             </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
-                <?php
+                <?php 
                 echo $this->render('_numberOfMenttionsPerDayChart', ['mentions_per_day_json_table' => $twitter->getMentionsPerDayJsonTable($statistics['mentions_per_day']['profile'])]);
                 ?>
             </div>
@@ -203,12 +213,12 @@ $this->title = 'Twitter';
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $user['name'] ?> Optimization</h2>
+                    <h2 class="internal-title sec-title">Optimization</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
         </div>
-
+		
         <div class="row">
             <div class="col-md-12">
             <?php
@@ -216,7 +226,7 @@ $this->title = 'Twitter';
             ?>
             </div>
         </div>
-
+		
         <div class="row">
             <div class="col-md-12">    
 			<?php
@@ -225,16 +235,22 @@ $this->title = 'Twitter';
             </div>
         </div>
         <!-- sperated line -->
+      
+      
+		<?php
+            echo $this->render('_comparison', ['comparison' => $twitter->getComparison($model->id)]);
+        ?>
+      
+      <!-- sperated line -->
         <div class="row">
             <div class="col-md-12">
                 <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $user['name'] ?> Top 10 Posts</h2>
+                    <h2 class="internal-title sec-title">Top 10 Posts</h2>
                     <div class="line-box"></div>
                 </div>
             </div>
         </div>
-
-
+	
         <div class="row">
             <div class="col-md-12">
             <?php

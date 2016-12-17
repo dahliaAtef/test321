@@ -9,7 +9,6 @@ nbproject
 nbproject/*
 uploads/*
 backend/uploads/*
-assets/*
 backend/assets/*
 common/config/main-local.php
 common/config/params-local.php
@@ -58,3 +57,5 @@ cgi-bin
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 amer
+backend/web/assets
+shared/

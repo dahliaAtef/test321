@@ -5,6 +5,7 @@ namespace backend\controllers\base;
 use Yii;
 use backend\components\BaseController;
 use yii\web\NotFoundHttpException;
+use common\models\custom\User;
 
 /**
  * UsersController implements the CRUD actions for User model.
@@ -67,7 +68,14 @@ class UsersController extends BaseController {
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+          if($model->status == User::STATUS_VERIFIED){
+                    if(\common\helpers\MailHelper::sendActivationResponse($model)){
+                        Yii::$app->getSession()->setFlash('success', "Activation mail has been sent successfully.");
+                    }else{
+                        Yii::$app->getSession()->setFlash('error', "Activation mail couldn't be sent.");
+                    }
+                    return $this->redirect(['view', 'id' => $model->id]);
+          }
         } else {
             return $this->render('update', [
                         'model' => $model,

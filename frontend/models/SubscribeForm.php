@@ -62,7 +62,7 @@ class SubscribeForm extends Model
             $this->addError($attribute, 'This email has already subscribed.');
             
 			$errors = Yii::$app->session['error'];
-                        ($errors) ? '' : ($errors = []);
+          (!$errors) ? ($errors = []) : '';
 			array_push($errors, 'This email has already subscribed.');
 			Yii::$app->session['error'] = $errors;
 			return false;
@@ -74,7 +74,7 @@ class SubscribeForm extends Model
         if ($oUser) {
             $this->addError($attribute, 'This Brand Name has already subscribed.');
 			$errors = Yii::$app->session['error'];
-                        ($errors) ? '' : ($errors = []);
+          (!$errors) ? ($errors = []) : '';
 			array_push($errors, 'This Brand Name has already subscribed.');
 			Yii::$app->session['error'] = $errors;
 			return false;

@@ -1,5 +1,3 @@
-
-
 @font-face {
 
   font-family:'NeoSansStd';
@@ -193,7 +191,7 @@ footer {padding: 10px 0;width:100%;position:absolute;bottom:0;left:0;}
 
 inside design ------*/
 
-header.inside {position:fixed;z-index:2;top:0;width:100%;padding: 0;/*height: 140px;*/border-bottom: 1px solid #fff;background: url(../images/home-bg.jpg) no-repeat center center fixed; 
+header.inside {position:fixed;z-index:2;top:0;width:100%;padding: 0;/*height: 140px;*/border-bottom: 1px solid #fff;background: url(../images/dashboard-bg.jpg) no-repeat center center fixed; 
 
   -webkit-background-size: cover;
 
@@ -950,8 +948,8 @@ table.dashboard td:nth-child(odd) ,table.dashboard td:nth-child(even) {border-ri
 table {width:94%;margin:auto;text-align: center;;margin-bottom: 40px}
 table.adaptMargin{margin-top: 108px}
 table tr{line-height: 24px;}
-    tr:nth-child(odd){background: #d3d3d3;}
-    tr:nth-child(even){background: #dedede;}
+    tr:nth-child(odd){/*background: #d3d3d3;*/background: #f4f3f3;}
+    tr:nth-child(even){/*background: #dedede;*/background: #fdfdfd;}
     td:nth-child(even){border-right: .5px solid #b3b3b3;}
     td:nth-child(odd){border-right: .5px solid #b3b3b3;}
     td:last-child{border-right: 0 !important}
@@ -992,7 +990,7 @@ h3.internal-title {display: inline-block;
   }
 h3.internal-title.short {min-width:initial;}
 
-h3.internal-title.noneBG {color:#6d6e71;font-size: 20px;}
+h3.internal-title.noneBG {color:#6d6e71;font-size: 20px;;text-align: center;display: block;}
 h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: center;display: block;}
 .internal-title.sec-title {font-size: 24px;font-weight: bolder}
   .page-content.inside.dashboard .internal-title.sec-title {color: #1c0f3a}
@@ -1071,11 +1069,15 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
             .element.twitter {border-color: #25aae1;}
             .element.instagram {border-color: #125688;}
             .element.youtube {border-color: #bd212e;}
+            .element.google_plus {border-color: #db402c;}
+            .element.linkedin {border-color: #0375b3;}
 
             .element.facebook:after {border-bottom-color: #4066ab;}
             .element.twitter:after {border-bottom-color: #25aae1;}
             .element.instagram:after {border-bottom-color: #125688;}
             .element.youtube:after {border-bottom-color: #bd212e;}
+            .element.google_plus:after {border-bottom-color: #db402c;}
+            .element.linkedin:after {border-bottom-color: #0375b3;}
 
             .growth {}
               .growth p {text-align: center!important}
@@ -1112,7 +1114,9 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
             .rounded.facebook{background:#4066ab } 
             .rounded.twitter {background:#25aae1 } 
             .rounded.instagram{background:#125688 } 
-            .rounded.youtube {background:#bd212e } 
+            .rounded.youtube {background:#bd212e }
+			.rounded.google_plus {background:#db402c } 
+			.rounded.linkedin {background:#0375b3 } 
 
 
             /*--- menu ----*/
@@ -1282,7 +1286,7 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
     margin: auto;
   transform: rotateY( 180deg );
 }
-
+.card.appear #formView {display:none}
 .logo-home-success {margin:0 0 48px;text-align: center;}
       .logo-home-success img{width: 100px}
     .about-hype-success {text-align: center}
@@ -1291,3 +1295,19 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
       .about-hype-success .thanks-success{color: #8e8e8e; font-size: 30px;line-height: 44px;margin-bottom: 0;}
       .about-hype-success .stutas-success{color: #8e8e8e;font-size: 20px;line-height: 20px;font-weight: normal;margin-bottom: 30px}
     .about-hype-success .get-start{font-size: 20px;width: 150px ;margin: 10px auto;display: block;}
+
+
+@media all and (max-width: 720px) {
+.about-hype-success .welcome-success {
+    font-size: 30px;
+    line-height: 27px;
+}
+.about-hype-success .thanks-success {
+    font-size: 20px;
+    line-height: 36px;
+}
+.about-hype-success .stutas-success {
+    font-size: 16px;
+    line-height: 18px;
+}
+}

@@ -4,7 +4,7 @@
     if($sharing_services_json_table){
         $this->registerJs("GoogleCharts.drawCircle(".$sharing_services_json_table.", 'yg', 'sharing_services')", yii\web\View::POS_END);	
         echo '<h3 class="internal-title noneBG">Channel view per Sharing Service</h3>';
-        echo '<div class="internal-content adaptMargin34">';      
+        echo '<div class="internal-content circleChart adaptMargin34">';      
             echo '<div id="sharing_services"></div>';
         echo '</div>'; 
     }
@@ -23,7 +23,7 @@ if(array_key_exists('rows', $sharing_services)){
     foreach($sharing_services['rows'] as $sharing_service){
     ?>
     <tr>
-        <td><?= $sharing_service[0] ?></td>
+        <td><?= ucwords(strtolower($sharing_service[0])) ?></td>
         <td><?= $sharing_service[1] ?></td>
     </tr>
     <?php } ?>

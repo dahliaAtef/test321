@@ -291,6 +291,33 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         '25' => 'Sales',
         '26' => 'Support'
     ];
+  
+  	public $language = [
+    	'en_US' => 'English',
+      	'ar_AE' => 'Arabic',
+        'zh_CN' => 'Chinese - Simplified',
+        'zh_TW' => 'Chinese - Traditional',
+        'cs_CZ' => 'Czech',
+        'da_DK' => 'Danish',
+        'nl_NL' => 'Dutch',
+        'fr_FR' => 'French',
+        'de_DE' => 'German',
+        'in_ID' => 'Indonesian',
+        'it_IT' => 'Italian',
+        'ja_JP' => 'Japanese',
+        'ko_KR' => 'Korean',
+        'ms_MY' => 'Malay',
+        'no_NO' => 'Norwegian',
+        'pl_PL' => 'Polish',
+        'pt_BR' => 'Portuguese',
+        'ro_RO' => 'Romanian',
+        'ru_RU' => 'Russian',
+        'es_ES' => 'Spanish',
+        'sv_SE' => 'Swedish',
+        'tl_PH' => 'Tagalog',
+        'th_TH' => 'Thai',
+        'tr_TR' => 'Turkish',
+    ];
     
     /**
      * Set instagram client session 
@@ -395,20 +422,27 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         return $company_update_statistics;
     }
     
-    public function getHistoricalStatisticsInTime($company_id, $since){
+    public function getHistoricalStatisticsInTime($company_id, $since, $until = null){
         $client = $this->getClient();
-        $company_update_statistics = $client->api('companies/'.$company_id.'/historical-status-update-statistics:(click-count,like-count,comment-count,impression-count,share-count,time)?time-granularity=day&start-timestamp='.$since.'&format=json');
+        if($until){
+        	$company_update_statistics = $client->api('companies/'.$company_id.'/historical-status-update-statistics:(click-count,like-count,comment-count,impression-count,share-count,time)?time-granularity=day&start-timestamp='.$since.'&end-timestamp='.$until.'&format=json');
+        }else{
+        	$company_update_statistics = $client->api('companies/'.$company_id.'/historical-status-update-statistics:(click-count,like-count,comment-count,impression-count,share-count,time)?time-granularity=day&start-timestamp='.$since.'&format=json');
+        }
         return $company_update_statistics;
     }
     
-    public function getHistoricalFollowersStatisticsInTime($company_id, $since){
+    public function getHistoricalFollowersStatisticsInTime($company_id, $since, $until = null){
         $client = $this->getClient();
-        $company_followers_statistics = $client->api('companies/'.$company_id.'/historical-follow-statistics?time-granularity=day&start-timestamp='.$since.'&format=json');
-        //echo '<pre>'; var_dump($company_followers_statistics); echo '</pre>'; die;
+      	if($until){
+        	$company_followers_statistics = $client->api('companies/'.$company_id.'/historical-follow-statistics?time-granularity=day&start-timestamp='.$since.'&end-timestamp='.$until.'&format=json');
+        }else{
+        	$company_followers_statistics = $client->api('companies/'.$company_id.'/historical-follow-statistics?time-granularity=day&start-timestamp='.$since.'&format=json');
+        }
         return $company_followers_statistics;
     }
     
-    public function getCompanyStatistics($company_id = '5260201'){
+    public function getCompanyStatistics($company_id){
         $client = $this->getClient();
         $company_statistics = $client->api('companies/'.$company_id.'/company-statistics?format=json');
         //echo '<pre>'; var_dump($company_statistics); echo '</pre>'; die;
@@ -455,7 +489,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     }
     
     public function statistics($oModel){
-        $since = strtotime('-12 months') * 1000;
+        $since = strtotime('first day of this month') * 1000;
         $until = time() * 1000;
         $historical_statistics = $this->getHistoricalStatisticsInTime($oModel->entity_id, $since)['values'];
         $days = [];
@@ -467,14 +501,17 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
             $statistics_array['comments'] += $statistics['commentCount'];
             $statistics_array['shares'] += $statistics['shareCount'];
             $statistics_array['impressions'] += $statistics['impressionCount'];
-            $day_in_str = date('d M', (($statistics['time'])/1000));
-            array_push($days, $day_in_str);
-            $company_views_statistics_by_day[$day_in_str]['impressions'] = $statistics['impressionCount'];
-            $company_views_statistics_by_day[$day_in_str]['shares'] = $statistics['shareCount'];
-            $company_views_statistics_by_day[$day_in_str]['comments'] = $statistics['commentCount'];
-            $company_views_statistics_by_day[$day_in_str]['likes'] = $statistics['likeCount'];
-            $company_views_statistics_by_day[$day_in_str]['clicks'] = $statistics['clickCount'];
-            $company_views_statistics_by_day[$day_in_str]['interactions'] = $company_views_statistics_by_day[$day_in_str]['shares'] + $company_views_statistics_by_day[$day_in_str]['likes'] + $company_views_statistics_by_day[$day_in_str]['comments'] = $statistics['commentCount'];
+          	
+          	$date_unix = (($statistics['time'])/1000);
+          	//$day_formated = date('M d, y', $date_unix);
+            $date_day = date('M d', $date_unix);
+            array_push($days, $date_unix);
+            $company_views_statistics_by_day[$date_unix]['impressions'] = $statistics['impressionCount'];
+            $company_views_statistics_by_day[$date_unix]['shares'] = $statistics['shareCount'];
+            $company_views_statistics_by_day[$date_unix]['comments'] = $statistics['commentCount'];
+            $company_views_statistics_by_day[$date_unix]['likes'] = $statistics['likeCount'];
+            $company_views_statistics_by_day[$date_unix]['clicks'] = $statistics['clickCount'];
+            $company_views_statistics_by_day[$date_unix]['interactions'] = $company_views_statistics_by_day[$date_unix]['shares'] + $company_views_statistics_by_day[$date_unix]['likes'] + $company_views_statistics_by_day[$date_unix]['comments'] = $statistics['commentCount'];
         }
         $statistics_array['company_views_statistics_by_day'] = $company_views_statistics_by_day;
         $statistics_array['days'] = $days;
@@ -485,7 +522,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         $statistics_array['total_followers'] = $statistics_array['followers']['values'][$days_max_index]['totalFollowerCount'];
         $statistics_array['organic_followers'] = $statistics_array['followers']['values'][$days_max_index]['organicFollowerCount'];
         $statistics_array['paid_followers'] = $statistics_array['followers']['values'][$days_max_index]['paidFollowerCount'];
-        $statistics_array['updates'] = Model::find()->Where(['parent_id' => $oModel->id])->andWhere(['between', 'creation_time', $since, $until])->all();
+        $statistics_array['updates'] = Model::find()->Where(['parent_id' => $oModel->id])->andWhere(['between', 'creation_time', ($since/1000), ($until/1000)])->all();
         $statistics_array['avg_daily_updates'] = (count($statistics_array['updates']) != 0) ? round(((count($statistics_array['updates']))/count($days)), 1) : 0;
         $statistics_array['avg_daily_reach'] = ($statistics_array['impressions'] != 0) ? round((($statistics_array['impressions'])/count($days)), 1) : 0;
         $statistics_array['avg_daily_interactions'] = ($statistics_array['interactions'] != 0) ? round((($statistics_array['interactions'])/count($days)), 1) : 0;
@@ -499,60 +536,88 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
     
     public function getUpdatesStatisticsByDay($days, $updates, $updates_statistics){
         foreach($days as $day){
-            $update_statistics_by_day[$day] = ['new_updates' => 0, 'new_likes' => 0, 'new_comments' => 0, 'new_shares' => 0, 'new_interactions' => 0, 'new_impressions' => 0, 'new_clicks' => 0];
-            foreach($updates as $oUpdate){
-                if(date('d M', $oUpdate->creation_time) == $day){
-                    $update_statistics_by_day[$day]['new_updates']++;
-                    $update_statistics_by_day[$day]['new_likes'] += $updates_statistics[$oUpdate->entity_id]['likes'];
-                    $update_statistics_by_day[$day]['new_comments'] += $updates_statistics[$oUpdate->entity_id]['comments'];
-                    $update_statistics_by_day[$day]['new_shares'] += $updates_statistics[$oUpdate->entity_id]['shares'];
-                    $update_statistics_by_day[$day]['new_interactions'] += ($update_statistics_by_day[$day]['new_likes'] + $update_statistics_by_day[$day]['new_comments'] + $update_statistics_by_day[$day]['new_shares']);
-                    $update_statistics_by_day[$day]['new_impressions'] += $updates_statistics[$oUpdate->entity_id]['impressions'];
-                    $update_statistics_by_day[$day]['new_clicks'] += $updates_statistics[$oUpdate->entity_id]['clicks'];
-                }
+          	$counter = 0;
+            $date_day = date('M d', $day);
+          	foreach($updates as $oUpdate){
+                if(date('M d', $oUpdate->creation_time) == $date_day){
+                  	if($counter == 0){
+                    	$update_statistics_by_day[$day]['new_updates'] = 1;
+                        $update_statistics_by_day[$day]['new_likes'] = $updates_statistics[$oUpdate->entity_id]['likes'];
+                        $update_statistics_by_day[$day]['new_comments'] = $updates_statistics[$oUpdate->entity_id]['comments'];
+                        $update_statistics_by_day[$day]['new_shares'] = $updates_statistics[$oUpdate->entity_id]['shares'];
+                        $update_statistics_by_day[$day]['new_interactions'] = ($update_statistics_by_day[$date]['new_likes'] + $update_statistics_by_day[$date]['new_comments'] + $update_statistics_by_day[$date]['new_shares']);
+                        $update_statistics_by_day[$day]['new_impressions'] = $updates_statistics[$oUpdate->entity_id]['impressions'];
+                        $update_statistics_by_day[$day]['new_clicks'] = $updates_statistics[$oUpdate->entity_id]['clicks'];
+                      	$counter++;
+                    }else{
+                    	$update_statistics_by_day[$day]['new_updates']++;
+                        $update_statistics_by_day[$day]['new_likes'] += $updates_statistics[$oUpdate->entity_id]['likes'];
+                        $update_statistics_by_day[$day]['new_comments'] += $updates_statistics[$oUpdate->entity_id]['comments'];
+                        $update_statistics_by_day[$day]['new_shares'] += $updates_statistics[$oUpdate->entity_id]['shares'];
+                        $update_statistics_by_day[$day]['new_interactions'] += ($update_statistics_by_day[$date]['new_likes'] + $update_statistics_by_day[$date]['new_comments'] + $update_statistics_by_day[$date]['new_shares']);
+                        $update_statistics_by_day[$day]['new_impressions'] += $updates_statistics[$oUpdate->entity_id]['impressions'];
+                        $update_statistics_by_day[$day]['new_clicks'] += $updates_statistics[$oUpdate->entity_id]['clicks'];
+                    }
+           	 	}
             }
+              if($counter == 0){
+                	$update_statistics_by_day[$day]['new_updates'] = 0;
+                    $update_statistics_by_day[$day]['new_likes'] = 0;
+                    $update_statistics_by_day[$day]['new_comments'] = 0;
+                    $update_statistics_by_day[$day]['new_shares'] = 0;
+                    $update_statistics_by_day[$day]['new_interactions'] = 0;
+                    $update_statistics_by_day[$day]['new_impressions'] = 0;
+                    $update_statistics_by_day[$day]['new_clicks'] = 0;
+              }
         }
+      //echo '<pre>'; var_dump($update_statistics_by_day); echo '</pre>'; die;
         return $update_statistics_by_day;
     }
     
     public function getUpdatesByDayJsonTable($updates_by_day_statistics){
-        $updates_by_day_json_table = ($updates_by_day_statistics) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'updates', $updates_by_day_statistics, 'new_updates') : '';
+        $updates_by_day_json_table = ($updates_by_day_statistics) ? GoogleChartHelper::getKeyValueTimeDataTableWithValueKeyName('day', 'updates', $updates_by_day_statistics, 'new_updates') : '';
         return $updates_by_day_json_table;
     }
     
     public function getInteractionsByDayJsonTable($days, $update_statistics_by_day, $company_views_statistics_by_day){
-        $interactions_by_day_json_table = (($update_statistics_by_day) && ($company_views_statistics_by_day)) ? GoogleChartHelper::getTwoGraphsByDayDataTableUsingKeyNames('day', 'new interactions', 'total interactions', $days, $update_statistics_by_day, 'new_interactions', $company_views_statistics_by_day, 'interactions') : '';
+        $interactions_by_day_json_table = (($update_statistics_by_day) && ($company_views_statistics_by_day)) ? GoogleChartHelper::getTwoGraphsByDayTimeDataTableUsingKeyNames('day', 'new interactions', 'total interactions', $days, $update_statistics_by_day, 'new_interactions', $company_views_statistics_by_day, 'interactions') : '';
         return $interactions_by_day_json_table;
     }
     
     public function getInteractionsDistributionByDayJsonTable($statistics){
-        $interactions_distribution_by_day_json_table = ($statistics) ? GoogleChartHelper::getSameArrayThreeValuesDataTableUsingKeyNames('day', 'likes', 'comments', 'shares', $statistics, 'likes', 'comments', 'shares') : '';
+        $interactions_distribution_by_day_json_table = ($statistics) ? GoogleChartHelper::getSameArrayThreeValuesTimeDataTableUsingKeyNames('day', 'likes', 'comments', 'shares', $statistics, 'likes', 'comments', 'shares') : '';
         return $interactions_distribution_by_day_json_table;
     }
     
     public function getClicksByDayJsonTable($statistics){
-        $clicks_by_day_json_table = ($statistics) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'clicks', $statistics, 'clicks') : '';
+        $clicks_by_day_json_table = ($statistics) ? GoogleChartHelper::getKeyValueTimeDataTableWithValueKeyName('day', 'clicks', $statistics, 'clicks') : '';
         return $clicks_by_day_json_table;
     }
     
     public function getImpressionsByDayJsonTable($statistics){
-        $impressions_by_day_json_table = ($statistics) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'impressions', $statistics, 'impressions') : '';
+        $impressions_by_day_json_table = ($statistics) ? GoogleChartHelper::getKeyValueTimeDataTableWithValueKeyName('day', 'impressions', $statistics, 'impressions') : '';
         return $impressions_by_day_json_table;
     }
     
     public function getFollowersArray($followers){
         $followers_array = [];
         foreach($followers as $day){
-            $day_t = date('d M', ($day['time']/1000));
-            $followers_array[$day_t]['total'] = $day['totalFollowerCount'];
-            $followers_array[$day_t]['organic'] = $day['organicFollowerCount'];
-            $followers_array[$day_t]['paid'] = $day['paidFollowerCount'];
+          
+          	$date_unix = ($day['time']/1000);
+          	//$day_formated = date('M d, y', $date_unix);
+            $date_day = date('M d', $date_unix);
+            $refine_date = date('d', $date_unix);
+            $date = ($refine_date != '01') ?  $refine_date : $date_day;
+          
+            $followers_array[$date_unix]['total'] = $day['totalFollowerCount'];
+            $followers_array[$date_unix]['organic'] = $day['organicFollowerCount'];
+            $followers_array[$date_unix]['paid'] = $day['paidFollowerCount'];
         }
         return $followers_array;
     }
     
     public function getFollowersByDayJsonTable($followers){
-        $followers_by_day_json_table = ($followers) ? GoogleChartHelper::getSameArrayThreeValuesDataTableUsingKeyNames('day', 'total', 'organic', 'paid', $followers, 'total', 'organic', 'paid') : '';
+        $followers_by_day_json_table = ($followers) ? GoogleChartHelper::getSameArrayThreeValuesTimeDataTableUsingKeyNames('day', 'total', 'organic', 'paid', $followers, 'total', 'organic', 'paid') : '';
         return $followers_by_day_json_table;
     }
     
@@ -660,7 +725,27 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
             }else{
                 $this->createUpdateModel($parent_model->entity_id, $parent_model->id, $parent_model->authclient_id, $update, $since);
             }
+        } 
+      //$since = strtotime('first day of this month') * 1000;
+      $history = $this->getHistoricalStatisticsInTime($parent_model->entity_id, $since)['values'];
+      $historyPerMonth = ['clicks' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'impressions' => 0];
+        foreach($historical_statistics as $statistics){
+            $historyPerMonth['clicks'] += $statistics['clickCount'];
+            $historyPerMonth['likes'] += $statistics['likeCount'];
+            $historyPerMonth['comments'] += $statistics['commentCount'];
+            $historyPerMonth['shares'] += $statistics['shareCount'];
+            $historyPerMonth['impressions'] += $statistics['impressionCount'];
         }
+      $company_statistics = $this->getCompanyStatistics($parent_model->entity_id);
+      $historyPerMonth['fans_countries'] = $this->getCountry($company_statistics['followStatistics']['countries']['values']);
+      $historyPerMonth['fans_industries'] = $this->getIndustry($company_statistics['followStatistics']['industries']['values']);
+      $historyPerMonth['fans_seniorities'] = $this->getSeniority($company_statistics['followStatistics']['seniorities']['values']);
+      $data = $this->getCompanyData($parent_model->entity_id);
+      $oAccountInsights = new Insights();
+      $oAccountInsights->model_id = $parent_model->id;
+      $oAccountInsights->followers = $data['numFollowers'];
+      $oAccountInsights->insights_json = json_encode($historyPerMonth);
+      $oAccountInsights->save();
     }
 
 
@@ -725,6 +810,66 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         return $this->apiInternal($accessToken, $url, $method, $params, $headers);
     }
 
+		
+    public function getAccountInsightsInRange($account_model_id, $since, $until){
+      $since_str = date('Y-m-d H:i:s', $since);
+      $until_str = date('Y-m-d H:i:s', $until);
+      $account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since_str, $until_str])->all();
+      return $account_insights;
+    }
 
-
+	public function getFansDemographics($insights){
+    	$linkedin = [];
+      	$max_country_value = max($insights['fans_countries']);
+      	$max_country_index = array_keys($insights['fans_countries'], $max_country_value)[0];
+      	$linkedin['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['fans_countries']))*100), 1).'%';
+		$max_industry_value = max($insights['fans_industries']);
+      	$max_industry_index = array_keys($insights['fans_industries'], $max_industry_value)[0];
+      	$linkedin['industry'] = $max_industry_index.' '.round(((($max_industry_value)/array_sum($insights['fans_industries']))*100), 1).'%';
+		$max_seniority_value = max($insights['fans_seniorities']);
+      	$max_seniority_index = array_keys($insights['fans_seniorities'], $max_seniority_value)[0];
+      	$linkedin['seniority'] = $max_seniority_index.' '.round(((($max_seniority_value)/array_sum($insights['fans_seniorities']))*100), 1).'%';
+		$linkedin['age'] = $linkedin['gender'] = $linkedin['language'] = $linkedin['device'] = '...';
+      return $linkedin;
+    }	
+  
+    public function calculateStatisticsDistributionArray($statistics){
+		$statistics_distribution = array_fill_keys(['clicks', 'impressions', 'likes', 'comments', 'shares'], 0);
+      	foreach($statistics as $metric){
+        	$statistics_distribution['clicks'] += $metric['clickCount'];
+          	$statistics_distribution['impressions'] += $metric['impressionCount'];
+          	$statistics_distribution['likes'] += $metric['likeCount'];
+          	$statistics_distribution['comments'] += $metric['commentCount'];
+          	$statistics_distribution['shares'] += $metric['shareCount'];
+        }
+      	return $statistics_distribution;
+    }
+  
+	public function getComparison($model_id){
+        if(date('d', time()) == '01'){
+            $first_day_last_month = strtotime('-2 months') * 1000;
+            $first_day_this_month = strtotime('-1 months') * 1000;
+            $last_day_last_month = strtotime('-1 days', (($first_day_this_month)/1000)) * 1000;
+            $last_day_this_month = strtotime('last day of last month') * 1000;
+        }else{
+            $first_day_last_month = strtotime('first day of last month') * 1000;
+            $last_day_last_month = strtotime('last day of last month') * 1000;
+            $first_day_this_month = strtotime('first day of this month') * 1000;
+            $last_day_this_month = strtotime('last day of this month') * 1000;
+        }
+      	$followers_last_month = $this->getHistoricalFollowersStatisticsInTime($model_id, $first_day_last_month, $last_day_last_month)['values'];
+      	$followers_this_month = $this->getHistoricalFollowersStatisticsInTime($model_id, $first_day_this_month, $last_day_this_month)['values'];
+		$history_last_month = $this->getHistoricalStatisticsInTime($model_id, $first_day_last_month, $last_day_last_month)['values'];
+        $history_this_month = $this->getHistoricalStatisticsInTime($model_id, $first_day_this_month, $last_day_this_month)['values'];
+		$statistics['last_month'] = $this->calculateStatisticsDistributionArray($history_last_month);
+      	$statistics['this_month'] = $this->calculateStatisticsDistributionArray($history_this_month);
+      	$statistics['last_month']['total_followers'] = $followers_last_month[count($followers_last_month) - 1]['totalFollowerCount'] - $followers_last_month[0]['totalFollowerCount'];
+      	$statistics['this_month']['total_followers'] = $followers_this_month[count($followers_this_month) - 1]['totalFollowerCount'] - $followers_this_month[0]['totalFollowerCount'];
+      	$statistics['last_month']['organic_followers'] = $followers_last_month[count($followers_last_month) - 1]['organicFollowerCount'] - $followers_last_month[0]['organicFollowerCount'];
+      	$statistics['this_month']['organic_followers'] = $followers_this_month[count($followers_this_month) - 1]['organicFollowerCount'] - $followers_this_month[0]['organicFollowerCount'];
+      	$statistics['last_month']['paid_followers'] = $followers_last_month[count($followers_last_month) - 1]['paidFollowerCount'] - $followers_last_month[0]['paidFollowerCount'];
+      	$statistics['this_month']['paid_followers'] = $followers_this_month[count($followers_this_month) - 1]['paidFollowerCount'] - $followers_this_month[0]['paidFollowerCount'];
+      	return $statistics;
+    }
+  
 }

@@ -15,8 +15,8 @@ use yii\helpers\Url;
                 </div>
                 <!-- END SIDEBAR TOGGLER BUTTON -->
             </li>
-
-            <li class="start <?= (in_array(Yii::$app->controller->id, ['clients', 'industries', 'offering', 'projects']) ) ? 'active open' : '' ?>">
+<!--
+            <li class="start </?= (in_array(Yii::$app->controller->id, ['clients', 'industries', 'offering', 'projects']) ) ? 'active open' : '' ?>">
                 <a href="javascript:;">
                     <i class="fa fa-database"></i>
                     <span class="title">Work</span>
@@ -25,35 +25,35 @@ use yii\helpers\Url;
                 </a>
 
                 <ul class="sub-menu">
-                    <li class="<?= (Yii::$app->controller->id == 'clients') ? 'active' : '' ?>">
+                    <li class="</?= (Yii::$app->controller->id == 'clients') ? 'active' : '' ?>">
                         <a href="<?= Url::to(['/clients']) ?>"><i class="fa fa-briefcase"></i> Clients </a>
                     </li>
-                    <li class="<?= (Yii::$app->controller->id == 'industries') ? 'active' : '' ?>">
-                        <a href="<?= Url::to(['/industries']) ?>"><i class="fa fa-paw"></i> Industries </a>
+                    <li class="</?= (Yii::$app->controller->id == 'industries') ? 'active' : '' ?>">
+                        <a href="</?= Url::to(['/industries']) ?>"><i class="fa fa-paw"></i> Industries </a>
                     </li>
-                    <li class="<?= (Yii::$app->controller->id == 'offering') ? 'active' : '' ?>">
-                        <a href="<?= Url::to(['/offering']) ?>"><i class="fa fa-cloud"></i> Offering </a>
+                    <li class="</?= (Yii::$app->controller->id == 'offering') ? 'active' : '' ?>">
+                        <a href="</?= Url::to(['/offering']) ?>"><i class="fa fa-cloud"></i> Offering </a>
                     </li>
-                    <li class="<?= (Yii::$app->controller->id == 'projects') ? 'active' : '' ?>">
-                        <a href="<?= Url::to(['/projects']) ?>"><i class="fa fa-cubes"></i> Projects </a>
+                    <li class="</?= (Yii::$app->controller->id == 'projects') ? 'active' : '' ?>">
+                        <a href="</?= Url::to(['/projects']) ?>"><i class="fa fa-cubes"></i> Projects </a>
                     </li>
                 </ul>
             </li>
 
-            <li class="<?= (Yii::$app->controller->id == 'pages') ? 'active' : '' ?>">
-                <a href="<?= Url::to(['/pages']) ?>">
+            <li class="</?= (Yii::$app->controller->id == 'pages') ? 'active' : '' ?>">
+                <a href="</?= Url::to(['/pages']) ?>">
                     <i class="fa fa-pencil"></i>
                     <span class="title">Pages</span> 
                 </a>
             </li>
             
-            <li class="<?= (Yii::$app->controller->id == 'careers') ? 'active' : '' ?>">
-                <a href="<?= Url::to(['/careers']) ?>">
+            <li class="</?= (Yii::$app->controller->id == 'careers') ? 'active' : '' ?>">
+                <a href="</?= Url::to(['/careers']) ?>">
                     <i class="fa fa-graduation-cap"></i>
                     <span class="title">Careers</span> 
                 </a>
             </li>
-
+-->
             <li class="<?= (Yii::$app->controller->id == 'users') ? 'active' : '' ?>">
                 <a href="<?= Url::to(['/users']) ?>">
                     <i class="fa fa-user"></i>

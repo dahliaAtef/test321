@@ -11,7 +11,7 @@ use common\models\custom\User;
  */
 class SupportForm extends Model
 {
-    public $name;
+    public $email;
     public $mobile;
     public $support;
     public $message;
@@ -27,9 +27,9 @@ class SupportForm extends Model
     public function rules()
     {
         return [
-            [['name', 'mobile', 'support', 'message'], 'required'],
+            [['email', 'mobile', 'support', 'message'], 'required'],
             [['mobile'], 'integer', 'min' => 10],
-            [['name'], 'string', 'min' => 3, 'max' => 64],
+            [['email'], 'email'],
         ];
     }
 
@@ -40,7 +40,7 @@ class SupportForm extends Model
     {
         return [
             'id' => 'ID',
-            'name' => 'Name',
+            'email' => 'Email',
             'mobile' => 'Mobile',
             'support' => 'Support',
             'message' => 'Message',
@@ -55,26 +55,11 @@ class SupportForm extends Model
      * @return boolean whether the email was sent
      */
     public function sendSupportEmail() {
-			$email = $this->getSupportEmail($this->support);
             return Yii::$app->mailer->compose()
-            ->setTo($email)
+            ->setTo(Yii::$app->params['supportEmail'])
+            ->setFrom($this->email)
             ->setTextBody($this->message)
             ->send();
     }
-	
-	public function getSupportEmail($support_type){
-		switch($support_type){
-			case self::FEEDBACK :
-				$support_email = Yii::$app->params['feedbackEmail'];
-				break;
-			case self::TECHNICALSUPPORT :
-				$support_email = Yii::$app->params['technicalSupportEmail'];
-				break;
-			case self::COMPLAINT :
-				$support_email = Yii::$app->params['complaintEmail'];
-				break;
-		}
-		return $support_email;
-	}
-    
+
 }

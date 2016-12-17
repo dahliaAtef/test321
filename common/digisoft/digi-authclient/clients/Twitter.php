@@ -25,8 +25,8 @@ class Twitter extends \yii\authclient\clients\Twitter
     /**
      * get array of days in the specified range of days 
      **/
-    public function getDaysInRange($from = null, $to = null){
-        (!$from) ? ($from = strtotime(date('Y-07-01', time()))) : '';
+    public function  getDaysInRange($from = null, $to = null){
+        (!$from) ? ($from = strtotime('first day of this month')) : '';
         (!$to) ? ($to = time()) : '';
         $days_in_range[] = $from;
         $current = $from/*strtotime('+1 days', $from)*/;
@@ -71,8 +71,37 @@ class Twitter extends \yii\authclient\clients\Twitter
 	return $screen_name;
     }
 	
+  	
+  	public function checkClientSession(){
+    	if(Yii::$app->session['twitter']){
+        	return $this->getClient();
+        }else{
+        	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
+          	if($oAuthclient ){
+              if($oAuthclient->source_data != null){
+                 Twitter::setClient( unserialize($oAuthclient->source_data));
+                 $ReturnData = $this->getAccountData() ;
+                  if( $ReturnData == null){
+                      $oAuthclient->source_data =null;
+                      $oAuthclient->save();
+                      Twitter::setClient( null);
+                  }
+                  return $this->getClient();
+              }else{
+                  /*
+                  $client = Facebook::getClient();
+                  //$client->getUserAttributes() ;
+                  $oAuthclient->source_data = serialize($client);
+                  $oAuthclient->save();
+                  */
+              }
+          }
+        }
+    }
+  
+  
     public function getAccountDataByScreenName($name){
-	$client = $this->getClient();
+	$client = $this->checkClientSession();
         $user_data = $client->api("users/show.json", 'GET', ['screen_name' => $name]);
         return $user_data;
     }
@@ -279,12 +308,12 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oTweetModel->likes = $tweet["favorite_count"];
         $oTweetModel->shares = $tweet["retweet_count"];
         $comments = Model::find()->andWhere(['parent_id' => $oAccountModel->id ,'in_reply_to_id' => $tweet["id_str"]])->all();
-        $oTweetModel->comments = ($comments)? count($comments) : null;
-	$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
+        $oTweetModel->comments = ($comments)? count($comments) : 0;
+		$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
         $oTweetModel->followers = $tweet['user']['followers_count'];
         $oTweetModel->creation_time = strtotime($tweet["created_at"]);
         $oTweetModel->url = 'https://twitter.com/'.$oAccountModel->name.'/status/'.$tweet['id_str'];
-	$oTweetModel->media_url = (array_key_exists('media', $tweet['entities'])) ? $tweet['entities']['media'][0]['media_url_https'] : null;
+		$oTweetModel->media_url = (array_key_exists('media', $tweet['entities'])) ? $tweet['entities']['media'][0]['media_url_https'] : null;
         $oTweetModel->source = strip_tags($tweet['source']);
         $oTweetModel->tags = (!empty($tweet['entities']['hashtags'])) ? $this->getTweetTags($tweet['entities']['hashtags']) : null;
         if(!$oTweetModel->save()){
@@ -297,7 +326,7 @@ class Twitter extends \yii\authclient\clients\Twitter
 		$oTweetModel->likes = $tweet["favorite_count"];
         $oTweetModel->shares = $tweet["retweet_count"];
         $comments = Model::find()->andWhere(['parent_id' => $oTweetModel->parent_id ,'in_reply_to_id' => $tweet["id_str"]])->all();
-        $oTweetModel->comments = ($comments)? count($comments) : null;
+        $oTweetModel->comments = ($comments)? count($comments) : 0;
 		$oTweetModel->interactions = ($oTweetModel->likes + $oTweetModel->shares + $oTweetModel->comments);
 		$oTweetModel->save();
 	}
@@ -310,9 +339,6 @@ class Twitter extends \yii\authclient\clients\Twitter
         $oMentionModel->type = self::POST;
         $oMentionModel->post_type = ($mention["in_reply_to_status_id_str"] && ($mention["in_reply_to_user_id_str"] == $oAccountModel->authclient_id)) ? self::REPLY : self::MENTION;
         $oMentionModel->in_reply_to_id = $mention["in_reply_to_status_id_str"];
-        //echo $oMentionModel->in_reply_to_id; die;
-        //$oMentionModel->likes = $mention["favorite_count"];
-        //$oMentionModel->shares = $mention["retweet_count"];
         $oMentionModel->creation_time = strtotime($mention["created_at"]);
         $oMentionModel->url = 'https://twitter.com/'.$mention["user"]["screen_name"].'/status/'.$mention["id_str"];
         $oMentionModel->source = strip_tags($mention["source"]);
@@ -322,7 +348,6 @@ class Twitter extends \yii\authclient\clients\Twitter
         }
         return $oMentionModel;
     }
-    
     public function createAccountInsights($oAccountModel, $user_data, $total_retweets, $total_replies, $total_favourites, $total_mentions, $sources){
         $oAccountInsights = new Insights();
         $oAccountInsights->model_id = $oAccountModel->id;
@@ -462,45 +487,52 @@ class Twitter extends \yii\authclient\clients\Twitter
         
     public function getTimeBasedAccountInsights($id, $since = null, $until = null){
         $since = (!$since) ? ($since = date('Y-m-d H:i:s', strtotime('first day of this month'))) : (date('Y-m-d H:i:s', $since));
-        $until = (!$until) ? ($until = date('Y-m-d H:i:s', time())) : (date('Y-m-d H:i:s', $until));
+        $until = (!$until) ? ($until = date('Y-m-d H:i:s', strtotime('+ 1 day', time()))) : (date('Y-m-d H:i:s', strtotime('+ 1 day', $until)));
         $this->account_insights_in_range = Insights::find()->where(['model_id' => $id])->andWhere(['between', 'created', $since, $until])->all();
         return ($this->account_insights_in_range) ? $this->account_insights_in_range : null;
     }
    
-    public function getTimeBasedMedia($id, $since = null, $until = null){
-        (!$since) ? ($since = date('Y-m-d H:i:s', strtotime('first day of this month'))) : '';
-        (!$until) ? ($until = date('Y-m-d H:i:s', time())) : '';
-        $media_in_range = Model::find()->where(['parent_id' => $id, 'post_type' => self::TWEET])->andWhere(['between', 'created', $since, $until])->all();
+    public function getTimeBasedMedia($id, $since, $until){
+        $since_str = (!$since) ? date('Y-m-d H:i:s', strtotime('first day of this month')) : date('Y-m-d H:i:s', $since);
+        $until_str = (!$until) ? date('Y-m-d H:i:s', time()) : date('Y-m-d H:i:s', $until);
+      	//$since_str = date('Y-m-d H:i:s', $since);
+        //$until_str = date('Y-m-d H:i:s', $until) ;
+        $media_in_range = Model::find()->where(['parent_id' => $id, 'post_type' => self::TWEET])->andWhere(['between', 'created', $since_str, $until_str])->all();
+      //var_dump($since_str); die;
         return $media_in_range;
     }
     
     public function getTimeBasedMentionsAndReplies($id, $since = null, $until = null){
-        (!$since) ? ($since = date('Y-m-d H:i:s', strtotime('first day of this month'))) : '';
-        (!$until) ? ($until = date('Y-m-d H:i:s', time())) : '';
+        (!$since) ? ($since = strtotime('first day of this month')) : '';
+        (!$until) ? ($until = time()) : '';
         $mentions_replies_in_range = Model::find()->where(['parent_id' => $id, 'post_type' => [self::MENTION, self::REPLY]])->andWhere(['between', 'creation_time', $since, $until])->all();
         return $mentions_replies_in_range;
     }
     
-    public function getFollowersGrowth(){
+    public function getFollowersGrowth($days_in_range){
         $followers_growth = array();
-        $days_in_range = $this->getDaysInRange();
         foreach($days_in_range as $day){
+          $day_formated = date('d M, y', $day);
+          $date_day = date('M d', $day);
+          $refine_date = date('d', $day);
+          $date = ($refine_date != '01') ?  $refine_date : $date_day;
             if(is_array($this->account_insights_in_range)){
                 foreach($this->account_insights_in_range as $account_insights){
                     //var_dump($account_insights->created); die;
-                    if(date('d M, y', strtotime($account_insights->created)) == date('d M, y', $day)){
-                       $followers_growth[date('d M, y', $day)] = $account_insights->followers;
+                    if(date('d M, y', strtotime($account_insights->created)) == $day_formated){
+                       $followers_growth[$date] = $account_insights->followers;
                     }
                 } 
             }else{
-                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == date('d M, y', $day)){
-                       $followers_growth[date('d M, y', $day)] = $this->account_insights_in_range->followers;
+                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == $day_formated){
+                       $followers_growth[$date] = $this->account_insights_in_range->followers;
                     }
             }
-            if(!array_key_exists(date('d M, y', $day), $followers_growth)){
-                $followers_growth[date('d M, y', $day)] = null;
+            if(!array_key_exists($date, $followers_growth)){
+                $followers_growth[$date] = null;
             }
         }
+      
         return $followers_growth;
     }
     
@@ -509,25 +541,29 @@ class Twitter extends \yii\authclient\clients\Twitter
         return $followers_growth_json_table;
     }
     
-    public function getFollowingGrowth(){
+    public function getFollowingGrowth($days_in_range){
         $following_growth = array();
-        $days_in_range = $this->getDaysInRange();
         foreach($days_in_range as $day){
+          $day_formated = date('d M, y', $day);
+          $date_day = date('M d', $day);
+          $refine_date = date('d', $day);
+          $date = ($refine_date != '01') ?  $refine_date : $date_day;
             if(is_array($this->account_insights_in_range)){
                 foreach($this->account_insights_in_range as $account_insights){
-                    if(date('d M, y', strtotime($account_insights->created)) == date('d M, y', $day)){
-                       $following_growth[date('d M, y', $day)] = $account_insights->follows;
+                    if(date('d M, y', strtotime($account_insights->created)) == $day_formated){
+                       $following_growth[$date] = $account_insights->follows;
                     }
                 } 
             }else{
-                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == date('d M, y', $day)){
-                       $following_growth[date('d M, y', $day)] = $this->account_insights_in_range->follows;
+                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == $day_formated){
+                       $following_growth[$date] = $this->account_insights_in_range->follows;
                     }
             }
-            if(!array_key_exists(date('d M, y', $day), $following_growth)){
-                $following_growth[date('d M, y', $day)] = null;
+            if(!array_key_exists($date, $following_growth)){
+                $following_growth[$date] = null;
             }
         }
+      
         return $following_growth;
     }
     
@@ -536,23 +572,26 @@ class Twitter extends \yii\authclient\clients\Twitter
         return $following_growth_json_table;
     }
     
-    public function getListedGrowth(){
+    public function getListedGrowth($days_in_range){
         $listed_growth = array();
-        $days_in_range = $this->getDaysInRange();
         foreach($days_in_range as $day){
+          $day_formated = date('d M, y', $day);
+          $date_day = date('M d', $day);
+          $refine_date = date('d', $day);
+          $date = ($refine_date != '01') ?  $refine_date : $date_day;
             if(is_array($this->account_insights_in_range)){
                 foreach($this->account_insights_in_range as $account_insights){
-                    if(date('d M, y', strtotime($account_insights->created)) == date('d M, y', $day)){
-                       $listed_growth[date('d M, y', $day)] = $account_insights->listed;
+                    if(date('d M, y', strtotime($account_insights->created)) == $day_formated){
+                       $listed_growth[$date] = $account_insights->listed;
                     }
                 } 
             }else{
-                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == date('d M, y', $day)){
-                       $listed_growth[date('d M, y', $day)] = $this->account_insights_in_range->listed;
+                if(date('d M, y', strtotime($this->account_insights_in_range->created)) == $day_formated){
+                       $listed_growth[$date] = $this->account_insights_in_range->listed;
                     }
             }
-            if(!array_key_exists(date('d M, y', $day), $listed_growth)){
-                $listed_growth[date('d M, y', $day)] = null;
+            if(!array_key_exists($date, $listed_growth)){
+                $listed_growth[$date] = null;
             }
         }
         return $listed_growth;
@@ -637,7 +676,7 @@ class Twitter extends \yii\authclient\clients\Twitter
             krsort($media_array);
             $top_posts_by_eng = array();
             foreach($media_array as $key => $value){
-                $top_posts_by_eng[] = ['id' => $media_in_range[$key]->id, 'engagement' => round($value, 2), 'favourites' => $media_in_range[$key]->likes, 'replies' => $media_in_range[$key]->comments, 'retweets' => $media_in_range[$key]->shares, 'media_url' => $media_in_range[$key]->media_url, 'url' => $media_in_range[$key]->url, 'content' => $media_in_range[$key]->content];  
+                $top_posts_by_eng[] = ['id' => $media_in_range[$key]->id, 'engagement' => round($value, 2), 'favourites' => $media_in_range[$key]->likes, 'replies' => $media_in_range[$key]->comments, 'retweets' => $media_in_range[$key]->shares, 'media_url' => $media_in_range[$key]->media_url, 'url' => $media_in_range[$key]->url, 'content' => $media_in_range[$key]->content, 'oPost' => $media_in_range[$key]];  
             }
         }else{
             $top_posts_by_eng = null;
@@ -659,16 +698,16 @@ class Twitter extends \yii\authclient\clients\Twitter
                 $day_formated_without_year = date('d M', $day);
                 foreach($mentions as $mention){
                     if(date('d M, y', $mention->creation_time) == $day_formated){
-                        if(!array_key_exists($day_formated_without_year, $mentions_per_day['profile'])){
-                            $mentions_per_day['profile'][$day_formated_without_year] = 1;
+                        if(!array_key_exists($day, $mentions_per_day['profile'])){
+                            $mentions_per_day['profile'][$day] = 1;
                         }else{
-                            $mentions_per_day['profile'][$day_formated_without_year]++;
+                            $mentions_per_day['profile'][$day]++;
                         }
                         $mentions_per_day['total_mentions']++;
                     }
                 }
-                if(!array_key_exists($day_formated_without_year, $mentions_per_day['profile'])){
-                    $mentions_per_day['profile'][$day_formated_without_year]["amount"] = 0;
+                if(!array_key_exists($day, $mentions_per_day['profile'])){
+                    $mentions_per_day['profile'][$day]["amount"] = 0;
                 }
             }
             $mentions_per_day['avg_mentions_per_day'] = round((($mentions_per_day['total_mentions'])/30), 2);
@@ -679,38 +718,41 @@ class Twitter extends \yii\authclient\clients\Twitter
     }
     
     public function getMentionsPerDayJsonTable($mentions_per_day){
-        $mentions_per_day_json_table = ($mentions_per_day) ? InstagramGoogleChartHelper::getDataTable('day', 'mentions', $mentions_per_day) : '';
+        $mentions_per_day_json_table = ($mentions_per_day) ? GoogleChartHelper::getRegularTimeDataTable('day', 'mentions', $mentions_per_day) : '';
+      //echo '<pre>'; var_dump($mentions_per_day_json_table); echo '</pre>'; die;
         return $mentions_per_day_json_table;
     }
     
-    public function getEngagementStatistics($model_id){
+    public function getEngagementStatistics($model_id, $days_in_range, $since, $until){
         $statistics = []; $statistics['profile'] = []; 
         $statistics['total_post_engagement_rate'] = $statistics['max_post_engagement_rate'] = $statistics['total_profile_engagement_rate'] = 
-                $statistics['max_profile_engagement_rate'] = $statistics['days_with_engagement'] = 0;
-        $days_in_range = $this->getDaysInRange();
-        $media_in_range = $this->getTimeBasedMedia($model_id);
+        $statistics['max_profile_engagement_rate'] = $statistics['days_with_engagement'] = 0;
+        $media_in_range = $this->getTimeBasedMedia($model_id, $since, $until);
 		//$this->saveInteractions($media_in_range);
         $statistics['tags_interactions'] = $this->tagsInteractions($media_in_range);
-        $mentions_replies = $this->getTimeBasedMentionsAndReplies($model_id);
+        $mentions_replies = $this->getTimeBasedMentionsAndReplies($model_id, $since, $until);
         $statistics['mentions_per_day'] = $this->getMentionsPerDay($mentions_replies, $days_in_range);
-        if(!empty($media_in_range)){
+      	//if($media_in_range){
+        //if(!empty($media_in_range)){
             $statistics['top_posts_by_engagement'] = $this->getTopPostsByEngagement($media_in_range);
             ($mentions_replies) ? ($statistics['source_of_engagement'] = $this->sourceOfEngagement($mentions_replies)) : '';
             $statistics['total_posts'] = $statistics['interactions']['likes'] = $statistics['interactions']['replies'] = $statistics['interactions']['retweets'] = 0;
             foreach($days_in_range as $day){
                 $day_formated = date('d M, y', $day);
-                //var_dump($media_in_range); die;
+                $date_day = date('M d', $day);
+              	$refine_date = date('d', $day);
+              	$date = ($refine_date != '01') ?  $refine_date : $date_day;
                 foreach($media_in_range as $media){
                     
                     if(date('d M, y', $media->creation_time) == $day_formated){
                         
-                        if(!array_key_exists($day, $statistics['profile'])){
-                            $statistics["profile"][$day]["amount"] = 1;
-                            $statistics["profile"][$day]["interaction"] = $media->interactions;
-                            $statistics['profile'][$day]['followers'] = $media->followers;
+                        if(!array_key_exists($date, $statistics['profile'])){
+                            $statistics["profile"][$date]["amount"] = 1;
+                            $statistics["profile"][$date]["interaction"] = $media->interactions;
+                            $statistics['profile'][$date]['followers'] = $media->followers;
                         }else{
-                            $statistics["profile"][$day]["amount"]++;
-                            $statistics["profile"][$day]["interaction"] += $media->interactions; 
+                            $statistics["profile"][$date]["amount"]++;
+                            $statistics["profile"][$date]["interaction"] += $media->interactions; 
                         }
                         $statistics['total_posts']++;
                         $statistics['interactions']['likes'] += $media->likes;
@@ -718,20 +760,21 @@ class Twitter extends \yii\authclient\clients\Twitter
                         $statistics['interactions']['retweets'] += $media->shares;
                     }
                 }
-                if(!array_key_exists($day, $statistics['profile'])){
-                    $statistics["profile"][$day]["amount"] = $statistics["profile"][$day]["interaction"] =
-                    $statistics['profile'][$day]['followers'] = $statistics['profile'][$day]["profile_engagement"] =
-                    $statistics['profile'][$day]["post_engagement"] = 0;
+                if(!array_key_exists($date, $statistics['profile'])){
+                    $statistics["profile"][$date]["amount"] = $statistics["profile"][$date]["interaction"] =
+                    $statistics['profile'][$date]['followers'] = $statistics['profile'][$date]["profile_engagement"] =
+                    $statistics['profile'][$date]["post_engagement"] = 0;
                 }else{
-                    (($statistics['profile'][$day]['interaction']) != 0) ? $statistics['days_with_engagement']++ : '';
-                    $statistics["profile"][$day]["profile_engagement"] = ((($statistics['profile'][$day]['followers'] != 'N/A') && ($statistics['profile'][$day]['followers'] != 0)) ? round(((($statistics["profile"][$day]['interaction'])/($statistics['profile'][$day]['followers']))*100), 2) : 0);
-                    $statistics['profile'][$day]["post_engagement"] = ((($statistics['profile'][$day]['followers'] != 'N/A') && ($statistics['profile'][$day]['followers'] != 0)) ? round(((($statistics["profile"][$day]['interaction'])/($statistics['profile'][$day]['amount'])/($statistics['profile'][$day]['followers']))*100),2) : 0);
-                    $statistics['total_post_engagement_rate'] += $statistics['profile'][$day]["post_engagement"];
-                    ($statistics['profile'][$day]["post_engagement"] > $statistics['max_post_engagement_rate']) ? ($statistics['max_post_engagement_rate'] = $statistics['profile'][$day]["post_engagement"]) : '';
-                    $statistics['total_profile_engagement_rate'] += $statistics['profile'][$day]["profile_engagement"];
-                    ($statistics['profile'][$day]["profile_engagement"] > $statistics['max_profile_engagement_rate']) ? ($statistics['max_profile_engagement_rate'] = $statistics['profile'][$day]["profile_engagement"]) : '';
+                    (($statistics['profile'][$date]['interaction']) != 0) ? $statistics['days_with_engagement']++ : '';
+                    $statistics["profile"][$date]["profile_engagement"] = ((($statistics['profile'][$date]['followers'] != 'N/A') && ($statistics['profile'][$date]['followers'] != 0)) ? round(((($statistics["profile"][$date]['interaction'])/($statistics['profile'][$date]['followers']))*100), 2) : 0);
+                    $statistics['profile'][$date]["post_engagement"] = ((($statistics['profile'][$date]['followers'] != 'N/A') && ($statistics['profile'][$date]['followers'] != 0)) ? round(((($statistics["profile"][$date]['interaction'])/($statistics['profile'][$date]['amount'])/($statistics['profile'][$date]['followers']))*100),2) : 0);
+                    $statistics['total_post_engagement_rate'] += $statistics['profile'][$date]["post_engagement"];
+                    ($statistics['profile'][$date]["post_engagement"] > $statistics['max_post_engagement_rate']) ? ($statistics['max_post_engagement_rate'] = $statistics['profile'][$date]["post_engagement"]) : '';
+                    $statistics['total_profile_engagement_rate'] += $statistics['profile'][$date]["profile_engagement"];
+                    ($statistics['profile'][$date]["profile_engagement"] > $statistics['max_profile_engagement_rate']) ? ($statistics['max_profile_engagement_rate'] = $statistics['profile'][$date]["profile_engagement"]) : '';
                 }
             }
+              //echo '<pre>'; var_dump($statistics['profile']); echo '</pre>'; die;
             $statistics['avg_favourites_per_post'] = ($statistics['total_posts'] != 0) ? (($statistics['interactions']['likes'])/($statistics['total_posts'])) : 0;
             $statistics['avg_replies_per_post'] = ($statistics['total_posts'] != 0) ? (($statistics['interactions']['replies'])/($statistics['total_posts'])) : 0;
             $statistics['avg_retweets_per_post'] = ($statistics['total_posts'] != 0) ? (($statistics['interactions']['retweets'])/($statistics['total_posts'])) : 0;
@@ -739,20 +782,20 @@ class Twitter extends \yii\authclient\clients\Twitter
             $statistics['avg_interaction_per_day'] = ($statistics['days_with_engagement'] != 0) ? (($statistics['total_interaction'])/($statistics['days_with_engagement'])) : 0;
             $statistics['avg_post_engagement_rate'] = ($statistics['days_with_engagement'] != 0) ? ($statistics['total_post_engagement_rate']/$statistics['days_with_engagement']) : 0;
             $statistics['avg_profile_engagement_rate'] = ($statistics['days_with_engagement'] != 0) ? ($statistics['total_profile_engagement_rate']/$statistics['days_with_engagement']) : 0;
-
-        }else{
+	//echo '<pre>'; var_dump($statistics); echo '</pre>'; die;
+       /* }else{
             $statistics = null;
-        }
+        }*/
         return $statistics;
     }
     
     public function getNumberOfTweetsJsonTable($tweets_per_day){
-        $tweets_per_day_json_table = ($tweets_per_day) ? InstagramGoogleChartHelper::getKeyValueTimeDataTableWithValueKeyName('day', 'tweet', $tweets_per_day, 'amount') : '';
+        $tweets_per_day_json_table = ($tweets_per_day) ? InstagramGoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'tweet', $tweets_per_day, 'amount') : '';
         return $tweets_per_day_json_table;
     }
     
     public function getNumberOfTweetsInteractionsPerDayJsonTable($tweets_per_day){
-        $tweets_interactions_per_day_json_table = ($tweets_per_day) ? InstagramGoogleChartHelper::getKeyValueTimeDataTableWithValueKeyName('day', 'tweet', $tweets_per_day, 'interaction') : '';
+        $tweets_interactions_per_day_json_table = ($tweets_per_day) ? InstagramGoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'tweet', $tweets_per_day, 'interaction') : '';
         return $tweets_interactions_per_day_json_table;
     }
     
@@ -810,7 +853,7 @@ class Twitter extends \yii\authclient\clients\Twitter
                 $oTweetModel = $this->updateTweetModel($oTweetModel, $tweet);
             }
         }
-        $tweets_this_month = $this->getTimeBasedMedia($oAccountModel->id);
+        $tweets_this_month = $this->getTimeBasedMedia($oAccountModel->id, $since, $until);
         foreach($tweets_this_month as $oTweetModel){
             $total_retweets += $oTweetModel->shares;
             $total_replies += $oTweetModel->comments;
@@ -884,6 +927,76 @@ class Twitter extends \yii\authclient\clients\Twitter
         return $devices_json_table;
 	}
 
+	public function getComparison($model_id){
+          if(date('d', time()) == '01'){
+              $last_month = date('m', strtotime('-2 months'));
+              $first_day_last_month = date('Y-m-d 02:00:00', strtotime('-2 months'));
+              $first_day_this_month = date('Y-m-d 02:00:00', strtotime('-1 months'));
+              $last_day_this_month = date('Y-m-d 02:00:00', strtotime('last day of last month'));
+            
+            $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
+            $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
+            $statistics['last_month']['followers'] = $insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers;
+            $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
+            $statistics['last_month']['listing'] = $insights_last_month[count($insights_last_month) -1]->listed - $insights_last_month[0]->listed;
+            $statistics['this_month']['listing'] = $insights_this_month[count($insights_this_month) -1]->listed - $insights_this_month[0]->listed;
 
+            $tweets_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('-2 months'), strtotime('-1 month')])->all();
+            $tweets_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
+
+            $statistics['last_month']['tweets'] = count($tweets_last_month);
+            $statistics['this_month']['tweets'] = count($tweets_this_month);
+
+            $mentions_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('-2 months'), strtotime('-1 month')])->all();
+            $mentions_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
+
+            $statistics['last_month']['mentions'] = count($mentions_last_month);
+            $statistics['this_month']['mentions'] = count($mentions_this_month);
+
+          }else{
+              $first_day_last_month = date('Y-m-d 02:00:00', strtotime('first day of last month'));
+              $first_day_this_month = date('Y-m-d 02:00:00', strtotime('first day of this month'));
+              $last_day_this_month = date('Y-m-d 02:00:00', strtotime('last day of this month'));
+            
+            $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
+            $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
+            $statistics['last_month']['followers'] = $insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers;
+            $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
+            $statistics['last_month']['listing'] = $insights_last_month[count($insights_last_month) -1]->listed - $insights_last_month[0]->listed;
+            $statistics['this_month']['listing'] = $insights_this_month[count($insights_this_month) -1]->listed - $insights_this_month[0]->listed;
+
+            $tweets_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
+            $tweets_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of this month'), strtotime('last day of this month')])->all();
+
+            $statistics['last_month']['tweets'] = count($tweets_last_month);
+            $statistics['this_month']['tweets'] = count($tweets_this_month);
+
+            $mentions_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
+            $mentions_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('first day of this month'), strtotime('last day of this month')])->all();
+
+            $statistics['last_month']['mentions'] = count($mentions_last_month);
+            $statistics['this_month']['mentions'] = count($mentions_this_month);
+          
+          }
+          
+          $statistics['last_month']['likes'] = $statistics['last_month']['comments'] = $statistics['last_month']['shares'] = 0;
+          $statistics['this_month']['likes'] = $statistics['this_month']['comments'] = $statistics['this_month']['shares'] = 0;
+          
+          foreach($tweets_last_month as $tweet){
+          	$statistics['last_month']['likes'] += $tweet->likes;
+            $statistics['last_month']['comments'] += $tweet->comments;
+            $statistics['last_month']['shares'] += $tweet->shares;
+          }
+		  $statistics['last_month']['interactions'] = $statistics['last_month']['likes'] + $statistics['last_month']['comments'] + $statistics['last_month']['shares'];
+		  
+          foreach($tweets_this_month as $tweet){
+          	$statistics['this_month']['likes'] += $tweet->likes;
+            $statistics['this_month']['comments'] += $tweet->comments;
+            $statistics['this_month']['shares'] += $tweet->shares;
+          }
+          $statistics['this_month']['interactions'] = $statistics['this_month']['likes'] + $statistics['this_month']['comments'] + $statistics['this_month']['shares'];
+		  
+          return $statistics;
+    }
     
 }

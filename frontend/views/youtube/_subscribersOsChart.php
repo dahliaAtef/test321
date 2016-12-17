@@ -4,7 +4,7 @@
     if($os_json_table){
         $this->registerJs("GoogleCharts.drawCircle(".$os_json_table.", 'yg', 'OS_views')", yii\web\View::POS_END);
     	echo '<h3 class="internal-title noneBG">Channel view per Operating System</h3>';
-        echo '<div class="internal-content adaptMargin34">';    
+        echo '<div class="internal-content circleChart adaptMargin34">';    
             echo '<div id="OS_views"></div>';
         echo '</div>'; 
     }
@@ -25,7 +25,7 @@ if(array_key_exists('rows', $os)){
     foreach($os['rows'] as $single_os){
     ?>
     <tr>
-        <td><?= $single_os[0] ?></td>
+        <td><?= ucwords(strtolower($single_os[0])) ?></td>
         <td><?= $single_os[1] ?></td>
         <td><?= $single_os[2] ?></td>
     </tr>
