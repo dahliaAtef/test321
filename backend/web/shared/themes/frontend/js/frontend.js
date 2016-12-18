@@ -44,6 +44,8 @@ Frontend.onReady = function () {
 
     //Frontend.formValdiation();
     Frontend.formValdiationSubscribe();
+    
+    Frontend.pageContent();
 
 
 };
@@ -321,12 +323,24 @@ Frontend.formValdiation = function(){
                 
 
 //         };
+
+Frontend.pageContent = function(){
+    $('.pdf').click(function(){
+        $("#page").val($('.inner-page').html());
+        $("#page-form").submit();
+        return true;
+    });
+    
+};
+
 Frontend.formValdiationSubscribe = function(){
 
 				if ($("input[type='hidden']").val() == "success") {
                     $("#btn-subsc").removeClass().addClass("submit-success");
                     $(".card").addClass("appear").delay(1500);
                 }
+  
+  
                 /*window.setTimeout(function(){
                     $("#btn-subsc").removeClass().addClass("btn");
                 }, 2000)*/
@@ -368,7 +382,7 @@ Frontend.formValdiationSubscribe = function(){
 $(document).ready(function () {
 
     Frontend.onReady();
-
+				$("form input:text, form textarea").first().focus();
                  $('inner-page').css("visibility","hidden");
         
 
