@@ -57,4 +57,3 @@ cgi-bin
 !.elasticbeanstalk/*.global.yml
 amer
 backend/web/assets
-shared/
