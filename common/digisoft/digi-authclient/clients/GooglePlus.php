@@ -154,7 +154,17 @@ class GooglePlus extends OAuth2
         	return GooglePlus::getClient();
         }else{
         	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'google_plus']);
-          	if($oAuthclient ){
+          	if(! $oAuthclient ){
+            	$oAuthclient = Authclient::findOne(['user_id' => 2, 'source' => 'google_plus']);
+              	$client = unserialize($oAuthclient->source_data);
+                  $ReturnData = $client->getUserAttributes() ;
+                    if( $ReturnData == null){
+                        $oAuthclient->source_data =null;
+                        $oAuthclient->save();
+                          $client = null;
+                    }
+                return $client;
+            }
               if($oAuthclient->source_data != null){
                  GooglePlus::setClient( unserialize($oAuthclient->source_data));
                  $ReturnData = $this->getAccountDetails() ;
@@ -164,15 +174,7 @@ class GooglePlus extends OAuth2
                       GooglePlus::setClient( null);
                   }
                 return GooglePlus::getClient();
-              }else{
-                  /*
-                  $client = Facebook::getClient();
-                  //$client->getUserAttributes() ;
-                  $oAuthclient->source_data = serialize($client);
-                  $oAuthclient->save();
-                  */
               }
-          }
         }
     }
   

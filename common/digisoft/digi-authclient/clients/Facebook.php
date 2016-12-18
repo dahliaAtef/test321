@@ -93,7 +93,9 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
   
   public function getFansByCountryValues($page_id, $since, $until){
-  	$fans_country = $this->getFansByCountry($page_id, $since, $until)['data'][0]['values'];
+    $fans_country_req = $this->getFansByCountry($page_id, $since, $until);
+    if($fans_country_req['data']){
+  		$fans_country = $this->getFansByCountry($page_id, $since, $until)['data'][0]['values'];
     	$count = $this->checkAndGetValueIndex($fans_country);
         if(array_key_exists('value', $fans_country[$count])){
             arsort($fans_country[$count]["value"]);
@@ -101,6 +103,9 @@ class Facebook extends \yii\authclient\clients\Facebook
         }else{
             return null;
         }
+    }else{
+     	return null;
+    }
   }
     
     public function getFansLanguage($page_id, $since, $until){
@@ -119,6 +124,8 @@ class Facebook extends \yii\authclient\clients\Facebook
 	}
   
   public function getFansLanguageValues($page_id, $since, $until){
+    $fans_languages_req = $this->getFansLanguage($page_id, $since, $until);
+    if($fans_languages_req){
   	$fans_language = $this->getFansLanguage($page_id, $since, $until)[0]['values'];
     $count = $this->checkAndGetValueIndex($fans_language);
         if(array_key_exists('value', $fans_language[$count])){
@@ -128,6 +135,7 @@ class Facebook extends \yii\authclient\clients\Facebook
         }else{
             return null;
         }
+    }else return null;
   }
     
 	
@@ -312,7 +320,7 @@ class Facebook extends \yii\authclient\clients\Facebook
             
             return $age_gender_array;
         }
-        return $age_gender_array = null;
+        return null;
     }
     
   	
@@ -1203,7 +1211,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     public function saveAccountInsights($oAccountModel, $followers){
 	$since = date('Y-m-d', strtotime('first day of this month'));
 	$until = date('Y-m-d', strtotime('+1days', time()));
-	$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until);
+	$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until); //array of zero
 	$total_likes = $total_comments = $total_reactions = $total_shares = $total_reactions = $total_interactions = 0;
 	foreach($posts as $post){
             $oPost = Model::findOne(['entity_id' => $post['id'],'parent_id' => $oAccountModel->id]);
@@ -1224,6 +1232,7 @@ class Facebook extends \yii\authclient\clients\Facebook
                 $total_interactions += $oPostModel->interactions;
             }
 	}
+      
 	$oAccountInsights = new Insights();
         $oAccountInsights->model_id = $oAccountModel->id;
         $oAccountInsights->followers = $followers;
@@ -1242,7 +1251,10 @@ class Facebook extends \yii\authclient\clients\Facebook
 	
   	public function getPageFansLikeSource($id, $since, $until){
     	$client = $this->getClient();
-        $fans_by_source = $client->api($id.'/insights/page_fans_by_like_source?since='.$since.'&until='.$until)['data'][0]['values'];
+      	$fans_by_source_req = $client->api($id.'/insights/page_fans_by_like_source?since='.$since.'&until='.$until)['data'];
+      	if($fans_by_source_req){
+        	$fans_by_source = $fans_by_source_req[0]['values'];
+          	$fans_by_source_array = [];
             foreach($fans_by_source as $day){
                 if(array_key_exists('value', $day)){
                   foreach($day['value'] as $key => $value){
@@ -1251,13 +1263,16 @@ class Facebook extends \yii\authclient\clients\Facebook
                 }
             }
         return $fans_by_source_array;
+        }else return null;
     }
   
     public function getPageViewsByDevice($id, $since, $until){
         $client = $this->getClient();
-        $views_by_device_array = ['desktop' => 0, 'mobile/tablet' => 0, 'other' => 0];
-        $views_by_device = $client->api($id.'/insights/page_views_by_site_logged_in_unique?since='.$since.'&until='.$until)['data'][0]['values'];
+      	$views_by_device_req = $client->api($id.'/insights/page_views_by_site_logged_in_unique?since='.$since.'&until='.$until)['data'];
+      	if($views_by_device_req){
+        $views_by_device = $views_by_device_req[0]['values'];
         if($views_by_device){
+        	$views_by_device_array = ['desktop' => 0, 'mobile/tablet' => 0, 'other' => 0];
             foreach($views_by_device as $day){
                 if(array_key_exists('value', $day)){
                     $views_by_device_array['desktop'] += $day['value']['WWW'];
@@ -1265,8 +1280,9 @@ class Facebook extends \yii\authclient\clients\Facebook
                     $views_by_device_array['other'] += ($day['value']['OTHER'] + $day['value']['OTHER']['API']);
                 }
             }
-        }
-        return $views_by_device_array;
+          return $views_by_device_array;
+        }else return null;
+    }else return null;
     }
     
     public function getPageReachArray($page_id, $since = null, $until = null){
@@ -1274,48 +1290,60 @@ class Facebook extends \yii\authclient\clients\Facebook
         $page_reach = ['organic' => 0, 'paid' => 0, 'unpaid' => 0];
         ($since)? '' : $since = date('Y-m-d',strtotime('-30 days',time()));
         ($until)? '' : $until = date('Y-m-d',strtotime('+1 days',time()));
-        $page_paid_unpaid_reach = $client->api($page_id."/insights/page_impressions_by_paid_non_paid/day?since=".$since."&until=".$until, 'GET')['data'][0]['values'];
-        foreach($page_paid_unpaid_reach as $day){
-            if(array_key_exists('value', $day)){
-                $page_reach['paid'] += $day['value']['paid'];
-                $page_reach['unpaid'] += $day['value']['unpaid'];
-                $page_reach['organic'] += $day['value']['total'];
-            }
+      	$page_paid_unpaid_reach_req = $client->api($page_id."/insights/page_impressions_by_paid_non_paid/day?since=".$since."&until=".$until, 'GET')['data'];
+      	if($page_paid_unpaid_reach_req){
+          $page_paid_unpaid_reach = $page_paid_unpaid_reach_req[0]['values'];
+          foreach($page_paid_unpaid_reach as $day){
+              if(array_key_exists('value', $day)){
+                  $page_reach['paid'] += $day['value']['paid'];
+                  $page_reach['unpaid'] += $day['value']['unpaid'];
+                  $page_reach['organic'] += $day['value']['total'];
+              }
+          }
         }
         return $page_reach;
     }
 	
     public function getPageReachByCountry($page_id, $since, $until){
         $client = $this->getClient();
-        $reach_by_country = $client->api($page_id.'/insights/page_impressions_by_country_unique/day?since='.$since.'&until='.$until)['data'][0]['values'];
+      	$reach_by_country_req = $client->api($page_id.'/insights/page_impressions_by_country_unique/day?since='.$since.'&until='.$until)['data'];
+      if($reach_by_country_req){
+        $reach_by_country = $reach_by_country_req[0]['values'];
       	$counter = $this->checkAndGetValueIndex($reach_by_country);
       	if(array_key_exists('value', $reach_by_country[$count])){
         	return ((array_key_exists('value', $reach_by_country[$counter])) ? $reach_by_country[$counter]['value'] : null);
         }else{
         	return null;
         }
+      }else return null;
     }
   
   public function getPageReachByAgeGender($page_id, $since, $until){
         $client = $this->getClient();
-        $reach_by_gender_age = $client->api($page_id.'/insights/page_impressions_by_age_gender_unique/day?since='.$since.'&until='.$until)['data'][0]['values'];
-        $counter = $this->checkAndGetValueIndex($reach_by_gender_age);
-    	if(array_key_exists('value', $reach_by_gender_age[$count])){
-        	return ((array_key_exists('value', $reach_by_gender_age[$counter])) ? $reach_by_gender_age[$counter]['value'] : null);
-        }else{
-        	return null;
-        }
+    	$reach_by_gender_age_req = $client->api($page_id.'/insights/page_impressions_by_age_gender_unique/day?since='.$since.'&until='.$until)['data'];
+    	if($reach_by_gender_age_req){
+          $reach_by_gender_age = $reach_by_gender_age_req[0]['values'];
+          $counter = $this->checkAndGetValueIndex($reach_by_gender_age);
+          if(array_key_exists('value', $reach_by_gender_age[$count])){
+              return ((array_key_exists('value', $reach_by_gender_age[$counter])) ? $reach_by_gender_age[$counter]['value'] : null);
+          }else{
+              return null;
+          }
+        }else return null;
     }
   
   public function getPageReachByLanguage($page_id, $since, $until){
         $client = $this->getClient();
-        $reach_by_lang = $client->api($page_id.'/insights/page_impressions_by_locale_unique/day?since='.$since.'&until='.$until)['data'][0]['values'];
-    	$counter = $this->checkAndGetValueIndex($reach_by_lang);
-    	if(array_key_exists('value', $reach_by_lang[$count])){
-        	return ((array_key_exists('value', $reach_by_lang[$counter])) ? $reach_by_lang[$counter]['value'] : null);
-        }else{
-        	return null;
-        }
+    	$reach_by_lang_req = $client->api($page_id.'/insights/page_impressions_by_locale_unique/day?since='.$since.'&until='.$until)['data'];
+    	if($reach_by_lang_req){
+          $reach_by_lang = $reach_by_lang_req[0]['values'];
+          $counter = $this->checkAndGetValueIndex($reach_by_lang);
+          if(array_key_exists('value', $reach_by_lang[$count])){
+              return ((array_key_exists('value', $reach_by_lang[$counter])) ? $reach_by_lang[$counter]['value'] : null);
+          }else{
+              return null;
+          }
+        }else return null;
     }
   
   public function getPageReachByLanguageInEnglish($page_id, $since, $until){
@@ -1342,8 +1370,8 @@ class Facebook extends \yii\authclient\clients\Facebook
       	$insights['reach_by_age_gender'] = $this->getPageReachByAgeGenderArrays($page_id, $since, $until);
       	$insights['reach_by_language'] = $this->getPageReachByLanguageInEnglish($page_id, $since, $until);
         $insights['page_reach'] = $this->getPageReachArray($page_id, $since, $until);
-	$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
-	$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTable($page_id, $since, $until);
+		$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
+		$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTable($page_id, $since, $until);
         return json_encode($insights);
     }
 	
@@ -1395,7 +1423,17 @@ class Facebook extends \yii\authclient\clients\Facebook
         	return $this->getClient();
         }else{
         	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
-          	if($oAuthclient ){
+              if(! $oAuthclient ){
+                  $oAuthclient = Authclient::findOne(['user_id' => 2, 'source' => 'facebook']);
+                  $client = unserialize($oAuthclient->source_data);
+                  $ReturnData = $client->getUserAttributes() ;
+                    if( $ReturnData == null){
+                        $oAuthclient->source_data =null;
+                        $oAuthclient->save();
+                          $client = null;
+                    }
+                return $client;
+              }
               if($oAuthclient->source_data != null){
                  Facebook::setClient( unserialize($oAuthclient->source_data));
                  $client = $this->getClient();
@@ -1406,14 +1444,7 @@ class Facebook extends \yii\authclient\clients\Facebook
                       Facebook::setClient( null);
                   }
                 return $this->getClient();
-              }else{
-                  $client = Facebook::getClient();
-                  //$client->getUserAttributes() ;
-                  $oAuthclient->source_data = serialize($client);
-                  $oAuthclient->save();
-                return $client;
               }
-          }
         }
     }
   

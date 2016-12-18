@@ -427,11 +427,11 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>google+ URL</label>
-                                    <?php if($gp){ ?>
+                                    <!--</?php  if($gp){ ?>-->
                                         <?= $form->field($oCompetitorsForm, 'comp1gp')->textInput()->label(false) ?>
-                                    <?php }else{ ?>
-                                        <a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
-                                    <?php } ?>
+                                    <!--</?php }else{ ?>
+                                        <a href="</?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
+                                    </?php } ?>-->
                                 </li>
                             </ul>
                             <!--<button type="button" class="btn btn-primary">Add</button>-->                            

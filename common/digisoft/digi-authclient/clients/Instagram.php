@@ -827,7 +827,17 @@ class Instagram extends OAuth2
         	return $this->getClient();
         }else{
         	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
-          	if($oAuthclient ){
+          	if(! $oAuthclient ){
+            	$oAuthclient = Authclient::findOne(['user_id' => 2, 'source' => 'instagram']);
+              	$client = unserialize($oAuthclient->source_data);
+                  $ReturnData = $client->getUserAttributes() ;
+                    if( $ReturnData == null){
+                        $oAuthclient->source_data =null;
+                        $oAuthclient->save();
+                          $client = null;
+                    }
+                return $client;
+            }
               if($oAuthclient->source_data != null){
                  Instagram::setClient( unserialize($oAuthclient->source_data));
                  $ReturnData = $this->getUserData() ;
@@ -837,15 +847,7 @@ class Instagram extends OAuth2
                       Instagram::setClient( null);
                   }
                 return $this->getClient();
-              }else{
-                  /*
-                  $client = Facebook::getClient();
-                  //$client->getUserAttributes() ;
-                  $oAuthclient->source_data = serialize($client);
-                  $oAuthclient->save();
-                  */
               }
-          }
         }
     }
   
