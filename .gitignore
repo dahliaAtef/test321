@@ -15,6 +15,7 @@ common/config/params-local.php
 common/config/main.php
 images/medium
 .idea/*
+backend/web/assets
 
 /index.php
 .sass-cache/*

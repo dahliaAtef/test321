@@ -7,12 +7,12 @@ $baseUrl='';
 
 
 $params = array_merge(
-        require(__DIR__ . '/../../common/config/params.php'), require(__DIR__ . '/../../common/config/params-local.php'), require(__DIR__ . '/params.php'), require(__DIR__ . '/params-local.php')
+    require(__DIR__ . '/../../common/config/params.php'), require(__DIR__ . '/../../common/config/params-local.php'), require(__DIR__ . '/params.php'), require(__DIR__ . '/params-local.php')
 );
 
 return [
     'id' => 'app-backend',
-  	'name' => 'Hype',
+    'name' => 'Hype',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
@@ -29,7 +29,7 @@ return [
         ],
         'treemanager' => [
             'class' => 'kartik\tree\Module',
-        // other module settings, refer detailed documentation
+            // other module settings, refer detailed documentation
         ],
     ],
     'components' => [
@@ -60,7 +60,7 @@ return [
             'class' => 'yii\rbac\DbManager', // or use 'yii\rbac\PhpManager'
         ],
         /**
-         *  here you can set theme used for your backend application 
+         *  here you can set theme used for your backend application
          */
         'view' => [
             'class' => 'digi\web\View',
@@ -100,7 +100,7 @@ return [
             //'rbac/*', // add or remove allowed actions to this list
             'site/login',
             'site/analytics',
-          'admin/*',
+            'admin/*',
         ]
     ],
     'params' => $params,

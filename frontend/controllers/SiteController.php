@@ -710,4 +710,19 @@ class SiteController extends \frontend\components\BaseController {
         }
     }
 
+
+    public function actionTestmail(){
+        $email= 'mohamed.amer2050@gmail.com';
+        $message='test email body ';
+
+        return Yii::$app->mailer->compose()
+            ->setFrom('dalia@digitreeinc.com')
+            ->setTo($email)
+            ->setTextBody($message)
+            ->setSubject('testing the email configurations ')
+            ->send();
+
+
+    }
+
 }
