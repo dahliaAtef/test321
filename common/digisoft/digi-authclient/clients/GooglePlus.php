@@ -93,10 +93,10 @@ class GooglePlus extends OAuth2
     }
     
     public function getDaysInRange(){
-        $from = strtotime('2015-5-1');
+        $from = strtotime('first day of this month');
         $to = time();
         $this->days_in_range[] = $from;
-        $current = strtotime('+1 days', $from);
+        $current = $from;
         while($current <= $to){
             array_push($this->days_in_range, $current);
             $current = strtotime('+1 days', $current);
@@ -147,9 +147,40 @@ class GooglePlus extends OAuth2
         }
         return $public_activities;
     }
+  
+  	
+  	public function checkClientSession(){
+    	if(Yii::$app->session['google_plus']){
+        	return GooglePlus::getClient();
+        }else{
+        	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'google_plus']);
+          	if(! $oAuthclient ){
+            	$oAuthclient = Authclient::findOne(['user_id' => 2, 'source' => 'google_plus']);
+              	$client = unserialize($oAuthclient->source_data);
+                  $ReturnData = $client->getUserAttributes() ;
+                    if( $ReturnData == null){
+                        $oAuthclient->source_data =null;
+                        $oAuthclient->save();
+                          $client = null;
+                    }
+                return $client;
+            }
+              if($oAuthclient->source_data != null){
+                 GooglePlus::setClient( unserialize($oAuthclient->source_data));
+                 $ReturnData = $this->getAccountDetails() ;
+                  if( $ReturnData == null){
+                      $oAuthclient->source_data =null;
+                      $oAuthclient->save();
+                      GooglePlus::setClient( null);
+                  }
+                return GooglePlus::getClient();
+              }
+        }
+    }
+  
     
     public function getAccountDetailsById($id){
-        $client = GooglePlus::getClient();
+        $client = $this->checkClientSession();
         $account = $client->api('/plus/v1/people/'.$id, 'GET');
         return $account;
     }
@@ -238,15 +269,16 @@ class GooglePlus extends OAuth2
         }
     }
     
-    public function firstTimeToLog($user_data, $authclient_id){
-        $oAuthclient = Authclient::findOne(['source_id' => $user_data['id']]);
+    public function firstTimeToLog($user_data){
+      $oAuthclient = Authclient::findOne(['source_id' => $user_data['id']]);
         if($oAuthclient){
             $oAccountModel = new Model();
-            $oAccountModel->authclient_id = $authclient_id;
+            $oAccountModel->authclient_id = $oAuthclient->id;
             $oAccountModel->entity_id = $user_data["id"];
             $oAccountModel->type = self::ACCOUNT;
             $oAccountModel->name = $user_data["displayName"];
             $oAccountModel->media_url = $user_data["image"]["url"];
+            //echo '<pre>'; var_dump($oAccountModel); echo '</pre>'; die;
             if($oAccountModel->save()){
                 $all_posts =  $this->getAllPublicActivities();
                 $total_likes = $total_comments = $total_shares = 0;
@@ -373,16 +405,20 @@ class GooglePlus extends OAuth2
         $this->statistics['profile'] = array();
         
         foreach($this->days_in_range as $day){
-            $day_formated = date('d M, y', $day);
+          	$day_formated = date('M d, y', $day);
+            $date_day = date('M d', $day);
+            $refine_date = date('d', $day);
+            $date = ($refine_date != '01') ?  $refine_date : $date_day;
+            
             foreach($this->posts_in_range as $post){
-                if(date('d M, y', $post->creation_time) == $day_formated){
+                if(date('M d, y', $post->creation_time) == $day_formated){
                     if(!array_key_exists($day_formated, $this->statistics['profile'])){
-                        $this->statistics["profile"][$day_formated]["amount"] = 1;
-                        $this->statistics["profile"][$day_formated]["interaction"] = ($post->likes + $post->comments + $post->shares);
-                        $this->statistics['profile'][$day_formated]['followers'] = $post->followers;
+                        $this->statistics["profile"][$date]["amount"] = 1;
+                        $this->statistics["profile"][$date]["interaction"] = ($post->likes + $post->comments + $post->shares);
+                        $this->statistics['profile'][$date]['followers'] = $post->followers;
                     }else{
-                        $this->statistics["profile"][$day_formated]["amount"]++;
-                        $this->statistics["profile"][$day_formated]["interaction"] += ($post->likes + $post->comments + $post->shares); 
+                        $this->statistics["profile"][$date]["amount"]++;
+                        $this->statistics["profile"][$date]["interaction"] += ($post->likes + $post->comments + $post->shares); 
                     }
                     $this->statistics['total_posts']++;
                     $this->statistics['total_post_likes'] += $post->likes;
@@ -391,26 +427,26 @@ class GooglePlus extends OAuth2
                     
                 }
             }
-            if(!array_key_exists($day_formated, $this->statistics['profile'])){
-                $this->statistics["profile"][$day_formated]["amount"] = 0;
-                $this->statistics["profile"][$day_formated]["interaction"] = 0;
-                $this->statistics['profile'][$day_formated]['followers'] = 0;
-                $this->statistics['profile'][$day_formated]["profile_engagement"] = 0;
-                $this->statistics['profile'][$day_formated]["post_engagement"] = 0;
+            if(!array_key_exists($date, $this->statistics['profile'])){
+                $this->statistics["profile"][$date]["amount"] = 0;
+                $this->statistics["profile"][$date]["interaction"] = 0;
+                $this->statistics['profile'][$date]['followers'] = 0;
+                $this->statistics['profile'][$date]["profile_engagement"] = 0;
+                $this->statistics['profile'][$date]["post_engagement"] = 0;
             }else{
-                if($this->statistics['profile'][$day_formated]['followers']){
-                    (($this->statistics['profile'][$day_formated]['interaction']) != 0) ? $this->statistics['days_with_engagement']++ : '';
-                    $this->statistics["profile"][$day_formated]["profile_engagement"] = round(((($this->statistics["profile"][$day_formated]['interaction'])/($this->statistics['profile'][$day_formated]['followers']))*100), 2);
-                    $this->statistics['profile'][$day_formated]["post_engagement"] = round(((($this->statistics["profile"][$day_formated]['interaction'])/($this->statistics['profile'][$day_formated]['amount'])/($this->statistics['profile'][$day_formated]['followers']))*100),2);
+                if($this->statistics['profile'][$date]['followers']){
+                    (($this->statistics['profile'][$date]['interaction']) != 0) ? $this->statistics['days_with_engagement']++ : '';
+                    $this->statistics["profile"][$date]["profile_engagement"] = round(((($this->statistics["profile"][$date]['interaction'])/($this->statistics['profile'][$date]['followers']))*100), 2);
+                    $this->statistics['profile'][$date]["post_engagement"] = round(((($this->statistics["profile"][$date]['interaction'])/($this->statistics['profile'][$date]['amount'])/($this->statistics['profile'][$date]['followers']))*100),2);
                 }else{
-                    $this->statistics["profile"][$day_formated]["profile_engagement"] = null;
-                    $this->statistics['profile'][$day_formated]["post_engagement"] = null;
+                    $this->statistics["profile"][$date]["profile_engagement"] = null;
+                    $this->statistics['profile'][$date]["post_engagement"] = null;
                 }
                 
-                $this->statistics['total_post_engagement_rate'] += $this->statistics['profile'][$day_formated]["post_engagement"];
-                ($this->statistics['profile'][$day_formated]["post_engagement"] > $this->statistics['max_post_engagement_rate']) ? ($this->statistics['max_post_engagement_rate'] = $this->statistics['profile'][$day_formated]["post_engagement"]) : '';
-                $this->statistics['total_profile_engagement_rate'] += $this->statistics['profile'][$day_formated]["profile_engagement"];
-                ($this->statistics['profile'][$day_formated]["profile_engagement"] > $this->statistics['max_profile_engagement_rate']) ? ($this->statistics['max_profile_engagement_rate'] = $this->statistics['profile'][$day_formated]["profile_engagement"]) : '';
+                $this->statistics['total_post_engagement_rate'] += $this->statistics['profile'][$date]["post_engagement"];
+                ($this->statistics['profile'][$date]["post_engagement"] > $this->statistics['max_post_engagement_rate']) ? ($this->statistics['max_post_engagement_rate'] = $this->statistics['profile'][$date]["post_engagement"]) : '';
+                $this->statistics['total_profile_engagement_rate'] += $this->statistics['profile'][$date]["profile_engagement"];
+                ($this->statistics['profile'][$date]["profile_engagement"] > $this->statistics['max_profile_engagement_rate']) ? ($this->statistics['max_profile_engagement_rate'] = $this->statistics['profile'][$date]["profile_engagement"]) : '';
             }
         }
         
@@ -426,7 +462,7 @@ class GooglePlus extends OAuth2
     
     public function getNumberOfPostsJsonTable($profile_statistics){
         $posts_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyName('day', 'post', null, $profile_statistics, null, 'amount', null) : '';
-        return $posts_per_day_json_table;
+		return $posts_per_day_json_table;
     }
     
     public function getNumberOfInteractionsJsonTable($profile_statistics){
@@ -448,10 +484,20 @@ class GooglePlus extends OAuth2
         $this->getHoursArray(); 
         $this->getTimeBasedPosts($model_id);
         $hour = $this->hours;
-        foreach($this->posts_in_range as $post){
-            $hour[date('ga', $post->creation_time)][date('D', $post->creation_time)] += ($post->likes + $post->comments + $post->shares);
+      	if($this->posts_in_range){
+          $total = 0;
+          foreach($this->posts_in_range as $post){
+            	$interaction = $post->likes + $post->comments + $post->shares;
+              	$hour[date('ga', $post->creation_time)][date('D', $post->creation_time)] += $interaction;
+            	$total += $interaction;
+          }if($total){
+          	return $hour;
+          }else{
+          	return null;
+          }
+        }else{
+        	return null;
         }
-        return $hour;
     }
     
     public function getBestTimeToPostJsonTable($model_id){

@@ -18,7 +18,7 @@ class InstagramGoogleChartHelper extends GoogleChartHelper {
         $rows = array();
         foreach($graph_one_values as $key => $value){
             $rows[] = ['c' =>[
-                ['v' => $key],
+                ['v' => ucwords(strtolower($key))],
                 ['v' => $value[$key_name]],
                 ['v' => $graph_two_values[$key][$key_name]]
             ]];
@@ -45,7 +45,7 @@ class InstagramGoogleChartHelper extends GoogleChartHelper {
         if($second_y_axis && $second_graph_values){
             foreach($graph_values as $key => $value){
                 $rows[] = ['c' => [
-                    ['v' => $key],
+                    ['v' => ucwords(strtolower($key))],
                     ['v' => $value[$key_name]],
                     ['v' => $second_graph_values[$key][$key_name]],
                 ]];
@@ -53,7 +53,7 @@ class InstagramGoogleChartHelper extends GoogleChartHelper {
         }elseif($second_y_axis && $second_key_name){
             foreach($graph_values as $key => $value){
                 $rows[] = ['c' => [
-                    ['v' => $key],
+                    ['v' => ucwords(strtolower($key))],
                     ['v' => $value[$key_name]],
                     ['v' => $value[$second_key_name]],
                 ]];
@@ -61,7 +61,7 @@ class InstagramGoogleChartHelper extends GoogleChartHelper {
         }else{
             foreach($graph_values as $key => $value){
                 $rows[] = ['c' => [
-                    ['v' => $key],
+                    ['v' => ucwords(strtolower($key))],
                     ['v' => $value[$key_name]],    
                 ]];
             }

@@ -1,6 +1,9 @@
+<?php
+use yii\helpers\Url;
+?>
 <div class="row">
     <div class="col-md-12">        
-        <h3 class="internal-title facebook"><?= $page_name ?> Interactions Overview</h3>
+        <h3 class="internal-title facebook">Interactions Overview</h3>
         <div class="internal-content">
             <ul>
                 <li><span class="small-title">Total Interactions : </span><?= $total_interactions ?></li>
@@ -14,13 +17,15 @@
 <div class="row">
     <div class="col-md-12">
         <?php
-        if($page_interaction_by_day_json_table){
-            $this->registerJs("GoogleCharts.drawColumns(".$page_interaction_by_day_json_table.", 'fb', 'daily_interaction')", yii\web\View::POS_END);
-        	echo '<h3 class="internal-title noneBG">Daily Interactions</h3>';
+  			echo '<h3 class="internal-title noneBG">Daily Interactions</h3>';
             echo '<div class="internal-content">';
+        if($page_interaction_by_day_json_table && $total_interactions){
+            $this->registerJs("GoogleCharts.drawColumns(".$page_interaction_by_day_json_table.", 'fb', 'daily_interaction')", yii\web\View::POS_END);
                 echo '<div id="daily_interaction"></div>';
-            echo '</div>';
+        }else{
+        	echo '<div id="daily_interaction"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/bar_2_no.png" /></div></div>';
         }
+	echo '</div>';
         ?>
     </div>
 </div>

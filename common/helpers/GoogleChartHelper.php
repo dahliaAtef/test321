@@ -31,7 +31,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $key => $value){
                 $rows[] = ['c' => [
-                ['v' => (((date('d', $key)) != 1) ? date('d', $key) : date('M d', $key))],
+                ['v' => ucwords(strtolower((((date('d', $key)) != 1) ? date('d', $key) : date('M d', $key))))],
                 ['v' => $value[$value_key_name]],    
                 ]];
         }
@@ -63,7 +63,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $key => $value){
                 $rows[] = ['c' => [
-                ['v' => $key],
+                ['v' => ucwords(strtolower($key))],
                 ['v' => $value[$value_key_name]],    
                 ]];
         }
@@ -88,7 +88,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $key => $value){
                 $rows[] = ['c' => [
-                ['v' => $key],
+                ['v' => ucwords(strtolower($key))],
                 ['v' => $value[$first_key_name]],
                 ['v' => $value[$second_key_name]],
                 ['v' => $value[$third_key_name]],
@@ -121,7 +121,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $key => $value){
             $rows[] = ['c' =>[
-                ['v' => $key],
+                ['v' => ucwords(strtolower($key))],
                 ['v' => $value]
             ]];
         }
@@ -135,6 +135,38 @@ class GoogleChartHelper {
         }
     }
     
+  
+  /**
+     * Get Data Table
+     * @author Dalia Atef <dahliaatef@hotmail.com>
+     * @param string $x_axis of graph
+     * @param string $y_axis of graph
+     * @param array $values to be graphed
+     * @return object $json_table of values
+     */
+    public static function getRegularTimeDataTable($x_axis, $y_axis, $values) {
+        $table = array();
+        $table['cols'] = [
+            ['label' => $x_axis, 'type' => 'string'],
+            ['label' => $y_axis, 'type' => 'number'],
+        ];
+        $rows = array();
+        foreach($values as $key => $value){
+            $rows[] = ['c' =>[
+                ['v' => (((date('d', ($key))) != 1) ? date('d', ($key)) : date('M d', ($key)))],
+                ['v' => $value]
+            ]];
+        }
+        if($rows){
+            $table['rows'] = $rows;
+            $json_table = json_encode($table);
+            return $json_table;
+        }else{
+            $json_table = null;
+            return $json_table;
+        }
+    }
+  
     /**
      * Get Data Table for two time graphs
      * @author Dalia Atef <dahliaatef@hotmail.com>
@@ -188,7 +220,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($x_axis_values as $x_axis_value){
             $rows[] = ['c' =>[
-                ['v' => $x_axis_value],
+                ['v' => ucwords(strtolower($x_axis_value))],
                 ['v' => $graph_one_values[$x_axis_value][$graph_one_key]],
                 ['v' => $graph_two_values[$x_axis_value][$graph_two_key]]
             ]];
@@ -203,6 +235,40 @@ class GoogleChartHelper {
         }
     }
     
+      /**
+     * Get Time Data Table for two Date graphs using key names
+     * @author Dalia Atef <dahliaatef@hotmail.com>
+     * @param string $x_axis of graph
+     * @param string $y_axis of graph
+     * @param array $values to be graphed
+     * @return object $json_table of values
+     */
+    public static function getTwoGraphsByDayTimeDataTableUsingKeyNames($x_axis, $graph_one_y_axis,$graph_two_y_axis, $x_axis_values, $graph_one_values, $graph_one_key, $graph_two_values, $graph_two_key) {
+        $table = array();
+        $table['cols'] = [
+            ['label' => $x_axis, 'type' => 'string'],
+            ['label' => $graph_one_y_axis, 'type' => 'number'],
+            ['label' => $graph_two_y_axis, 'type' => 'number'],
+        ];
+        $rows = array();
+        foreach($x_axis_values as $x_axis_value){
+            $rows[] = ['c' =>[
+                ['v' => (((date('d', $x_axis_value)) != 01) ? date('d', $x_axis_value) : date('M d', $x_axis_value))],
+                ['v' => $graph_one_values[$x_axis_value][$graph_one_key]],
+                ['v' => $graph_two_values[$x_axis_value][$graph_two_key]]
+            ]];
+        }
+        if($rows){
+            $table['rows'] = $rows;
+            $json_table = json_encode($table);
+            return $json_table;
+        }else{
+            $json_table = null;
+            return $json_table;
+        }
+    }
+    
+  
     
     /**
      * Get Data Table
@@ -277,7 +343,7 @@ class GoogleChartHelper {
         foreach($values as $first_array){
             foreach($first_array as $key => $value){
                 $rows[] = ['c' =>[
-                    ['v' => $key],
+                    ['v' => ucwords(strtolower($key))],
                     ['v' => $value]
                 ]];
             }
@@ -301,7 +367,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $value){
             $rows[] = ['c' =>[
-                ['v' => $value[0]],
+                ['v' => ucwords(strtolower($value[0]))],
                 ['v' => $value[1]],
             ]];
         }
@@ -324,7 +390,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $value){
             $rows[] = ['c' =>[
-                ['v' => $value[0]],
+                ['v' => ucwords(strtolower($value[0]))],
                 ['v' => $value[$index]],
             ]];
         }
@@ -348,7 +414,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $value){
             $rows[] = ['c' =>[
-                ['v' => $value[0]],
+                ['v' => ucwords(strtolower($value[0]))],
                 ['v' => $value[1]],
                 ['v' => $value[2]],
             ]];
@@ -373,7 +439,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($values as $key => $value){
             $rows[] = ['c' =>[
-                ['v' => $key],
+                ['v' => ucwords(strtolower($key))],
                 ['v' => $value],
                 ['v' => $value[2]],
             ]];
@@ -398,7 +464,7 @@ class GoogleChartHelper {
         $rows = array();
         foreach($age_ranges as $age_range){
             $rows[] = ['c' =>[
-                ['v' => $age_range],
+                ['v' => ucwords(strtolower($age_range))],
                 ['v' => (array_key_exists($age_range, $male)) ? $male[$age_range] : 0],
                 ['v' => (array_key_exists($age_range, $female)) ? $female[$age_range] : 0],
             ]];
@@ -431,12 +497,40 @@ class GoogleChartHelper {
             }else{
                foreach($days_of_week as $day => $interaction){
                 $rows[] = ['c' =>[
-                    ['v' => $hour],
+                    ['v' => ucwords(strtolower($hour))],
                     ['v' => $day],
                     ['v' => $interaction],
                 ]];
                 } 
             }
+        }
+        if($rows){
+            $table['rows'] = $rows;
+            $json_table = json_encode($table);
+            return $json_table;
+        }else{
+            $json_table = null;
+            return $json_table;
+        }
+    }
+    
+  
+    public static function getSameArrayThreeValuesTimeDataTableUsingKeyNames($x_axis, $first_y_axis, $second_y_axis, $third_y_axis, $values, $first_key_name, $second_key_name, $third_key_name){
+      $table = array();
+        $table['cols'] = [
+            ['label' => $x_axis, 'type' => 'string'],
+            ['label' => $first_y_axis, 'type' => 'number'],
+            ['label' => $second_y_axis, 'type' => 'number'],
+            ['label' => $third_y_axis, 'type' => 'number'],
+        ];
+        $rows = array();
+        foreach($values as $key => $value){
+                $rows[] = ['c' => [
+                ['v' => (((date('d', $key)) != 01) ? date('d', $key) : date('M d', $key))],
+                ['v' => $value[$first_key_name]],
+                ['v' => $value[$second_key_name]],
+                ['v' => $value[$third_key_name]],
+                ]];
         }
         if($rows){
             $table['rows'] = $rows;

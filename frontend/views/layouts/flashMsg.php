@@ -1,18 +1,19 @@
 <?php
+use yii\helpers\Url;
+
 $flashMessages = Yii::$app->session->getAllFlashes();
 if ( $flashMessages ) {
 ?>
 
 <div class="flashMessage active">
-    <div class="container">
 <?php
     foreach ($flashMessages as $message) {
 ?>
-	<div><?= $message; ?></div>
+	<span><?= $message; ?></span>
+  <div class="closBtn"><img src="<?= Url::to(['@frontThemeUrl']) ?>/images/cancel.png"></div>
 <?php        
     }
 ?>
-    </div>
 </div>
 <?php
 }

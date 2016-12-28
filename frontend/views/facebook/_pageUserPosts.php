@@ -1,11 +1,14 @@
+<?php
+use yii\helpers\Url;
+?>
 <div class="row">
     <div class="col-md-12">
-        <h3 class="internal-title facebook"><?= $page_name ?> User Activity</h3>
+        <h3 class="internal-title facebook">User Activity</h3>
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">    
-        <h3 class="internal-title noneBG">Activity Overview</h3>
+        <h3 class="internal-title noneBG" style="text-align:left">Activity Overview</h3>
         <?php
         $max = 0;
         foreach($user_posts as $posts_per_day){
@@ -25,13 +28,15 @@
 <div class="row">
     <div class="col-md-12">
         <?php
-        if($page_user_posts_by_day_json_table){
-            $this->registerJs("GoogleCharts.drawColumns(".$page_user_posts_by_day_json_table.", 'fb', 'user_posts')", yii\web\View::POS_END);
-            echo '<h3 class="internal-title noneBG">User Posts</h3>';
+          echo '<h3 class="internal-title noneBG">User Posts</h3>';
             echo '<div class="internal-content">';
-                echo '<div id="user_posts"></div>';
-        	echo '</div>';
+        if($page_user_posts_by_day_json_table && (array_sum($user_posts) > 0)){
+            $this->registerJs("GoogleCharts.drawColumns(".$page_user_posts_by_day_json_table.", 'fb', 'user_posts')", yii\web\View::POS_END);
+                echo '<div id="user_posts"></div>';	
+        }else{
+        	echo '<div id="user_posts"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/bar_2_no.png" /></div></div>';	
         }
+		echo '</div>';
         ?>
     </div>
 </div>

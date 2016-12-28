@@ -17,8 +17,8 @@ $this->title = Yii::t('app', 'Support');
 					<form class="contact-form">
 						<div class="row">
 							<div class="col-md-12">
-								<p>Name</p>
-								<?= $form->field($oSupportForm, 'name')->textInput()->label(false) ?>
+								<p>Email</p>
+								<?= $form->field($oSupportForm, 'email')->textInput()->label(false) ?>
 							</div>
 							<div class="col-md-12">
 								<p>Mobile</p>

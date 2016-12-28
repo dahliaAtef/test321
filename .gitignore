@@ -4,19 +4,18 @@ node_modules
 backend/runtime/*
 partners/runtime/*
 frontend/runtime/*
-frontend/assets/*
 frontend/web/assets/*
 nbproject
 nbproject/*
 uploads/*
 backend/uploads/*
-assets/*
 backend/assets/*
 common/config/main-local.php
 common/config/params-local.php
 common/config/main.php
 images/medium
 .idea/*
+backend/web/assets
 
 /index.php
 .sass-cache/*
@@ -58,3 +57,4 @@ cgi-bin
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 amer
+backend/web/assets

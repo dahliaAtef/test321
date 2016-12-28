@@ -26,7 +26,7 @@ use digi\metronic\widgets\ActiveForm;
 <div class="form-body">
     <!--<form class="login-form" method="post">-->
 
-    <h3 class="form-title">GAWAD - Backyard</h3>
+    <h3 class="form-title">HYPE - Backyard</h3>
     <div class="alert alert-danger display-hide">
         <button class="close" data-close="alert"></button>
         <span>

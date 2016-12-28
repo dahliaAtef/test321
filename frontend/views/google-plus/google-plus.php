@@ -6,12 +6,22 @@ $this->title = 'Google+';
 ?>
 
 <div class="page-content inside google-plus">
+  <?php if(strtotime('+5 days', strtotime($model->created)) > time()){ ?>
+ <div class="warning-msg">
+  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
+</div><!-- warning msg -->
+  <?php } ?>
+  <div id="loadWh">
+    <div id="loadx">
+      <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
+    </div>
+  </div><!-- loader -->
     <div class="container">
 	<div class="inner-page">
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
-                        <h2 class="internal-title sec-title"><?= $account['displayName'] ?> Audience</h2>
+                        <h2 class="internal-title sec-title"><?= $account['displayName'] ?>-Audience</h2>
                         <div class="line-box"></div>
                     </div>
                 </div>
@@ -48,7 +58,7 @@ $this->title = 'Google+';
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
-                        <h2 class="internal-title sec-title"><?= $account['displayName'] ?> Engagement</h2>
+                        <h2 class="internal-title sec-title">Engagement</h2>
                         <div class="line-box"></div>
                     </div>
                 </div>
@@ -65,13 +75,14 @@ $this->title = 'Google+';
                 echo '<li class="col-md-6"><span class="small-title">Total Likes : </span>'.$statistics['total_post_likes'].'</li>';
                 echo '<li class="col-md-6"><span class="small-title">Total Comments : </span>'.$statistics['total_post_comments'].'</li>';
                 echo '<li class="col-md-6"><span class="small-title">Total Shares : </span>'.$statistics['total_post_shares'].'</li>';
-                echo '<li class="col-md-6"><span class="small-title">Avg. Likes Per Post : </span>'.$statistics['avg_likes_per_post'].'</li>';
-                echo '<li class="col-md-6"><span class="small-title">Avg. Comments Per Post : </span>'.$statistics['avg_comments_per_post'].'</li>';
-                echo '<li class="col-md-6"><span class="small-title">Avg. Shares Per Post : </span>'.$statistics['avg_shares_per_post'].'</li>';
+                echo '<li class="col-lg-6 col-md-12"><span class="small-title">Avg. Likes Per Post : </span>'.$statistics['avg_likes_per_post'].'</li>';
+                echo '<li class="col-lg-6 col-md-12"><span class="small-title">Avg. Comments Per Post : </span>'.$statistics['avg_comments_per_post'].'</li>';
+                echo '<li class="col-lg-6 col-md-12"><span class="small-title">Avg. Shares Per Post : </span>'.$statistics['avg_shares_per_post'].'</li>';
                 echo '</ul>';
                 echo '</div></div></div></div>';
 
                 echo '<div class="row"><div class="col-md-12">';
+				
                     echo $this->render('_numberOfPostsChart', ['number_of_posts_json_table' => $googleP->getNumberOfPostsJsonTable($statistics['profile'])]);
                 echo '</div></div>';
                 echo '<div class="row"><div class="col-md-12">';
@@ -110,7 +121,7 @@ $this->title = 'Google+';
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
-                        <h2 class="internal-title sec-title"><?= $account['displayName'] ?> Audience</h2>
+                        <h2 class="internal-title sec-title">Audience</h2>
                         <div class="line-box"></div>
                     </div>
                 </div>
@@ -127,7 +138,7 @@ $this->title = 'Google+';
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
-                        <h2 class="internal-title sec-title"><?= $account['displayName'] ?> Top 10 Posts</h2>
+                        <h2 class="internal-title sec-title">Top 10 Posts</h2>
                         <div class="line-box"></div>
                     </div>
                 </div>

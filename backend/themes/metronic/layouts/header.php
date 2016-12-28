@@ -9,7 +9,7 @@ use yii\helpers\Url;
         <div class="container">
             <!-- BEGIN LOGO -->
             <div class="page-logo">
-                <a class="logo-bg" href="<?= Url::home(); //Url::to('/');   ?>">
+                <a class="logo-bg" href="<?= Url::to(['/users']); //Url::to('/');   ?>">
                     <img src="<?= Url::to(['/images/logo.png']); ?>" alt="logo" class="logo-default"/>
                 </a>
                 <div class="menu-toggler sidebar-toggler hide">
@@ -42,7 +42,7 @@ use yii\helpers\Url;
                                     <i class="icon-settings"></i> Settings </a>
                             </li>
                             <li>
-                                <a href="<?= Url::to(['/users/change-password', 'id' => 1]) ?>">
+                                <a href="<?= Url::to(['/users/change-password', 'id' => Yii::$app->user->getId()]) ?>">
                                     <i class="icon-key"></i> Change Password </a>
                             </li>
                             <li class="divider">

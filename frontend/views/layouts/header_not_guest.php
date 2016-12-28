@@ -20,12 +20,12 @@ if(($action_id == 'subscribe') || ($action_id == 'contact-us')){
             <div class="logo"><a href="<?= Url::to(['/']) ?>"><img src="<?= $logo ?>"></a></div>
             <nav class="nav-menu">
                    <ul class="menu-list">
-                    <li><a class="<?= ($action_id != 'support') ? 'active' : '' ?>" href="<?= Url::to(['dashboard']) ?>">Dashboard</a></li>
-                    <li><a class="<?= ($action_id == 'support') ? 'active' : '' ?>" href="<?= Url::to(['support']) ?>">Support</a></li>
+                    <li><a class="<?= ($action_id != 'support') ? 'active' : '' ?>" href="<?= Url::to(['/dashboard']) ?>">Dashboard</a></li>
+                    <li><a class="<?= ($action_id == 'support') ? 'active' : '' ?>" href="<?= Url::to(['/support']) ?>">Support</a></li>
                     <li class="sub-menu setting">
                         <a href="#" class="acc-setting glyphicon glyphicon-cog"></a>
                         <ul class="sub-menu-ul">
-                            <li><a href="<?= Url::to(['/user/request-password-reset']) ?>"><i class="PR8 glyphicon glyphicon-edit"></i>Change Password</a></li>
+                            <li><a href="<?= Url::to(['/change-password']) ?>"><i class="PR8 glyphicon glyphicon-edit"></i>Change Password</a></li>
                             <li><a href="<?= Url::to(['/logout']) ?>"><i class="PR8 glyphicon glyphicon-log-out"></i>Logout</a></li>
                         </ul>
                     </li>

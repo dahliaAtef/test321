@@ -17,8 +17,8 @@ $action_id = Yii::$app->controller->action->id;
             <nav class="nav-menu">
                 <ul class="menu-list">
                     <li><a class="<?= ($action_id == 'home') ? 'active' : '' ?>" href="<?= Url::to(['/']) ?>">Home</a></li>
-                    <li><a class="<?= ($action_id == 'subscribe') ? 'active' : '' ?>" href="<?= Url::to(['subscribe']) ?>">Subscribe</a></li>
-                    <li><a class="<?= ($action_id == 'contact-us') ? 'active' : '' ?>" href="<?= Url::to(['contact-us']) ?>">Contact Us</a></li>
+                    <li><a class="<?= ($action_id == 'subscribe') ? 'active' : '' ?>" href="<?= Url::to(['/subscribe']) ?>">Subscribe</a></li>
+                    <li><a class="<?= ($action_id == 'contact-us') ? 'active' : '' ?>" href="<?= Url::to(['/contact-us']) ?>">Contact Us</a></li>
                     <li class="sub-menu">
                         <a href="#">Login</a>
                     </li>

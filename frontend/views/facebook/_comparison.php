@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12">        
-        <h3 class="internal-title noneBG"><?= $page_name ?> Comparison</h3>
+        <h3 class="internal-title noneBG">Comparison</h3>
 
         <table class="facebook">
 
@@ -37,16 +37,6 @@
                 <td><?= $comparison['this_month']['total']['dislikes'] ?></td>
 
                 <td><?= $comparison['last_month']['total']['dislikes'] ?></td>
-
-            </tr>
-
-            <tr>
-
-                <td>Net Likes</td>
-
-                <td><?= $comparison['this_month']['total']['netlikes'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['netlikes'] ?></td>
 
             </tr>
 

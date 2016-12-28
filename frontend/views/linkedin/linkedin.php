@@ -10,6 +10,14 @@ $session = Yii::$app->session;
 
 
 <div class="page-content inside">
+ <div class="warning-msg">
+  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>3 days</b> to analyse your full data
+</div><!-- warning msg -->
+   <div id="loadWh">
+    <div id="loadx">
+      <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
+    </div>
+  </div><!-- loader -->
     <div class="container">
 	<div class="inner-page">
             <div>
@@ -23,7 +31,7 @@ $session = Yii::$app->session;
                     $form = ActiveForm::begin(['id' => 'userPagesForm']);
                 ?>
                 <?= $form->field($oUserPagesForm, 'id')->dropDownList($pages)->label('Please Select the page you need to manage with Hype') ?>
-                <?= Html::submitButton(Yii::t('app', 'Submit'), ['id' => 'submit_contact', 'name' => 'submit']) ?>
+                <?= Html::submitButton(Yii::t('app', 'Submit'), ['id' => 'submit_pages', 'name' => 'submit']) ?>
                 <?php
                 ActiveForm::end();
                     }else{

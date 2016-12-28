@@ -80,7 +80,9 @@ Dev.globalEvents = function () {
  * @author Ahmed Sharaf (sharaf.developer@gmail.com)
  */
 Dev.reInit = function () {
-    TSS.initializeFoundation();
+    //TSS.initializeFoundation();
+  alert('dev');
+  Frontend.modalFunc();
 };
 
 /**

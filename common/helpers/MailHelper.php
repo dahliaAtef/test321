@@ -59,10 +59,23 @@ class MailHelper {
      */
     public static function sendSubscriptionResponse($oUser) {
 
-        return Yii::$app->mailer->compose(['html' => 'successfulSubscriptionResponse-html'])
-                        ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
+      return Yii::$app->mailer->compose(['html' => 'successfulSubscriptionResponse-html'])
+                        ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
                         ->setTo($oUser->email)
                         ->setSubject(Yii::$app->name.' insights subscription')
+                        ->send();
+    }
+	
+  	/**
+     * Send Successful Activation Response
+     * @return boolean whether the email was send
+     */
+    public static function sendActivationResponse($oUser) {
+
+      return Yii::$app->mailer->compose(['html' => 'successfulActivationResponse-html'])
+                        ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
+                        ->setTo($oUser->email)
+                        ->setSubject(Yii::$app->name.' insights Activation')
                         ->send();
     }
 

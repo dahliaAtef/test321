@@ -19,11 +19,14 @@ use common\models\custom\Authclient;
 use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\Dashboard;
+use common\models\custom\Competitors;
 use frontend\models\ContactForm;
 use frontend\models\SubscribeForm;
 use frontend\models\UserPagesForm;
 use frontend\models\SupportForm;
 use frontend\models\CompetitorsForm;
+use frontend\models\CompetitorTest;
+use mikehaertl\wkhtmlto\Pdf;
 
 /**
  * Site controller
@@ -36,6 +39,22 @@ class SiteController extends \frontend\components\BaseController {
     public function behaviors()
     {
         return [
+          'access' => [
+                'class' => \yii\filters\AccessControl::className(),
+                'except' => ['auth'],
+                'rules' => [
+                    [
+                        'actions' => ['/signup', '/login', 'subscribe', 'mobile-login', 'contact-us', 'home'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'actions' => ['/logout', '/change-password', 'dashboard', 'facebook', 'twitter', 'instagram', 'youtube', 'google-plus', 'linkedin', 'support', 'home', 'testmail', 'delete-competitor', 'admin', 'competitors/index', 'competitors/delete', 'competitors/update'],
+                        'allow' => true,
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
 /*
             'pageCache' => [
                 'class' => 'yii\filters\PageCache',
@@ -143,15 +162,16 @@ class SiteController extends \frontend\components\BaseController {
             }
             $err = null;
             if($oUser = $oSubscribeForm->subscribe()){
-		if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
+              if (\common\helpers\MailHelper::sendSubscriptionResponse($oUser)) {
                     $oSubscribeForm->verifySuccess = 'success';
                     return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'success']);
-		} else {
-                    $oUser->delete();
-		}
+              } else {
+                   $oUser->delete();
+              }
             }else
 		Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, error occurred while subscribing.'));
         }
+      $oSubscribeForm->verifySuccess = 'nop';
         return $this->render('subscribe', ['oUserForm' => $oSubscribeForm, 'err' => null, 'success' => 'nop']);
     }
       
@@ -194,7 +214,15 @@ class SiteController extends \frontend\components\BaseController {
         }
         return $this->render('contact-us', ['oContactForm' => $oContactForm]);
     }
-    
+    public function actionUpdateCompetitor($id){
+    	$oCompetitorTest = new CompetitorTest();
+      	if($oCompetitorTest->load(Yii::$app->request->post()) && $oCompetitorTest->validate()){
+          	$oCompetitorTest->compid = $id;
+          	Competitors::checkAndUpdateChannels($oCompetitorTest);
+        }
+      
+          	return $this->actionDashboard;
+    }
     /**
      * Dashboard page
      */
@@ -202,15 +230,39 @@ class SiteController extends \frontend\components\BaseController {
 		$session= Yii::$app->session;
         $dashboard = new Dashboard();
 		$oCompetitorsForm = new CompetitorsForm();
+      	$oCompetitorTest = new CompetitorTest();
+      	if(Yii::$app->request->post() && array_key_exists('del-comp', $_POST) && (!empty($_POST['del-comp']))){
+        	Competitors::deleteCompetitors($_POST['del-comp']);
+          	$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+          	return $this->render('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
+        }
+      	if($oCompetitorTest->load(Yii::$app->request->post()) && $oCompetitorTest->validate()){
+          if($_POST['comp_id']){
+            Dashboard::checkAndUpdateChannels($_POST['CompetitorTest']['compid'], $oCompetitorTest);
+          }else{
+          	Dashboard::createNewCompetitor($oCompetitorTest);
+          }
+          	Dashboard::checkAndUpdateChannels($_POST['CompetitorTest']['compid'], $oCompetitorTest);
+          	$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+              $insights = $dashboard->getDashboardAccountsInsights();
+              $dashboard->getGrowthPerMonth($insights);
+        	  return $this->render('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
+        }
 		if($oCompetitorsForm->load(Yii::$app->request->post()) && $oCompetitorsForm->validate()){
-			//echo '<pre>'; var_dump($oCompetitorsForm); echo '</pre>'; die;
+          	if($oCompetitorsForm->id){
+            	echo '<pre>'; var_dump($oCompetitorsForm); echo '</pre>'; die;
+            }
 			if($dashboard->saveCompetitors($oCompetitorsForm)){
-				//die('success');
+              $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+              $insights = $dashboard->getDashboardAccountsInsights();
+              $dashboard->getGrowthPerMonth($insights);
+        	  return $this->renderAjax('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
 			}else{
 				//echo '<pre>'; var_dump($oCompetitorsForm); echo '</pre>'; 
 				//die('error');
 			}
 		}
+      	$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
         if(!$session->has('dashboard_accounts')){
             $dashboard_accounts = [];
             $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
@@ -221,10 +273,11 @@ class SiteController extends \frontend\components\BaseController {
                 }
             } 
             $session->set('dashboard_accounts', $dashboard_accounts);
+          //echo '<pre>'; var_dump($dashboard_accounts); echo '</pre>'; die;
         }
         $insights = $dashboard->getDashboardAccountsInsights();
         $dashboard->getGrowthPerMonth($insights);
-        return $this->render('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm]);
+        return $this->render('/dashboard/dashboard', ['insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
     }
     
     /**
@@ -251,17 +304,8 @@ class SiteController extends \frontend\components\BaseController {
             }
         }
 
-//        if($session->has('linkedin')) {
-//            echo "<pre>";
-//            print_r($linkedin->getClient());
-//            echo "</pre>";
-//            die;
-//        }
-
         if($session->has('linkedin')){
             $client = $linkedin->getClient();
-            $company_statistics = $linkedin->getCompanyStatistics();
-            //echo '<pre>'; var_dump($linkedin->getCompanySizes($company_statistics['followStatistics']['companySizes']['values'])); echo '</pre>'; die;
             $oUserPagesForm = new UserPagesForm();
 
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
@@ -272,7 +316,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
-                $since = strtotime('-12 months') * 1000;
+                $since = strtotime('first day of this month') * 1000;
                 $linkedin->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id, $since);
             }
             if($oAuthclient){
@@ -284,10 +328,10 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
-                    $since = strtotime('-12 months') * 1000;
+                    $since = strtotime('first day of this month') * 1000;
                     $until = time() * 1000;
                     $statistics = $linkedin->statistics($oModel[0]);
-                    $linkedin->saveAccountInsights($oModel[0], $since);
+                    //$linkedin->saveAccountInsights($oModel[0], $since);
                     return $this->render('/linkedin/linkedinPage', ['statistics' => $statistics, 'linkedin' => $linkedin, 'oModel' => $oModel[0]]);
                 }
             }else{
@@ -330,7 +374,6 @@ class SiteController extends \frontend\components\BaseController {
                 $gPlus->firstTimeToLog($account);
             }
             $oAccountModel = Model::findOne(['authclient_id' => $oAuthclient->id, 'parent_id' => null]);
-            //echo '<pre>'; var_dump($gPlus->getCompetitorNameAndCircledBy("https://plus.google.com/+TaylorSwift")); echo '</pre>'; die;
             $account = $gPlus->getAccountDetails();
             $gPlus->getTimeBasedAccountInsights($oAccountModel->id);
             return $this->render('/google-plus/google-plus', [
@@ -338,7 +381,8 @@ class SiteController extends \frontend\components\BaseController {
                 'googleP' => $gPlus,
                 'oAccountModel' => $oAccountModel,
                 'followers_growth' => $gPlus->getFollowersGrowth(),
-                'statistics' => $gPlus->getEngagementStatistics($oAccountModel->id)
+                'statistics' => $gPlus->getEngagementStatistics($oAccountModel->id),
+              	'model' => $oAccountModel
                     ]);
         }else{
             return $this->render('/google-plus/google-plusAuth');
@@ -355,7 +399,7 @@ class SiteController extends \frontend\components\BaseController {
                 //check stored token
                 Youtube::setClient( unserialize($oAuthclient->source_data));
               $ReturnData = $youtube->getChannelData() ;
-                if( $ReturnData == null){   // this case will hapen only when user revoke the access
+                if( $ReturnData == null){   // this case will happen only when user revoke the access
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
                     Youtube::setClient( null);
@@ -375,7 +419,7 @@ class SiteController extends \frontend\components\BaseController {
             ]);
         }else if($session['youtube']){
             $channels = $youtube->getChannelData();
-            $channel_analytics = $youtube->getChannelAnalytics();
+            
 
             if(!$oAuthclient){
                 $oAuthclient = $youtube->createNewAuthclient($channels);
@@ -387,19 +431,31 @@ class SiteController extends \frontend\components\BaseController {
                 }
             }
             $models = $oAuthclient->model;
+          	if((date('d M', time()) == date('d M', strtotime('first day of this month'))) || date('d', time()) == '02'){
+                $since = date('Y-m-d', strtotime('first day of last month'));
+                $until = date('Y-m-d', strtotime('last day of last month'));
+            }else{
+              	$since = date('Y-m-d', strtotime('first day of this month'));
+              //$since = date('Y-m-d', strtotime('- 3 months', time()));
+                $until = date('Y-m-d', time());
+            }
+          $channel_analytics = $youtube->getChannelAnalytics($since, $until);
             if(!$models){
                 $youtube->firstTimeToLog($oAuthclient->id);
             }else{
                 //echo '<pre>'; var_dump($youtube->getCompetitorNameAndSubscribers("https://www.youtube.com/channel/UC89jxlRgoiqAnO_0pm-Ug0g")); echo '</pre>'; die;
                 //$youtube->updatePostImageActualSize($oAuthclient->model[0]->id);
-                $youtube->saveAccountInsights($oAuthclient->model[0]->id);
+                //$youtube->saveAccountInsights($oAuthclient->model[0]->id, $since);
             }
             $subscribers = $youtube->getChannelSubscribers();
             return $this->render('/youtube/youtube', [
                 'channels' => $channels,
                 'channel_analytics' => $channel_analytics,
                 'subscribers' => $subscribers,
-                'youtube' => $youtube
+                'youtube' => $youtube,
+                'start_date' => $since,
+                'end_date' => $until,
+              'model' => $models[0],
             ]);
 
         }else{
@@ -426,16 +482,23 @@ class SiteController extends \frontend\components\BaseController {
         }
 
         //echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
-	if(Yii::$app->request->post() && isset($_POST['since'])){
+	/*if(Yii::$app->request->post() && isset($_POST['since'])){
             $since = $_POST['since'];
 	}else{
-            $since =  strtotime('-3 months', time());
+            $since =  strtotime('first day of this month');
 	}
 	if(Yii::$app->request->post() && isset($_POST['until'])){
             $until = $_POST['until'];
 	}else{
             $until = time();
-	}
+	}*/
+      if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+         $since = strtotime('first day of last month');
+         $until = strtotime('last day of last month');
+     }else{
+         $since = strtotime('first day of this month');
+         $until = time();
+    }
 	$days_in_range = $insta->getDaysInRange($since, $until);
         if($session->has('instagram')){
             $user_data = $insta->getUserData();
@@ -454,16 +517,15 @@ class SiteController extends \frontend\components\BaseController {
             if(!$oModels){
                 $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }else{
-		$insta->saveAccountInsights($oModels[0]);
+		//$insta->saveAccountInsights($oModels[0]);
                 $insta->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
             }
             return $this->render('/instagram/instagram', [
                 'user' => $user_data,
                 'insta' => $insta,
                 'followers_growth' => $insta->getFollowersGrowth($days_in_range),
-                'followers_gained_lost_json_table' => $insta->getFollowersGainedAndLostJsonTable($days_in_range),
                 'statistics' => $insta->getEngagementStatistics($oModels[0]->id, $days_in_range, $since, $until),
-		'model_id' => $oModels[0]->id,
+		'model' => $oModels[0],
 		'since' => $since,
 		'until' => $until,
                     ]);
@@ -473,7 +535,7 @@ class SiteController extends \frontend\components\BaseController {
     }
     
     public function actionTwitter(){
-        ini_set('max_execution_time', 900000);
+       ini_set('max_execution_time', 900000);
         //check if the save access is working
         $twitter = new Twitter();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
@@ -506,25 +568,39 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->save();
                 //$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }
-
+			
             //$oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'instagram']);
             $oModels = $oAuthclient->model;
+              if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+                    $since = strtotime('first day of last month');
+                	//$since_str = date('Y-m-d H:i:s', $since);
+                    $until = strtotime('first day of this month');
+                	//$until_str = date('Y-m-d H:i:s', $until);
+                }else{
+                    $since = strtotime('first day of this month');
+                	//$since_str = date('Y-m-d H:i:s', $since);
+                    $until = time();
+                	//$until_str = date('Y-m-d H:i:s', $until);
+                }
+          //var_dump(date('Y-m-d H:i:s', $until)); die;
             if(!$oModels){
                 $oModels[0] = $twitter->firstTimeToLog($user_data, $oAuthclient->id);
-		$twitter->getTimeBasedAccountInsights($oModels[0]->id);
+				$twitter->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
+              	$days_in_range = $twitter->getDaysInRange($since, $until);
             }else{
-		$twitter->saveAccountInsights($oModels[0]);
-                $twitter->getTimeBasedAccountInsights($oModels[0]->id);
+				//$twitter->saveAccountInsights($oModels[0]);
+              $twitter->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
+              $days_in_range = $twitter->getDaysInRange($since, $until);
             }
-            
             return $this->render('/twitter/twitter', [
                 'user' => $user_data,
                 'twitter' => $twitter,
-                'followers_growth' => $twitter->getFollowersGrowth(),
-                'following_growth' => $twitter->getFollowingGrowth(),
-                'listed_growth' => $twitter->getListedGrowth(),
-                'statistics' => $twitter->getEngagementStatistics($oModels[0]->id),
+                'followers_growth' => $twitter->getFollowersGrowth($days_in_range),
+                'following_growth' => $twitter->getFollowingGrowth($days_in_range),
+                'listed_growth' => $twitter->getListedGrowth($days_in_range),
+                'statistics' => $twitter->getEngagementStatistics($oModels[0]->id, $days_in_range, $since, $until),
                 'top_ten_trends' => $twitter->getPublicTrends(),
+                'model' => $oModels[0],
                     ]);
         }else{
             return $this->render('/twitter/twitterAuth');  
@@ -532,6 +608,9 @@ class SiteController extends \frontend\components\BaseController {
     }
     
     public function actionFacebook(){
+      //$oUserPagesForm = new UserPagesForm();
+      //$array['data'] = [['id' => 0, 'name' => 'A'], ['id' => 1, 'name' => 'B'], ['id' => 2, 'name' => 'C']];
+      //return $this->render('/facebook/facebook',['user_pages' => $array, 'oUserPagesForm' => $oUserPagesForm]);
         ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();
@@ -556,8 +635,6 @@ class SiteController extends \frontend\components\BaseController {
             }
         }
 
-		//echo '<pre>'; var_dump($fb->getCompetitorNameAndFollowersFromUrl("https://www.facebook.com/collectivenouncomedy/?hc_ref=NEWSFEED")); echo '</pre>'; die;
-
         if($session->has('facebook')){
             if($oUserPagesForm->load(Yii::$app->request->post()) && $oUserPagesForm->validate()){
                 $client = $fb->getClient();
@@ -572,16 +649,23 @@ class SiteController extends \frontend\components\BaseController {
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
             if($oModel){
-		$since = strtotime('first day of this month');
-                $until = time();
+				if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+                    $since = strtotime('first day of last month');
+                  	$since = strtotime('-1 days', $since);
+                    $until = strtotime('last day of last month');
+                }else{
+                    $since = strtotime('first day of this month');
+                  	$since = strtotime('-1 days', $since);
+                    $until = time();
+                }
                 $page = $fb->getPageData($oModel[0]->entity_id);
-		$fb->saveAccountInsights($oModel[0], $page['likes']);
                 return $this->render('/facebook/facebookPage',[
                     'page' => $page,
                     'fb' => $fb,
                     'id' => $oModel[0]->entity_id,
                     'since' => $since,
                     'until' => $until,
+                  	'model' => $oModel[0]
                 ]);
             }else{
                 return $this->render('/facebook/facebook',['user_pages' => $fb->getUserPages(), 'oUserPagesForm' => $oUserPagesForm]);
@@ -624,6 +708,21 @@ class SiteController extends \frontend\components\BaseController {
         }else{
             echo '<pre>'; var_dump($client); echo '</pre>'; die;
         }
+    }
+
+
+    public function actionTestmail(){
+        $email= 'mohamed.amer2050@gmail.com';
+        $message='test email body ';
+
+        return Yii::$app->mailer->compose()
+            ->setFrom('dalia@digitreeinc.com')
+            ->setTo($email)
+            ->setTextBody($message)
+            ->setSubject('testing the email configurations ')
+            ->send();
+
+
     }
 
 }
