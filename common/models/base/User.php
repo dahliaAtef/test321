@@ -104,6 +104,16 @@ class User extends Base implements IdentityInterface {
         return static::findOne(['username' => $username, 'status' => self::STATUS_VERIFIED]);
     }
 
+  	/**
+     * Finds user by email
+     *
+     * @param string $email
+     * @return static|null
+     */
+    public static function findByEmail($email) {
+        return static::findOne(['email' => $email, 'status' => self::STATUS_VERIFIED]);
+    }
+  
     public static function findByUserId($Id) {
         return static::findOne(['id' => $Id]);
     }

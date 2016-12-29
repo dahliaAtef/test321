@@ -15,7 +15,7 @@ if($post_types_json_table){
     echo '</div>';
 ?>
 
-?>
+
 <table class="facebook">
     <tr>
         <th>Post Type</th>

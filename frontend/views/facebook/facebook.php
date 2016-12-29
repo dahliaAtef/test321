@@ -11,7 +11,8 @@ $session = Yii::$app->session;
 <div class="page-content inside">
     <div class="container">
 	<div class="inner-page">
-            <div>
+      <div class="row">
+            <div class="col-md-4 col-md-offset-4" style="padding-top:10vh">
                 
                 <?php
                     $pages = [];
@@ -21,14 +22,15 @@ $session = Yii::$app->session;
                     if(!empty($pages)){
                     $form = ActiveForm::begin(['id' => 'userPagehsForm']);
                 ?>
-                <?= $form->field($oUserPagesForm, 'id')->dropDownList($pages)->label('Please Select the page you need to manage with Hype') ?>
-                <?= Html::submitButton(Yii::t('app', 'Submit'), ['id' => 'submit_fb_pages', 'name' => 'submit']) ?>
+                <?= $form->field($oUserPagesForm, 'id', ['labelOptions' => [ 'class' => 'custmLabel' ]])->dropDownList($pages)->label('<p class="grayTitle">Please Select the page you need to manage</p>') ?>
+                <?= Html::submitButton(Yii::t('app', 'Submit'), ['id' => 'submit_fb_pages','class' => 'btn extraMargin', 'name' => 'submit']) ?>
                 <?php
                 ActiveForm::end();
                     }else{
                         echo "Sorry, it looks like you aren't managing any facebook pages.";
                     }?>
             </div>
+        </div>
 	</div>
 	<!-- inner page -->
     </div>

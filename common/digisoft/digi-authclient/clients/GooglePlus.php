@@ -3,10 +3,13 @@
 namespace digi\authclient\clients;
 
 use Yii;
+use yii\authclient\InvalidResponseException;
 use yii\authclient\OAuth2;
 use common\models\custom\Authclient;
 use common\models\custom\Model;
 use common\models\custom\Insights;
+use common\models\custom\CompChannels;
+use common\models\custom\Competitors;
 use common\helpers\GoogleChartHelper;
 use common\helpers\InstagramGoogleChartHelper;
 use yii\authclient\OAuthToken;
@@ -137,11 +140,11 @@ class GooglePlus extends OAuth2
         return $public_activities;
     }
     
-    public function getAllPublicActivities(){
+    public function getAllPublicActivities($since){
         $public_activities = array();
         $public_activities_array = $this->getPublicActivities();
         $public_activities = $public_activities_array ['items'];
-        while(array_key_exists('nextPageToken', $public_activities_array)){
+        while(array_key_exists('nextPageToken', $public_activities_array) && (strtotime($public_activities[count($public_activities) - 1]['published']) > $since)){
             $public_activities_array = $this->getTheRestOfThePublicActivities($public_activities_array['nextPageToken']);
             $public_activities = array_merge($public_activities, $public_activities_array ['items']);
         }
@@ -191,13 +194,34 @@ class GooglePlus extends OAuth2
     }
 	
     public function getCompetitorNameAndCircledBy($url){
-	$username = $this->getUserIdUsingUrl($url);
-	$data = $this->getAccountDetailsById($username);
-	$page['followers'] = $data["circledByCount"];
-	$page['name'] = $data["displayName"];
-	$page['id'] = $data["id"];
-	return $page;
+      $username = $this->getUserIdUsingUrl($url);
+      $data = $this->getAccountDetailsById($username);
+      $page['followers'] = $data["circledByCount"];
+      $page['name'] = $data["displayName"];
+      $page['id'] = $data["id"];
+      $page['img_url'] = $data['image']['url'];
+      return $page;
     }
+  
+  	
+ 	public function updateCompetitorsValues(){
+      	$competitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+  		foreach($competitors as $oCompetitor){
+        	$oGooglePlus = CompChannels::findOne(['comp_id' => $oCompetitor->id, 'comp_channel' => 'google_plus']);
+          	if($oGooglePlus){
+            	$this->updateCompetitorValue($oGooglePlus);
+            }
+        }
+  	}
+    
+  
+ 	public function updateCompetitorValue($oGooglePlus){
+  		$page_data = $this->getAccountDetailsById($oGooglePlus->comp_channel_id);
+      	if($page_data){
+        	$oGooglePlus->comp_channel_followers = $page_data["circledByCount"];
+          	$oGooglePlus->update();
+        }
+  	}
     
     public function getPublicActivitiesById($id){
         $client = GooglePlus::getClient();
@@ -237,11 +261,10 @@ class GooglePlus extends OAuth2
         $oPostModel->followers = $followers;
         $oPostModel->creation_time = strtotime($post['published']);
         $oPostModel->url = $post['url'];
-        //echo '<pre>'; var_dump($oPostModel); echo '</pre>'; die;
         if($oPostModel->save()){
             return $oPostModel;
         }else{
-            echo 'there were an error while saving this model'; die;
+            echo '<pre>'; var_dump($oPostModel->getErrors()); echo '</pre>'; die;
         }
     }
     
@@ -270,7 +293,7 @@ class GooglePlus extends OAuth2
     }
     
     public function firstTimeToLog($user_data){
-      $oAuthclient = Authclient::findOne(['source_id' => $user_data['id']]);
+      $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source_id' => $user_data['id']]);
         if($oAuthclient){
             $oAccountModel = new Model();
             $oAccountModel->authclient_id = $oAuthclient->id;
@@ -280,7 +303,8 @@ class GooglePlus extends OAuth2
             $oAccountModel->media_url = $user_data["image"]["url"];
             //echo '<pre>'; var_dump($oAccountModel); echo '</pre>'; die;
             if($oAccountModel->save()){
-                $all_posts =  $this->getAllPublicActivities();
+              	$since = strtotime('first day of this month');
+                $all_posts =  $this->getAllPublicActivities($since);
                 $total_likes = $total_comments = $total_shares = 0;
                 foreach($all_posts as $post){
                     $total_likes += $post['object']['plusoners']['totalItems'];
@@ -308,40 +332,66 @@ class GooglePlus extends OAuth2
         }
         
     }
+  
+  	public function getActivityById($id){
+    	$client = GooglePlus::getClient();
+        $activity = $client->api('/plus/v1/activities/'.$id);
+        return $activity;
+    }
+  
+    public function updatePostModel($post, $oPostModel){
+        $oPostModel->likes = $post['object']['plusoners']['totalItems'];
+        $oPostModel->comments = $post['object']['replies']['totalItems'];
+        $oPostModel->shares = $post['object']['resharers']['totalItems'];
+        if($oPostModel->update()){
+            return $oPostModel;
+        }
+    }
     
-    public function everydayCron(){
-        $all_accounts = Authclient::find()->where(['source' => 'google_plus'])->all();
-        foreach($all_accounts as $account){
-            $user_data = $this->getAccountDetailsById($account->source_id);
-            $oAccountModel = Model::findOne(['authclient_id' => $account->id, 'entity_id' => $account->source_id]);
-            if($oAccountModel){
-                $all_posts =  $this->getAllPublicActivities();
+
+    public function saveAccountInsights($oAccountModel){
+            $user_data = $this->getAccountDetails();
+				$updated = [];
+                $all_posts_call =  $this->getAllPublicActivities();
+              	$prev_posts = $this->getTimeBasedPosts($oAccountModel->id);
                 $total_likes = $total_comments = $total_shares = 0;
-                foreach($all_posts as $post){
+                foreach($all_posts_call as $post){
                     $total_likes += $post['object']['plusoners']['totalItems'];
                     $total_comments += $post['object']['replies']['totalItems'];
                     $total_shares += $post['object']['resharers']['totalItems'];
                     $oPostModel = Model::findOne(['parent_id' => $oAccountModel->id, 'entity_id' => $post['id']]);
                     if(!$oPostModel){
-                        $oPostModel = $this->creatNewPostModel($post, $oAuthclient->id, $oAccountModel->id, $user_data['circledByCount']);
-                    }
+                        $oPostModel = $this->creatNewPostModel($post, $oAccountModel->authclient_id, $oAccountModel->id, $user_data['circledByCount']);
+                    }else{
+						$oPostModel = $this->updatePostModel($post, $oPostModel);
+						array_push($updated, $oPostModel->id);
+					}
+                }
+				foreach($prev_posts as $oPostModel){
+					if(!in_array($oPostModel, $updated)){
+						$post = $this->getActivityById($oPostModel->entity_id);
+						if($post){
+							$this->updatePostModel($post, $oPostModel);
+						}
+					}
+                }
+				$all_posts = $this->getTimeBasedPosts($oAccountModel->id);
+				$total_likes = $total_comments = $total_shares = 0;
+                foreach($all_posts as $post){
+                    $total_likes += $post->likes;
+                    $total_comments += $post->comments;
+                    $total_shares += $post->shares;
                 }
                 $oAccountInsights = new Insights();
                 $oAccountInsights->model_id = $oAccountModel->id;
                 $oAccountInsights->followers = $user_data["circledByCount"];
-                $oAccountInsights->number_of_posted_media = count($all_posts);
+                $oAccountInsights->number_of_posted_media = count($all_posts_call);
                 $oAccountInsights->total_likes = $total_likes;
                 $oAccountInsights->total_comments = $total_comments;
                 $oAccountInsights->total_shares = $total_shares;
-                if(!$oAccountInsights->save()){
-                    echo "error while saving this page's insights"; die;
-                }
-            }else{
-                echo "couldn't find it"; die;
-            }
-        }
+                $oAccountInsights->save();
     }
-    
+
     public function getTimeBasedAccountInsights($model_id, $since = null, $until = null){
         ($since)? '' : ($since = strtotime(date('Y-m', time()).'-1'));
         ($until)? '' : ($until = time());
@@ -363,10 +413,9 @@ class GooglePlus extends OAuth2
     }
     
     public function getTimeBasedPosts($parent_id, $since = null, $until = null){
-        ($since)? '' : ($since = strtotime(date('2015-5-1')));
+        ($since)? '' : ($since = strtotime('first day of this month'));
         ($until)? '' : ($until = time());
-        $this->posts_in_range = Model::find()->where(['parent_id' => $parent_id])->andWhere(['>=', 'creation_time', $since])->andWhere(['<=', 'creation_time', $until])->all();
-        
+        $this->posts_in_range = Model::find()->where(['parent_id' => $parent_id])->andWhere(['between', 'creation_time', $since, $until])->all();
         return $this->posts_in_range;
     }
     
@@ -374,7 +423,6 @@ class GooglePlus extends OAuth2
         $top_posts_by_eng = [];
         if($this->posts_in_range){
             $post_array = array();
-            //echo '<pre>'; var_dump($this->posts_in_range); echo '</pre>'; die;
             foreach($this->posts_in_range as $key => $oPost){
                 if(!$oPost->followers){
                    $post_array[$key] = null; 
@@ -383,13 +431,19 @@ class GooglePlus extends OAuth2
                 }
             }
             arsort($post_array);
-            ///echo '<pre>'; var_dump($post_array); echo '</pre>'; die;
             $top_posts_by_eng = array();
             foreach($post_array as $key => $value){
-                ($value != null) ? ($top_posts_by_eng[] = ['id' => $this->posts_in_range[$key]->id, 'engagement' => round($value, 2), 'likes' => $this->posts_in_range[$key]->likes, 'comments' => $this->posts_in_range[$key]->comments, 'shares' => $this->posts_in_range[$key]->shares,'link' => $this->posts_in_range[$key]->url, 'media_url' => $this->posts_in_range[$key]->media_url]) : '';  
+              array_push($top_posts_by_eng, [
+              	'id' => $this->posts_in_range[$key]->id,
+                'engagement' => (($value) ? round($value, 2) : 0),
+                'likes' => $this->posts_in_range[$key]->likes, 
+                'comments' => $this->posts_in_range[$key]->comments, 
+                'shares' => $this->posts_in_range[$key]->shares,
+                'link' => $this->posts_in_range[$key]->url, 
+                'media_url' => $this->posts_in_range[$key]->media_url
+              ]);
             }
         }
-        //echo '<pre>'; var_dump($top_posts_by_eng); echo '</pre>'; die;
         return $top_posts_by_eng;
     }
     
@@ -412,7 +466,7 @@ class GooglePlus extends OAuth2
             
             foreach($this->posts_in_range as $post){
                 if(date('M d, y', $post->creation_time) == $day_formated){
-                    if(!array_key_exists($day_formated, $this->statistics['profile'])){
+                    if(!array_key_exists($date, $this->statistics['profile'])){
                         $this->statistics["profile"][$date]["amount"] = 1;
                         $this->statistics["profile"][$date]["interaction"] = ($post->likes + $post->comments + $post->shares);
                         $this->statistics['profile'][$date]['followers'] = $post->followers;
@@ -490,7 +544,8 @@ class GooglePlus extends OAuth2
             	$interaction = $post->likes + $post->comments + $post->shares;
               	$hour[date('ga', $post->creation_time)][date('D', $post->creation_time)] += $interaction;
             	$total += $interaction;
-          }if($total){
+          }
+          if($total){
           	return $hour;
           }else{
           	return null;

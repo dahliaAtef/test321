@@ -12,6 +12,7 @@ use Yii;
  * @property string $comp_channel
  * @property string $comp_channel_id
  * @property integer $comp_channel_followers
+ * @property string $img_url
  * @property string $created
  * @property string $updated
  *
@@ -35,7 +36,7 @@ class CompChannels extends \common\models\base\Base
         return [
             [['comp_id', 'comp_channel', 'comp_channel_id', 'comp_channel_name', 'comp_channel_followers'], 'required'],
             [['comp_id', 'comp_channel_followers'], 'integer'],
-            [['comp_channel'], 'string', 'max' => 10],
+            [['comp_channel'], 'string', 'max' => 16],
             [['comp_channel_id', 'comp_channel_name'], 'string', 'max' => 250],
 			[['created', 'updated'], 'safe']
         ];
@@ -53,6 +54,7 @@ class CompChannels extends \common\models\base\Base
             'comp_channel_id' => Yii::t('app', 'Comp Channel ID'),
 			'comp_channel_name' => Yii::t('app', 'Comp Channel Name'),
             'comp_channel_followers' => Yii::t('app', 'Comp Channel Followers'),
+          	'img_url' => Yii::t('app', 'Img Url'),
             'created' => Yii::t('app', 'Created'),
             'updated' => Yii::t('app', 'Updated')
         ];

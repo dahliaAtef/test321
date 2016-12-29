@@ -6,14 +6,16 @@ use common\models\custom\Dashboard;
 <div class="row">
 	<div class="col-md-12">
 		<?php
-		$growth_per_channel_json_table = Dashboard::getGrowthPerChannelJsonTable($growth_per_channel);
-		if($growth_per_channel_json_table){
-		    $this->registerJs("GoogleCharts.drawBars(".$growth_per_channel_json_table.", 'Growth Per Channel', 'growth_per_channel')", yii\web\View::POS_END);
-		    echo '<h3 class="internal-title noneBG ">Growth Per Channel</h3>';
+			echo '<h3 class="internal-title noneBG ">Growth Per Channel</h3>';
             echo '<div class="internal-content">';
+		$growth_per_channel_json_table = Dashboard::getGrowthPerChannelJsonTable($growth_per_channel);
+		if($growth_per_channel_json_table && (array_sum($growth_per_channel) > 0)){
+		    $this->registerJs("GoogleCharts.drawBars(".$growth_per_channel_json_table.", 'Growth Per Channel', 'growth_per_channel')", yii\web\View::POS_END);
 		    echo '<div id="growth_per_channel"></div>';
-		    echo '</div>';
-		}   
+		}else{
+        	echo '<div id="growth_per_channel"><div class="dummy_chart" ><img src="'.Url::to('@frontThemeUrl').'/images/bar_no.png" /></div></div>';
+        }
+		echo '</div>';
 		?>
 	</div>
 </div>

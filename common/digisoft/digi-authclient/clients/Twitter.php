@@ -9,6 +9,8 @@ use common\models\custom\Authclient;
 use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\RecentFollowers;
+use common\models\custom\CompChannels;
+use common\models\custom\Competitors;
 
 class Twitter extends \yii\authclient\clients\Twitter
 {
@@ -77,7 +79,17 @@ class Twitter extends \yii\authclient\clients\Twitter
         	return $this->getClient();
         }else{
         	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
-          	if($oAuthclient ){
+              if(! $oAuthclient ){
+                  $oAuthclient = Authclient::findOne(['user_id' => 2, 'source' => 'twitter']);
+                  $client = unserialize($oAuthclient->source_data);
+                  $ReturnData = $client->getUserAttributes() ;
+                    if( $ReturnData == null){
+                        $oAuthclient->source_data =null;
+                        $oAuthclient->save();
+                          $client = null;
+                    }
+                return $client;
+              }
               if($oAuthclient->source_data != null){
                  Twitter::setClient( unserialize($oAuthclient->source_data));
                  $ReturnData = $this->getAccountData() ;
@@ -87,14 +99,7 @@ class Twitter extends \yii\authclient\clients\Twitter
                       Twitter::setClient( null);
                   }
                   return $this->getClient();
-              }else{
-                  /*
-                  $client = Facebook::getClient();
-                  //$client->getUserAttributes() ;
-                  $oAuthclient->source_data = serialize($client);
-                  $oAuthclient->save();
-                  */
-              }
+              
           }
         }
     }
@@ -107,14 +112,33 @@ class Twitter extends \yii\authclient\clients\Twitter
     }
 	
     public function getCompetitorNamesAndFollowers($url){
-	$screen_name = $this->getScreenNameFromUrl($url);
-	$user_data = $this->getAccountDataByScreenName($screen_name);
-	$page['name'] = $user_data["name"];
-	$page['id'] = $user_data["id_str"];
-	$page['followers'] = $user_data["followers_count"];
-	return $page;
+      $screen_name = $this->getScreenNameFromUrl($url);
+      $user_data = $this->getAccountDataByScreenName($screen_name);
+      $page['name'] = $user_data["name"];
+      $page['id'] = $user_data["id_str"];
+      $page['followers'] = $user_data["followers_count"];
+      $page['img_url'] = $user_data['profile_image_url'];
+      return $page;
     }
     
+ 	public function updateCompetitorsValues(){
+      	$competitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+  		foreach($competitors as $oCompetitor){
+        	$oTwitter = CompChannels::findOne(['comp_id' => $oCompetitor->id, 'comp_channel' => 'twitter']);
+          	if($oTwitter){
+            	$this->updateCompetitorValue($oTwitter);
+            }
+        }
+  	}
+    
+ 	public function updateCompetitorValue($oTwitter){
+  		$page_data = $this->getAccountDataById($oTwitter->comp_channel_id);
+      	if($page_data){
+        	$oTwitter->comp_channel_followers = $page_data["followers_count"];
+          	$oTwitter->update();
+        }
+  	}
+  
     public function getAccountFollowers(){
         $client = $this->getClient();
         $followers = $client->api("followers/list.json",'GET',['count' => 200,'cursor' => -1, 'skip_status' => true, "include_user_entities" => false]);

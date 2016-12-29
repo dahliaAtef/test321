@@ -9,11 +9,6 @@ $this->title = 'Instagram';
 ?>
 
 <div class="page-content inside instagram">
-  <?php if(strtotime('+5 days', strtotime($model->created)) > time()){ ?>
- <div class="warning-msg">
-  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
-</div><!-- warning msg -->
-  <?php } ?>
   <div id="loadWh">
     <div id="loadx">
       <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
@@ -225,7 +220,7 @@ $this->title = 'Instagram';
 			<div class="col-md-12">
 			<?php
 				echo $this->render('_topTagsByInteractionsChart', ['tags_interactions_json_table' => $insta->getTagsInteractionsJsonTable()]);
-				echo $this->render('_bestTimeToPostChart', ['best_time_to_post_json_table' => $insta->getBestTimeToPostJsonTable($model->id, $since, $until)]);
+				echo $this->render('_bestTimeToPostChart', ['total_interaction' => $statistics['total_interaction'], 'best_time_to_post_json_table' => $insta->getBestTimeToPostJsonTable($model->id, $since, $until)]);
 			?>
 			</div>
 		</div>

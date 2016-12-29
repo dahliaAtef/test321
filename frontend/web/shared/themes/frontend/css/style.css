@@ -454,6 +454,9 @@ header.outSide .logo {display: block;;margin: 28px 0;}
   .radio {margin-left: 10px;    color: #6C6D6F;}
 
 .btn.focus, .btn:focus, .btn:hover {color: #fff}
+form p.grayTitle {color: #6c6d6f;margin-bottom:8px;text-align:center!important}
+.extraMargin{margin-top :30px!important;width:200px!important}
+.custmLabel {display:block!important;text-align:center!important}
 
 
 .help-arrow{display:none;position: absolute;
@@ -881,7 +884,7 @@ table.dashboard td:nth-child(odd) ,table.dashboard td:nth-child(even) {border-ri
   .small-title {font-weight: bold;text-transform: capitalize;}
   .internal-content {padding: 0 14px;margin-bottom: 40px;}
     .internal-content li{line-height: 26px}
-table {width:94%;margin:auto;text-align: center;;margin-bottom: 40px}
+table {width:94%;margin:auto;text-align: center;margin-bottom: 40px}
 table.adaptMargin{margin-top: 108px}
 table tr{line-height: 24px;}
     tr:nth-child(odd){/*background: #d3d3d3;*/background: #f4f3f3;}
@@ -1146,7 +1149,7 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
     margin-bottom: 20px;
 }
 .editable{display: inline-block;
-    vertical-align: sub;
+    text-align:left;
     position: relative;
     width: 160px;
     font-size: 16px;}
@@ -1247,12 +1250,12 @@ cursor: pointer;}
     -moz-osx-font-smoothing: grayscale;
 }
 .has-error:before {content: "\e014";position: absolute;
-    top: 34px;
+    top: 38px;
     right: 24px;
     z-index: 99;
     color: red;}
 .help-block{display: none!important}
-
+.modal-content {min-height:100vh;border-radius:0}
 /*
 .card {
   position: relative;

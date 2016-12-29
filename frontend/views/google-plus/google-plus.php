@@ -6,11 +6,6 @@ $this->title = 'Google+';
 ?>
 
 <div class="page-content inside google-plus">
-  <?php if(strtotime('+5 days', strtotime($model->created)) > time()){ ?>
- <div class="warning-msg">
-  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
-</div><!-- warning msg -->
-  <?php } ?>
   <div id="loadWh">
     <div id="loadx">
       <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
@@ -83,10 +78,11 @@ $this->title = 'Google+';
 
                 echo '<div class="row"><div class="col-md-12">';
 				
-                    echo $this->render('_numberOfPostsChart', ['number_of_posts_json_table' => $googleP->getNumberOfPostsJsonTable($statistics['profile'])]);
+                    echo $this->render('_numberOfPostsChart', ['total_posts' => $statistics['total_posts'], 'number_of_posts_json_table' => $googleP->getNumberOfPostsJsonTable($statistics['profile'])]);
                 echo '</div></div>';
                 echo '<div class="row"><div class="col-md-12">';
-                    echo $this->render('_numberOfInteractionsChart', ['number_of_interactions_json_table' => $googleP->getNumberOfInteractionsJsonTable($statistics['profile'])]);
+					$total_interactions = $statistics['total_post_likes'] + $statistics['total_post_comments'] + $statistics['total_post_shares'];
+                    echo $this->render('_numberOfInteractionsChart', ['total_interactions' => $total_interactions, 'number_of_interactions_json_table' => $googleP->getNumberOfInteractionsJsonTable($statistics['profile'])]);
                 echo '</div></div>';
                 ?>
 
@@ -109,10 +105,10 @@ $this->title = 'Google+';
             echo '</div></div></div>';
 
             echo '<div class="row"><div class="col-md-12">';
-                echo $this->render('_postEngagementChart', ['post_engagement_per_day_json_table' => $googleP->getPostEngagementJsonTable($statistics['profile'])]);
+                echo $this->render('_postEngagementChart', ['total_posts' => $statistics['total_posts'], 'post_engagement_per_day_json_table' => $googleP->getPostEngagementJsonTable($statistics['profile'])]);
             echo '</div></div>';
             echo '<div class="row"><div class="col-md-12">';
-                echo $this->render('_profileEngagementChart', ['profile_engagement_per_day_json_table' => $googleP->getProfileEngagementJsonTable($statistics['profile'])]);
+                echo $this->render('_profileEngagementChart', ['total_posts' => $statistics['total_posts'], 'profile_engagement_per_day_json_table' => $googleP->getProfileEngagementJsonTable($statistics['profile'])]);
             echo '</div></div>';
 
            
@@ -127,13 +123,13 @@ $this->title = 'Google+';
                 </div>
             </div>
 
-            <div class="row">
+            <!--<div class="row">
                 <div class="col-md-12">
-                    <?php
-                    echo $this->render('_bestTimeToPostChart', ['best_time_to_post_json_table' => $googleP->getBestTimeToPostJsonTable($oAccountModel->id)]);
+                    </?php
+                    //echo $this->render('_bestTimeToPostChart', ['total_interactions' => $total_interactions, 'best_time_to_post_json_table' => $googleP->getBestTimeToPostJsonTable($oAccountModel->id)]);
                     ?>
                 </div>
-            </div>
+            </div>-->
 
             <div class="row">
                 <div class="col-md-12">

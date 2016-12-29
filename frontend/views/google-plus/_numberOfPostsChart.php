@@ -3,7 +3,7 @@ use yii\helpers\Url;
 
     echo '<h3 class="internal-title noneBG">Number of Posts</h3>';
     echo '<div class="internal-content">';
-if($number_of_posts_json_table && $total_posts){
+if($number_of_posts_json_table && ($total_posts > 0)){
 	$this->registerJs("GoogleCharts.drawColumns(".$number_of_posts_json_table.", 'yg', 'posts_per_day')", yii\web\View::POS_END);	
     echo '<div id="posts_per_day"></div>';
 }else{

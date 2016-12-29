@@ -81,7 +81,6 @@ Dev.globalEvents = function () {
  */
 Dev.reInit = function () {
     //TSS.initializeFoundation();
-  alert('dev');
   Frontend.modalFunc();
 };
 

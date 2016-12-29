@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12">        
-        <h3 class="internal-title noneBG">Comparison</h3>
+        <h3 class="internal-title noneBG circleChart-title">Comparison</h3>
 
         <table class="twitter">
 

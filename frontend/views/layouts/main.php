@@ -28,7 +28,7 @@ if(($action_id) == 'home'){
 		<link rel="icon" href="<?= Url::to('@frontThemeUrl') ?>/images/favicon.ico" />
 		
 		<?php $this->head() ?>
-		
+		<?php include_once 'analyticstracking.php'; ?>
 	</head>  
 	<body class="<?= ($action_id != 'home') ? 'white-bg' : '' ?>">    
 	
@@ -65,7 +65,7 @@ if(($action_id) == 'home'){
 				<?php echo $content; ?>
 			<!-- END CONTAINER -->		
                         <?php
-                        (!Yii::$app->user->isGuest) ? include_once '_social_tabs.php' : '';
+                        (!Yii::$app->user->isGuest && (Yii::$app->controller->action->id != 'support') && (Yii::$app->controller->action->id != 'change-password')) ? include_once '_social_tabs.php' : '';
                         ?>
 			<!-- BEGIN FOOTER -->            
 				<?php include_once 'footer.php'; ?>        

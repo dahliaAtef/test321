@@ -44,13 +44,15 @@ use yii\widgets\Pjax;
         <div class="row"> 
             <div class="col-md-6">
                 <?php
-                    if($sx_json_table){
-                        $this->registerJs("GoogleCharts.drawCircle(".$sx_json_table.", 'Social Media Existance', 'sx')", yii\web\View::POS_END);
-                        echo '<h3 class="internal-title noneBG">Existance Chart</h3>';
+						echo '<h3 class="internal-title noneBG">Existance Chart</h3>';
                         echo '<div class="internal-content circleChart">';
+                    if($sx_json_table && (array_sum($sx) > 0)){
+                        $this->registerJs("GoogleCharts.drawCircle(".$sx_json_table.", 'Social Media Existance', 'sx')", yii\web\View::POS_END);
                         echo '<div id="sx"></div>';
-                        echo "</div>";
+                    }else{
+                    	echo '<div id="sx"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/pie_no.png" /></div></div>';
                     }
+					echo "</div>";
                 ?>            
             </div>
             <div class="col-md-6">

@@ -4,11 +4,6 @@ $updates = count($statistics['updates']);
 $days_count = count($statistics['days']);
 ?>
 <div class="page-content inside linkeidn">
-    <?php if(strtotime('+4 days', strtotime($oModel->created)) > time()){ ?>
- <div class="warning-msg">
-  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
-</div><!-- warning msg -->
-  <?php } ?>
    <div id="loadWh">
     <div id="loadx">
       <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
@@ -62,12 +57,12 @@ $days_count = count($statistics['days']);
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->render('_updatesByDayChart', ['updates_by_day_json_table' => $linkedin->getUpdatesByDayJsonTable($statistics['updates_statistics_by_day'])]); ?>
+                    <?= $this->render('_updatesByDayChart', ['updates_count' => count($statistics['updates']),'updates_by_day_json_table' => $linkedin->getUpdatesByDayJsonTable($statistics['updates_statistics_by_day'])]); ?>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->render('_interactionsByDayChart', ['interactions_by_day_json_table' => $linkedin->getInteractionsByDayJsonTable($statistics['days'], $statistics['updates_statistics_by_day'], $statistics['company_views_statistics_by_day'])]); ?>
+                    <?= $this->render('_interactionsByDayChart', ['interactions_count' => $statistics['interactions'],'interactions_by_day_json_table' => $linkedin->getInteractionsByDayJsonTable($statistics['days'], $statistics['updates_statistics_by_day'], $statistics['company_views_statistics_by_day'])]); ?>
                 </div>
             </div>
             <div class="row">
@@ -92,7 +87,7 @@ $days_count = count($statistics['days']);
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->render('_interactionsDistributionByDayChart', ['interactions_distribution_by_day_json_table' => $linkedin->getInteractionsDistributionByDayJsonTable($statistics['company_views_statistics_by_day'])]); ?>
+                    <?= $this->render('_interactionsDistributionByDayChart', ['interactions_count' => $statistics['interactions'],'interactions_distribution_by_day_json_table' => $linkedin->getInteractionsDistributionByDayJsonTable($statistics['company_views_statistics_by_day'])]); ?>
                 </div>
             </div>
             <div class="row">
@@ -111,7 +106,7 @@ $days_count = count($statistics['days']);
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->render('_clicksByDayChart', ['clicks_by_day_json_table' => $linkedin->getClicksByDayJsonTable($statistics['company_views_statistics_by_day'])]); ?>
+                    <?= $this->render('_clicksByDayChart', ['clicks_count' => $statistics['clicks'], 'clicks_by_day_json_table' => $linkedin->getClicksByDayJsonTable($statistics['company_views_statistics_by_day'])]); ?>
                 </div>
             </div>
             <div class="row">
@@ -130,7 +125,7 @@ $days_count = count($statistics['days']);
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->render('_impressionsByDayChart', ['impressions_by_day_json_table' => $linkedin->getImpressionsByDayJsonTable($statistics['company_views_statistics_by_day'])]); ?>
+                    <?= $this->render('_impressionsByDayChart', ['impressions_count' => $statistics['impressions'], 'impressions_by_day_json_table' => $linkedin->getImpressionsByDayJsonTable($statistics['company_views_statistics_by_day'])]); ?>
                 </div>
             </div>
             <div class="row">
@@ -152,14 +147,14 @@ $days_count = count($statistics['days']);
             </div>
             <div class="row">
                 <div class="col-md-12">
-                    <?= $this->render('_followersByDayChart', ['followers_by_day_json_table' => $linkedin->getFollowersByDayJsonTable($statistics['followers_array'])]); ?>
+                    <?= $this->render('_followersByDayChart', ['total_followers_count' => $statistics['total_followers'], 'followers_by_day_json_table' => $linkedin->getFollowersByDayJsonTable($statistics['followers_array'])]); ?>
                 </div>
             </div>
             <?= $this->render('_followersDemographics', ['followers_statistics' => $statistics['company_statistics']['followStatistics'], 'linkedin' => $linkedin]); ?>
             
             <div class="row">
 		<div class="col-md-12">
-                    <?= $this->render('_bestTimeToPostChart', ['best_time_to_post_json_table' => $linkedin->getBestTimeToPostJsonTable($statistics['updates'])]); ?>
+                    <?= $this->render('_bestTimeToPostChart', ['updates' => $statistics['updates'], 'best_time_to_post_json_table' => $linkedin->getBestTimeToPostJsonTable($statistics['updates'])]); ?>
 		</div>
             </div>
         <!-- sperated line -->  

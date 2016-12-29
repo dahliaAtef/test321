@@ -14,6 +14,8 @@ use common\helpers\GoogleChartHelper;
 use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\Authclient;
+use common\models\custom\CompChannels;
+use common\models\custom\Competitors;
 use yii\authclient\OAuthToken;
 use yii\base\Exception;
 
@@ -132,7 +134,17 @@ class Youtube extends OAuth2
         	return $this->getClient();
         }else{
         	$oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
-          	if($oAuthclient ){
+              if(! $oAuthclient ){
+                  $oAuthclient = Authclient::findOne(['user_id' => 2, 'source' => 'youtube']);
+                  $client = unserialize($oAuthclient->source_data);
+                  $ReturnData = $client->getUserAttributes() ;
+                    if( $ReturnData == null){
+                        $oAuthclient->source_data =null;
+                        $oAuthclient->save();
+                          $client = null;
+                    }
+                return $client;
+              }
               if($oAuthclient->source_data != null){
                  Youtube::setClient( unserialize($oAuthclient->source_data));
                  $ReturnData = $this->getChannelData() ;
@@ -142,14 +154,6 @@ class Youtube extends OAuth2
                       Youtube::setClient( null);
                   }
                   return $this->getClient();
-              }else{
-                  /*
-                  $client = Facebook::getClient();
-                  //$client->getUserAttributes() ;
-                  $oAuthclient->source_data = serialize($client);
-                  $oAuthclient->save();
-                  */
-              }
           }
         }
     }
@@ -174,11 +178,31 @@ class Youtube extends OAuth2
 		$username = $this->getChannelUsernameFromUrl($url);
 		$channel = $this->getChannelDataByUserName($username);
 		$page['followers'] = $channel["items"][0]["statistics"]["subscriberCount"];
-		$page['name'] = $channel["items"][0]["id"];
-		$page['id'] = $channel["items"][0]["snippet"]["title"];
+		$page['name'] = $channel["items"][0]["snippet"]["title"];
+		$page['id'] = $channel["items"][0]["id"];
+      	$page['img_url'] = $channel["items"][0]['snippet']['thumbnails']['default']['url'];
 		return $page;
 	}
 	
+  	
+ 	public function updateCompetitorsValues(){
+      	$competitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+  		foreach($competitors as $oCompetitor){
+        	$oYoutube = CompChannels::findOne(['comp_id' => $oCompetitor->id, 'comp_channel' => 'youtube']);
+          	if($oYoutube){
+            	$this->updateCompetitorValue($oYoutube);
+            }
+        }
+  	}
+    
+ 	public function updateCompetitorValue($oYoutube){
+  		$page_data = $this->getChannelDataByUserName($oYoutube->comp_channel_id);
+      	if($page_data){
+        	$oYoutube->comp_channel_followers = $page_data["items"][0]["statistics"]["subscriberCount"];
+          	$oYoutube->update();
+        }
+  	}
+  
     public function getChannelAnalytics($start_date = null, $end_date = null){
         $client = $this->getClient();
         ($start_date) ? '' : ($start_date = date('Y-m-d', strtotime('- 3 days'))) ;

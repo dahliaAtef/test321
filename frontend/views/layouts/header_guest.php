@@ -28,8 +28,8 @@ if(($action_id == 'subscribe') || ($action_id == 'contact-us')){
                         <a href="#">Login</a>
                         <ul class="sub-menu-ul">
                             <?php $form = ActiveForm::begin(['id' => 'login-form', 'action' => Url::to(['/login'])]); ?>
-									<p>User Name<p>
-                                    <?= $form->field($oUserLoginForm, 'username')->textInput()->label(false) ?>
+									<p>Email<p>
+                                    <?= $form->field($oUserLoginForm, 'email')->textInput()->label(false) ?>
                                     
 									<p>Password<p>
                                     <?= $form->field($oUserLoginForm, 'password')->passwordInput()->label(false); ?>

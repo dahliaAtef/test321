@@ -6,11 +6,6 @@ $this->title = "Twitter";
 
 ?>
 <div class="page-content inside twitter">
-  <?php if(strtotime('+4 days', strtotime($model->created)) > time()){ ?>
- <div class="warning-msg">
-  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>5 days</b> to analyse your full data
-</div><!-- warning msg -->
-  <?php } ?>
    <div id="loadWh">
     <div id="loadx">
       <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
@@ -148,7 +143,7 @@ $this->title = "Twitter";
         <div class="row">
             <div class="col-md-12">
             <?php
-            echo $this->render('_numberOfTweetsChart', ['tweets_per_day_json_table' => $twitter->getNumberOfTweetsJsonTable($statistics['profile'])]);
+            echo $this->render('_numberOfTweetsChart', ['total_posts' => $statistics['total_posts'], 'tweets_per_day_json_table' => $twitter->getNumberOfTweetsJsonTable($statistics['profile'])]);
             ?>
             </div>
         </div>
@@ -176,7 +171,7 @@ $this->title = "Twitter";
         <div class="row">
             <div class="col-md-12">
                 <?php
-                echo $this->render('_numberOfTweetsInteractionsPerDayChart', ['tweets_interactions_per_day_json_table' => $twitter->getNumberOfTweetsInteractionsPerDayJsonTable($statistics['profile'])]);
+                echo $this->render('_numberOfTweetsInteractionsPerDayChart', ['total_interactions' => $statistics['total_interaction'], 'tweets_interactions_per_day_json_table' => $twitter->getNumberOfTweetsInteractionsPerDayJsonTable($statistics['profile'])]);
                 ?>
             </div>
         </div>
@@ -205,7 +200,7 @@ $this->title = "Twitter";
         <div class="row">
             <div class="col-md-12">
                 <?php 
-                echo $this->render('_numberOfMenttionsPerDayChart', ['mentions_per_day_json_table' => $twitter->getMentionsPerDayJsonTable($statistics['mentions_per_day']['profile'])]);
+                echo $this->render('_numberOfMenttionsPerDayChart', ['total_mentions' => $statistics['mentions_per_day']['total_mentions'],'mentions_per_day_json_table' => $twitter->getMentionsPerDayJsonTable($statistics['mentions_per_day']['profile'])]);
                 ?>
             </div>
         </div>

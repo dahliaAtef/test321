@@ -1,5 +1,5 @@
 <?php
-namespace common\models\base\form;
+namespace common\models\custom\form;
 
 use Yii;
 use yii\base\Model;
@@ -7,9 +7,9 @@ use yii\base\Model;
 /**
  * Login form
  */
-class Login extends Model
+class BackLogin extends Model
 {
-    public $email;
+    public $username;
     public $password;
     public $rememberMe = true;
 
@@ -23,8 +23,8 @@ class Login extends Model
     {
         return [
             // username and password are both required
-            [['email', 'password'], 'required'],
-          	[['email'], 'email'],
+            [['username', 'password'], 'required'],
+          	[['username'], 'string'],
             // rememberMe must be a boolean value
             ['rememberMe', 'boolean'],
             // password is validated by validatePassword()
@@ -84,9 +84,10 @@ class Login extends Model
     public function getUser()
     {
         if ($this->_user === false) {
-            $this->_user = \common\models\base\User::findByEmail($this->email);
+            $this->_user = \common\models\base\User::findByUsername($this->username);
         }
 
         return $this->_user;
     }
+
 }

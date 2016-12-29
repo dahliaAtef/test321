@@ -12,6 +12,8 @@ use common\models\custom\Authclient;
 use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\RecentFollowers;
+use common\models\custom\CompChannels;
+use common\models\custom\Competitors;
 
 class Instagram extends OAuth2
 {
@@ -865,9 +867,30 @@ class Instagram extends OAuth2
 		$page['followers'] = $user_data['counts']['followed_by'];
 		$page['name'] = $user_data['username'];
 		$page['id'] = $user_data['id'];
+      	$page['img_url'] = $user_data['profile_picture'];
 		return $page;
 	}
 	
+  	
+ 	public function updateCompetitorsValues(){
+      	$competitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+  		foreach($competitors as $oCompetitor){
+        	$oInstagram = CompChannels::findOne(['comp_id' => $oCompetitor->id, 'comp_channel' => 'instagram']);
+          	if($oInstagram){
+            	$this->updateCompetitorValue($oInstagram);
+            }
+        }
+  	}
+    
+  
+ 	public function updateCompetitorValue($oInstagram){
+  		$page_data = $this->getUserDataById($oInstagram->comp_channel_id);
+      	if($page_data){
+        	$oInstagram->comp_channel_followers = $page_data['counts']['followed_by'];
+          	$oInstagram->update();
+        }
+  	}
+    
   	
 	public function getComparison($model_id){
           if(date('d', time()) == '01'){

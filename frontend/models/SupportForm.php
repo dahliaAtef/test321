@@ -58,6 +58,7 @@ class SupportForm extends Model
             return Yii::$app->mailer->compose()
             ->setTo(Yii::$app->params['supportEmail'])
             ->setFrom($this->email)
+            ->setSubject('Support Message')
             ->setTextBody($this->message)
             ->send();
     }

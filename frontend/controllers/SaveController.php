@@ -107,7 +107,45 @@ class SaveController extends \frontend\components\BaseController {
             return $this->render('/linkedin/linkedinAuth');
         }
     }
+	
+    public function actionGooglePlus(){ 
+        $session = Yii::$app->session;
+        $gPlus = new GooglePlus();
 
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'google_plus']);
+        if($oAuthclient ){
+            if($oAuthclient->source_data != null){
+                GooglePlus::setClient( unserialize($oAuthclient->source_data));
+                $ReturnData =$gPlus->getAccountDetails();
+                if( $ReturnData == null){
+                   $oAuthclient->source_data =null;
+                   $oAuthclient->save();
+                   GooglePlus::setClient( null);
+                }
+            }
+
+        if($session->has('google_plus')){
+          //$gPlus->saveAccountInsights();
+            $client = $gPlus->getClient();
+            //save the auth client data
+            if(!$oAuthclient or ($oAuthclient->source_data==null)) {
+                $oAuthclient = !$oAuthclient ? new Authclient() : $oAuthclient;
+                $oAuthclient->user_id = Yii::$app->user->getId();
+                $oAuthclient->source = $client->name;
+                $oAuthclient->source_data = serialize($client);
+                $oAuthclient->source_id = $client->getUserAttributes()["id"];
+                $oAuthclient->save();
+                $account = $gPlus->getAccountDetails();
+                $gPlus->firstTimeToLog($account);
+            }
+            $oAccountModel = Model::findOne(['authclient_id' => $oAuthclient->id, 'parent_id' => null]);
+          	$gPlus->saveAccountInsights($oAccountModel);
+          	$gPlus->updateCompetitorsValues();
+            return $this->render('/cron/cron');
+        }
+      }
+    }
+  
     public function actionYoutube(){
         $session = Yii::$app->session;
         $youtube = new Youtube();
@@ -137,11 +175,10 @@ class SaveController extends \frontend\components\BaseController {
                   $since = date('Y-m-d', strtotime('first day of this month'));
               }
                 $youtube->saveAccountInsights($oAuthclient->model[0]->id, $since);
+              	$youtube->updateCompetitorsValues();
             }
             return $this->render('/cron/cron');
 
-        }else{
-            return $this->render('/youtube/youtubeAuth');
         }
     }
 
@@ -164,11 +201,10 @@ class SaveController extends \frontend\components\BaseController {
         if($session->has('instagram')){
             $oModels = $oAuthclient->model;
             if($oModels){
-		$insta->saveAccountInsights($oModels[0]);
+				$insta->saveAccountInsights($oModels[0]);
+              	$insta->updateCompetitorsValues();
             }
             return $this->render('/cron/cron');
-        }else{
-            return $this->render('/instagram/instagramAuth');
         }
     }
     
@@ -192,11 +228,10 @@ class SaveController extends \frontend\components\BaseController {
 	if($session->has('twitter')){
             $oModels = $oAuthclient->model;
             if($oModels){
-		$twitter->saveAccountInsights($oModels[0]);
+				$twitter->saveAccountInsights($oModels[0]);
+              	$twitter->updateCompetitorsValues();
             }
             return $this->render('/cron/cron');
-        }else{
-            return $this->render('/twitter/twitterAuth');  
         }
     }
     
@@ -225,6 +260,7 @@ class SaveController extends \frontend\components\BaseController {
             if($oModel){
             	$page = $fb->getPageData($oModel[0]->entity_id);
               	$fb->saveAccountInsights($oModel[0], $page['likes']);
+              	$fb->updateCompetitorsValues();
               	return $this->render('/cron/cron');
             }
           }

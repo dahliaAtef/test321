@@ -15,8 +15,8 @@ $this->title = Yii::t('app', 'Contact Us');
 			<div class="row">
                             <div class="col-md-12">
 				<div class="field">
-                                    <p>Name</p>
-                                    <?= $form->field($oContactForm, 'name')->textInput()->label(false) ?>
+                                    <p>Email</p>
+                                    <?= $form->field($oContactForm, 'email')->textInput()->label(false) ?>
 				</div>
                             </div>
                             <div class="col-md-12">

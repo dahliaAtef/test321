@@ -4,7 +4,7 @@ namespace backend\controllers;
 
 use Yii;
 use backend\components\BaseController;
-use common\models\base\form\Login;
+use common\models\custom\form\BackLogin;
 use common\models\custom\User;
 use common\models\custom\Order;
 use common\models\custom\Comment;
@@ -58,10 +58,10 @@ class SiteController extends BaseController {
         $this->layout = 'login';
         
         if (!\Yii::$app->user->isGuest) {
-            return $this->goHome;
+            return $this->actionIndex();
         }
 
-        $model = new Login();
+        $model = new BackLogin();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->redirect(['/users']);
         } else {

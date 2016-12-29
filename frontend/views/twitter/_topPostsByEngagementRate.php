@@ -1,11 +1,13 @@
 <?php
+use yii\helpers\Url;
+
 if($top_posts_by_engagement){
   
     foreach($top_posts_by_engagement as $post){
         ?>
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="post-item">
-                <div class="post-img"><img src="<?= (($post['media_url']) ? ($post['media_url']) : ($post['oPost']->getFeaturedImgUrl('top_posts'))) ?>"/></div>
+                <div class="post-img"><img src="<?= (($post['media_url']) ? ($post['media_url']) : (Url::to('@frontThemeUrl/images/twitter_posts_placeholder.png'))) ?>"/></div>
                 <div class="internal-content">
                     <ul>
                         <li class="special-height"><?= $post['content'] ?></li>

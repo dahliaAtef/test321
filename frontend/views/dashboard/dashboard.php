@@ -16,7 +16,7 @@ use yii\widgets\Pjax;
 $this->title = 'Dashboard';
 $dashboard_accounts = Yii::$app->session['dashboard_accounts'];
 $sx = $oDashboard->getSocialMediaExistance($insights);
-//echo '<pre>'; var_dump(json_decode($insights['linkedin']['last_insights']->insights_json, true)); echo '</pre>'; die;
+//echo '<pre>'; var_dump(json_decode($insights['facebook']['last_insights']->insights_json, true)['page_posts_organic_reach']); echo '</pre>'; die;
 $fb = array_key_exists('facebook', $dashboard_accounts);
 $yt = array_key_exists('youtube', $dashboard_accounts);
 $tw = array_key_exists('twitter', $dashboard_accounts);
@@ -27,6 +27,13 @@ reset($dashboard_accounts);
 $name = User::findOne(Yii::$app->user->getId())->brand_name;
 ?>
 <div class="page-content inside dashboard">
+    <?php
+	if(($fb && ($dashboard_accounts['facebook']['authclient']->created > time())) || ($tw && ($dashboard_accounts['twitter']['authclient']->created > time())) || ($insta && ($dashboard_accounts['instagram']['authclient']->created > time())) || ($yt && ($dashboard_accounts['youtube']['authclient']->created > time())) || ($gp && ($dashboard_accounts['google_plus']['authclient']->created > time())) || ($in && ($dashboard_accounts['linkedin']['authclient']->created > time()))){
+      ?>
+ <div class="warning-msg">
+  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>3 days</b> to analyse your full data
+</div><!-- warning msg -->
+  <?php } ?>
   <div id="loadWh">
     <div id="loadx">
       <img src="http://adigitree.org/shared/themes/frontend/images/logoLoader.png" alt="">
@@ -115,12 +122,9 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                 </div>
             </div>
         </div>
-
-            <?= $this->render('_channelInteractionsChart', ['interaction_per_channel_json_table' => $oDashboard->getInteractionPerChannelJsonTable($kpi_overviews)]); ?>
+            <?= $this->render('_channelInteractionsChart', ['interaction_per_channel_json_table' => $oDashboard->getInteractionPerChannelJsonTable($kpi_overviews), 'kpi_overviews' => $kpi_overviews]); ?>
            
             
-            <?php
-            if(($fb && json_decode($insights['facebook']['last_insights']->insights_json, true)['gender_age']) || ($yt && json_decode($insights['youtube']['last_insights']->insights_json, true)['gender_age'])){ ?>
             <div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
@@ -143,11 +147,9 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                     }
                     echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $insights['youtube']['last_insights']->followers]);
                 }
-            } ?>
+				 ?>
                 
-                <?php
-                if(($fb && json_decode($insights['facebook']['last_insights']->insights_json, true)['page_views']) || ($yt && json_decode($insights['youtube']['last_insights']->insights_json, true)['device']) || ($tw && json_decode($insights['twitter']['last_insights']->insights_json, true))){?>
-                    <div class="row">
+                	<div class="row">
                         <div class="col-md-12">
                             <div class="title-box">
                                 <h2 class="internal-title sec-title">Views by Device Types</h2>
@@ -166,10 +168,6 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                         echo $this->render('_yt_device_type', ['devices' => json_decode($insights['youtube']['last_insights']->insights_json, true)['device']]);
                     }
                     ?>
-                <?php }
-                ?>
-                <?php
-                if($fb && json_decode($insights['facebook']['last_insights']->insights_json, true)['organic_paid_reach_json_table']){ ?>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="title-box">
@@ -180,11 +178,8 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                     </div>
                     <?php
                     echo $this->render('_fb_paid_organic_reach', ['reach' => json_decode($insights['facebook']['last_insights']->insights_json, true)['organic_paid_reach_json_table']]);
-                }
                 ?>
-       <?php
-                if(($fb && json_decode($insights['facebook']['last_insights']->insights_json, true)['reach_by_country']) || ($yt && json_decode($insights['youtube']['last_insights']->insights_json, true)['location'])){?>
-            <div class="row">
+         	<div class="row">
                 <div class="col-md-12">
                     <div class="title-box">
                         <h2 class="internal-title sec-title">Views by Country</h2>
@@ -211,7 +206,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                     ?>
                 </div>
             </div>
-        <?php } } ?>
+        <?php } ?>
         
         <div class="row">
             <div class="col-md-12">
@@ -224,36 +219,6 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
 
         <div class="row">
             <?php
-            /*
-            if($fb){
-
-            echo '<div class="col-md-6">';
-                echo $this->render('_fbAudienceMajority', [
-                  'fans_gender_age' => json_decode($insights['facebook']['last_insights']->insights_json, true)['gender_age'], 
-                  'followers' => $insights['facebook']['last_insights']->followers, 
-                  'devices' => json_decode($insights['facebook']['last_insights']->insights_json, true)['page_views'],
-                   'countries' => $top_fifteen_countries
-                ]);
-            echo '</div>';
-            }
-            if($yt){
-
-            echo '<div class="col-md-6">';
-                echo $this->render('_ytAudienceMajority', [
-                  'devices' => json_decode($insights['youtube']['last_insights']->insights_json, true)['device'],
-                  'fans_gender_age' => $fans_gender_age_per, 
-                  'followers' => $insights['youtube']['last_insights']->followers,
-                  'countries' => json_decode($insights['youtube']['last_insights']->insights_json, true)['location']
-                ]);
-            echo '</div>';
-            }
-            if($tw){
-
-            echo '<div class="col-md-6">';
-                echo $this->render('_twAudienceMajority', ['devices' => json_decode($insights['twitter']['last_insights']->insights_json, true)]);
-            echo '</div>';
-            }
-            */
             $undefined = ['gender' => '...', 'age' => '...', 'country' => '...', 'language' => '...', 'device' => '...', 'industry' => '...', 'seniority' => '...'];
             $unauthenticated = ['gender' => 'Un-authenticated', 'age' => 'Un-authenticated', 'country' => 'Un-authenticated', 'language' => 'Un-authenticated', 'device' => 'Un-authenticated', 'industry' => 'Un-authenticated', 'seniority' => 'Un-authenticated'];
             if($fb){
@@ -308,7 +273,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             </tr>
             <tr>
                 <td>Age</td>
-                <td><?= (($facebook['age'] == ' 0%') ? 'N/A': $facebook['age']) ?></td>
+                <td><?= $facebook['age'] ?></td>
                 <td><?= $twitter['age'] ?></td>
                 <td><?= $instagram['age'] ?></td>
                 <td><?= $youtube['age'] ?></td>
@@ -317,7 +282,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             </tr>
             <tr>
                 <td>Country</td>
-                <td><?= (($facebook['country'] == ' 0%') ? 'N/A': $facebook['country']) ?></td>
+                <td><?= $facebook['country'] ?></td>
                 <td><?= $twitter['country'] ?></td>
                 <td><?= $instagram['country'] ?></td>
                 <td><?= $youtube['country'] ?></td>
@@ -326,7 +291,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             </tr>
             <tr>
                 <td>Language</td>
-                <td><?= (($facebook['language'] == ' 0%') ? 'N/A': $facebook['language']) ?></td>
+                <td><?= $facebook['language'] ?></td>
                 <td><?= $twitter['language'] ?></td>
                 <td><?= $instagram['language'] ?></td>
                 <td><?= $youtube['language'] ?></td>
@@ -395,7 +360,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                             <ul>
                                 <li>
                                     <label forr="antaka">facebook URL</label>
-                                    <?php if($fb){ ?>
+                                    <?php if(($fb && ($dashboard_accounts['facebook']['authclient']->source_data)) || ($admin_accounts[0]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp1fb')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['facebook']) ?>">Please Authenticate Facebook first.</a>
@@ -403,7 +368,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>Twitter URL</label>
-                                    <?php if($tw){ ?>
+                                    <?php if(($tw && ($dashboard_accounts['twitter']['authclient']->source_data)) || ($admin_accounts[1]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp1tw')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['twitter']) ?>">Please Authenticate Twitter first.</a>
@@ -411,7 +376,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>instagram URL</label>
-                                    <?php if($insta){ ?>
+                                    <?php if(($insta && ($dashboard_accounts['instagram']['authclient']->source_data)) || ($admin_accounts[5]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp1insta')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['instagram']) ?>">Please Authenticate Instagram first.</a>
@@ -419,7 +384,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>youtube URL</label>
-                                    <?php if($yt){ ?>
+                                    <?php if(($yt && ($dashboard_accounts['youtube']['authclient']->source_data)) || ($admin_accounts[2]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp1yt')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['youtube']) ?>">Please Authenticate Youtube first.</a>
@@ -427,11 +392,11 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>google+ URL</label>
-                                    <!--</?php  if($gp){ ?>-->
+                                    <?php  if(($gp && ($dashboard_accounts['google_plus']['authclient']->source_data)) || ($admin_accounts[4]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp1gp')->textInput()->label(false) ?>
-                                    <!--</?php }else{ ?>
-                                        <a href="</?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
-                                    </?php } ?>-->
+                                    <?php }else{ ?>
+                                        <a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
+                                    <?php } ?>
                                 </li>
                             </ul>
                             <!--<button type="button" class="btn btn-primary">Add</button>-->                            
@@ -443,7 +408,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                             <ul>
                                 <li>
                                     <label forr="antaka">facebook URL</label>
-                                    <?php if($fb){ ?>
+                                    <?php if(($fb && ($dashboard_accounts['facebook']['authclient']->source_data)) || ($admin_accounts[0]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp2fb')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['facebook']) ?>">Please Authenticate Facebook first.</a>
@@ -451,7 +416,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>Twitter URL</label>
-                                    <?php if($tw){ ?>
+                                    <?php if(($tw && ($dashboard_accounts['twitter']['authclient']->source_data)) || ($admin_accounts[1]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp2tw')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['twitter']) ?>">Please Authenticate Twitter first.</a>
@@ -459,7 +424,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>instagram URL</label>
-                                    <?php if($insta){ ?>
+                                    <?php if(($insta && ($dashboard_accounts['instagram']['authclient']->source_data)) || ($admin_accounts[5]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp2insta')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['instagram']) ?>">Please Authenticate Instagram first.</a>
@@ -467,7 +432,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>youtube URL</label>
-                                    <?php if($yt){ ?>
+                                    <?php if(($yt && ($dashboard_accounts['youtube']['authclient']->source_data)) || ($admin_accounts[2]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp2yt')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['youtube']) ?>">Please Authenticate Youtube first.</a>
@@ -475,7 +440,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>google+ URL</label>
-                                    <?php if($gp){ ?>
+                                    <?php if(($gp && ($dashboard_accounts['google_plus']['authclient']->source_data)) || ($admin_accounts[4]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp2gp')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
@@ -491,7 +456,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                             <ul>
                                 <li>
                                     <label forr="antaka">facebook URL</label>
-                                    <?php if($fb){ ?>
+                                    <?php if(($fb && ($dashboard_accounts['facebook']['authclient']->source_data)) || ($admin_accounts[0]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp3fb')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['facebook']) ?>">Please Authenticate Facebook first.</a>
@@ -499,7 +464,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>Twitter URL</label>
-                                    <?php if($tw){ ?>
+                                    <?php if(($tw && ($dashboard_accounts['twitter']['authclient']->source_data)) || ($admin_accounts[1]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp3tw')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['twitter']) ?>">Please Authenticate Twitter first.</a>
@@ -507,7 +472,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>instagram URL</label>
-                                    <?php if($insta){ ?>
+                                    <?php if(($insta && ($dashboard_accounts['instagram']['authclient']->source_data)) || ($admin_accounts[5]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp3insta')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['instagram']) ?>">Please Authenticate Instagram first.</a>
@@ -515,7 +480,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>youtube URL</label>
-                                    <?php if($yt){ ?>
+                                    <?php if(($yt && ($dashboard_accounts['youtube']['authclient']->source_data)) || ($admin_accounts[2]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp3yt')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['youtube']) ?>">Please Authenticate Youtube first.</a>
@@ -523,7 +488,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                                 </li>
                                 <li>
                                     <label>google+ URL</label>
-                                    <?php if($gp){ ?>
+                                    <?php if(($gp && ($dashboard_accounts['google_plus']['authclient']->source_data)) || ($admin_accounts[4]->source_data)){ ?>
                                         <?= $form->field($oCompetitorsForm, 'comp3gp')->textInput()->label(false) ?>
                                     <?php }else{ ?>
                                         <a href="<?= Url::to(['google-plus']) ?>">Please Authenticate Google+ first.</a>
@@ -561,7 +526,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
         		 
             <div class="container">
                 <div class="row">
-                  <?= $this->render('/competitors/index', ['oCompetitors' => $oCompetitors, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitorTest' => $oCompetitorTest]) ?>
+                  <?= $this->render('/competitors/index', ['oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest, 'admin_accounts' => $admin_accounts]) ?>
                 </div>
                 
             </div>

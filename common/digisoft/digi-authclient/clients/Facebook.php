@@ -8,6 +8,8 @@ use common\models\custom\Model;
 use common\models\custom\Insights;
 use common\models\custom\UserPosts;
 use common\models\custom\Authclient;
+use common\models\custom\CompChannels;
+use common\models\custom\Competitors;
 
 class Facebook extends \yii\authclient\clients\Facebook
 {
@@ -854,6 +856,7 @@ class Facebook extends \yii\authclient\clients\Facebook
             $oAccountInsights->total_shares = $total_shares;
             $oAccountInsights->total_reactions = $total_reactions;
             $oAccountInsights->total_interactions = $total_interactions;
+          	$oAccountInsights->insights_json = $this->getInsightsJson($oAccountModel->entity_id, $since, $until);
             if($oAccountInsights->save()){
                 $this->saveUserPosts($id, $oAccountModel->id, $since, $until);
             }
@@ -1211,7 +1214,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     public function saveAccountInsights($oAccountModel, $followers){
 	$since = date('Y-m-d', strtotime('first day of this month'));
 	$until = date('Y-m-d', strtotime('+1days', time()));
-	$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until); //array of zero
+	$posts = $this->getAllPagePosts($oAccountModel->entity_id, $since, $until); 
 	$total_likes = $total_comments = $total_reactions = $total_shares = $total_reactions = $total_interactions = 0;
 	foreach($posts as $post){
             $oPost = Model::findOne(['entity_id' => $post['id'],'parent_id' => $oAccountModel->id]);
@@ -1371,8 +1374,20 @@ class Facebook extends \yii\authclient\clients\Facebook
       	$insights['reach_by_language'] = $this->getPageReachByLanguageInEnglish($page_id, $since, $until);
         $insights['page_reach'] = $this->getPageReachArray($page_id, $since, $until);
 		$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
-		$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTable($page_id, $since, $until);
+      	$page_posts_paid_reach = $this->getPagePostsPaidReach($page_id, $since, $until);
+        $page_posts_organic_reach = $this->getPagePostsOrganicReach($page_id, $since, $until);
+      	$insights['page_posts_paid_reach'] = ($page_posts_paid_reach) ? $this->getSumOfValuesInArray($page_posts_paid_reach[0]['values']) : 0;
+      	$insights['page_posts_organic_reach'] = ($page_posts_organic_reach) ? $this->getSumOfValuesInArray($page_posts_organic_reach[0]['values']) : 0;
+		$insights['organic_paid_reach_json_table'] = $this->getPagePostsReachJsonTableByArray($page_posts_paid_reach, $page_posts_organic_reach);
         return json_encode($insights);
+    }
+  
+  	public function getSumOfValuesInArray($array){
+    	$sum = 0;
+          foreach($array as $value){
+          	if(array_key_exists('value', $value)) ($sum += $value['value']);
+          }
+      return $sum;
     }
 	
     public function getDeviceTypeJsonTable($devices){
@@ -1465,14 +1480,34 @@ class Facebook extends \yii\authclient\clients\Facebook
 	$page['name'] = $page_data["name"];
 	$page['followers'] = $page_data["likes"];
 	$page['id'] = $page_data['id'];
+    $page['img_url'] = (array_key_exists('picture', $page_data) && array_key_exists('url', $page_data['picture']['data'])) ? $page_data['picture']['data']['url'] : null;
 	return $page;
     }
+  
+ 	public function updateCompetitorsValues(){
+      	$competitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+  		foreach($competitors as $oCompetitor){
+        	$oFacebook = CompChannels::findOne(['comp_id' => $oCompetitor->id, 'comp_channel' => 'facebook']);
+          	if($oFacebook){
+            	$this->updateCompetitorValue($oFacebook);
+            }
+        }
+  	}
+    
+  
+ 	public function updateCompetitorValue($oFacebook){
+  		$page_data = $this->getPageData($oFacebook->comp_channel_id);
+      	if($page_data){
+        	$oFacebook->comp_channel_followers = $page_data["likes"];
+          	$oFacebook->update();
+        }
+  	}
     
   
   	public function getFansDemographicsDashboard($insights){
       	$facebook = [];
       	$followers = $insights['gender_age']['male_count'] + $insights['gender_age']['female_count'];
-    	$facebook['gender'] = (($insights['gender_age']['male_count'] != 0) && $insights['gender_age']['male_count'] >= $insights['gender_age']['female_count']) ? ('males '.round(((($insights['gender_age']['male_count'])/$followers)*100),1).'%') : (($insights['gender_age']['male_count'] < $insights['gender_age']['female_count']) ? ('females '.round(((($insights['gender_age']['female_count'])/$followers)*100), 2).'%') : 'N/A');
+    	$facebook['gender'] = (($insights['gender_age']['male_count'] != 0) && $insights['gender_age']['male_count'] >= $insights['gender_age']['female_count']) ? ('males '.round(((($insights['gender_age']['male_count'])/$followers)*100),1).'%') : (($insights['gender_age']['male_count'] < $insights['gender_age']['female_count']) ? ('females '.round(((($insights['gender_age']['female_count'])/$followers)*100), 2).'%') : '0%');
       	foreach($insights['gender_age']['age_ranges'] as $age){
         	$ages[$age] = $insights['gender_age']['male'][$age] + $insights['gender_age']['female'][$age];
         }
@@ -1497,5 +1532,10 @@ class Facebook extends \yii\authclient\clients\Facebook
         }
       return $count;
   	}
+  
+  public function getPagePostsReachJsonTableByArray($page_posts_paid_reach, $page_posts_organic_reach){
+        $page_posts_reach_json_table = (($page_posts_paid_reach) && ($page_posts_organic_reach)) ? GoogleChartHelper::getTwoTimeGraphsDataTable('day', 'organic impressions', 'paid impressions', $page_posts_organic_reach[0]["values"], $page_posts_paid_reach[0]["values"]) : '';
+        return $page_posts_reach_json_table;
+    }
   
 }

@@ -51,7 +51,7 @@ class CronController extends \frontend\components\BaseController {
                 if ($twitter) Yii::$app->runAction('save/twitter');
                 if ($instagram) Yii::$app->runAction('save/instagram');
                 if ($youtube) Yii::$app->runAction('save/youtube');
-                if ($google_plus) Yii::$app->runAction('site/google-plus');
+                if ($google_plus) Yii::$app->runAction('save/google-plus');
                 if ($linkedin) Yii::$app->runAction('save/linkedin');
             }
         }

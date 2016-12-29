@@ -14,7 +14,6 @@ if(array_key_exists('rows', $top_ten_viewed_videos)){
 
             <div class="col-lg-3 col-md-4 col-sm-6">
                 <div class="post-item">
-                    <a target="_blank" href ="<?= Url::to(['youtube/v/'.$video[0]]) ?>">
                         <div class="post-img">
                             <img src="<?= $img_src["url"] ?>" alt="<?= $video_data["items"][0]["snippet"]["title"] ?>"/>
                         </div>
@@ -27,13 +26,12 @@ if(array_key_exists('rows', $top_ten_viewed_videos)){
                 				<li><span class="small-title">Subscribers gained : </span><?= $video[4] ?></li>		
                             </ul>
                         </div>
-                    </a>
                 </div>
             </div>
 
         <?php }  ?>
         </div>
-        <?php }else{
+        <?php }else{ ?>
 		<div class="waiting-text col-md-12""><p>You have no videos.</p></div>
 	
 	<?php } ?>

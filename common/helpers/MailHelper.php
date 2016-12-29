@@ -75,7 +75,7 @@ class MailHelper {
       return Yii::$app->mailer->compose(['html' => 'successfulActivationResponse-html'])
                         ->setFrom([Yii::$app->params['adminEmail'] => Yii::$app->name])
                         ->setTo($oUser->email)
-                        ->setSubject(Yii::$app->name.' insights Activation')
+                        ->setSubject('Your Account has been Activated')
                         ->send();
     }
 

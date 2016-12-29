@@ -34,17 +34,18 @@ class Dashboard extends \common\models\base\Base
         }
         $session = Yii::$app->session;
 		$accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-        //if(!$session['dashboard_accounts']){
+        if(!$session['dashboard_accounts']){
             $dashboard_accounts = [];
             $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
             foreach($accounts as $account){
                 if($account->model){
                     $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
                     $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
+                  	$dashboard_accounts[$account['source']]['authclient'] = $account;
                 }
             }
             $session->set('dashboard_accounts', $dashboard_accounts);
-        //}
+        }
         if(array_key_exists('facebook', $session['dashboard_accounts'])){
             $facebook = new Facebook();
 			//echo '<pre>'; var_dump($facebook->getAccountInsightsInRange($session['dashboard_accounts']['facebook']['model_id'], $since, $until)); echo '</pre>'; die;
@@ -156,11 +157,9 @@ class Dashboard extends \common\models\base\Base
     
     public function getFacebookKpiOverviewPerMonth($since, $until){
         $oInsights = Insights::find()->Where(['model_id' => Yii::$app->session['dashboard_accounts']['facebook']['model_id']])->orderBy(['id' => SORT_DESC])->one();
-        //echo '<pre>'; var_dump(Yii::$app->session['dashboard_accounts']['facebook']['model_id']); echo '</pre>'; die;
         $fb_insights['followers'] = $oInsights->followers;
-        $fb_insights['total_organic_reach'] = $oInsights->total_organic_reach;
-        $fb_insights['total_paid_reach'] = $oInsights->total_paid_reach;
-        $fb_insights['total_unpaid_reach'] = $oInsights->total_unpaid_reach;
+        $fb_insights['total_organic_reach'] = json_decode($oInsights->insights_json, true)['page_posts_organic_reach'];
+        $fb_insights['total_paid_reach'] = json_decode($oInsights->insights_json, true)['page_posts_paid_reach'];
         $posts = Model::find()->Where(['parent_id' => Yii::$app->session['dashboard_accounts']['facebook']['model_id']])->andWhere(['between', 'creation_time', $since, $until])->all();
         $fb_insights['reactions'] = $fb_insights['comments'] = $fb_insights['shares'] = 0;
         foreach($posts as $oPost){
@@ -241,6 +240,7 @@ class Dashboard extends \common\models\base\Base
 		$this->checkAndSaveCompetitorOne($oCompetitorsForm);
 		$this->checkAndSaveCompetitorTwo($oCompetitorsForm);
 		$this->checkAndSaveCompetitorThree($oCompetitorsForm);
+      return true;
 	}
 	
 	public function checkAndSaveCompetitorOne($oCompetitorsForm){
@@ -258,6 +258,7 @@ class Dashboard extends \common\models\base\Base
 	}
 	
 	public function checkAndSaveCompetitorTwo($oCompetitorsForm){
+      
 		if($oCompetitorsForm->comp2fb || $oCompetitorsForm->comp2tw || $oCompetitorsForm->comp2insta || $oCompetitorsForm->comp2yt || $oCompetitorsForm->comp2gp){
 			$oCompetitor = new Competitors();
 			$oCompetitor->comp_no = 2;
@@ -292,7 +293,7 @@ class Dashboard extends \common\models\base\Base
   
 	public function createNewCompetitor($competitor){
 			$oCompetitor = new Competitors();
-			$oCompetitor->comp_no = Competitors::find()->count();
+			$oCompetitor->comp_no = (Competitors::find()->count());
 			$oCompetitor->user_id = Yii::$app->user->getId();
 			if($oCompetitor->save()){
 				Dashboard::checkAndUpdateChannels($oCompetitor->id, $competitor);
@@ -321,6 +322,7 @@ class Dashboard extends \common\models\base\Base
 			$oCompDetails->comp_channel_id = $page["id"];
 			$oCompDetails->comp_channel_name = $page["name"];
 			$oCompDetails->comp_channel_followers = $page["followers"];
+          	$oCompDetails->img_url = $page['img_url'];
 			$oCompDetails->save();
 		}
 	}
@@ -339,6 +341,7 @@ class Dashboard extends \common\models\base\Base
 			$oCompDetails->comp_channel_id = $page["id"];
 			$oCompDetails->comp_channel_name = $page["name"];
 			$oCompDetails->comp_channel_followers = $page["followers"];
+          	$oCompDetails->img_url = $page['img_url'];
 			$oCompDetails->save();
 		}
 	}
@@ -357,6 +360,7 @@ class Dashboard extends \common\models\base\Base
 			$oCompDetails->comp_channel_id = $page["id"];
 			$oCompDetails->comp_channel_name = $page["name"];
 			$oCompDetails->comp_channel_followers = $page["followers"];
+          	$oCompDetails->img_url = $page['img_url'];
 			$oCompDetails->save();
 		}
 	}
@@ -375,6 +379,7 @@ class Dashboard extends \common\models\base\Base
 			$oCompDetails->comp_channel_id = $page["id"];
 			$oCompDetails->comp_channel_name = $page["name"];
 			$oCompDetails->comp_channel_followers = $page["followers"];
+          	$oCompDetails->img_url = $page['img_url'];
 			$oCompDetails->save();
 		}
 	}
@@ -393,6 +398,7 @@ class Dashboard extends \common\models\base\Base
 			$oCompDetails->comp_channel_id = $page["id"];
 			$oCompDetails->comp_channel_name = $page["name"];
 			$oCompDetails->comp_channel_followers = $page["followers"];
+          	$oCompDetails->img_url = $page['img_url'];
 			$oCompDetails->save();
 		}
 	}

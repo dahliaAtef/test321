@@ -1,13 +1,17 @@
+<?php
+use yii\helpers\Url;
+?>
 <div class="col-md-6">     
     <?php
-    //echo '<pre>'; var_dump($sharing_services); echo '</pre>'; die;
+    echo '<h3 class="internal-title noneBG">Channel views per Sharing Service</h3>';
+    echo '<div class="internal-content circleChart adaptMargin34">';
     if($sharing_services_json_table){
         $this->registerJs("GoogleCharts.drawCircle(".$sharing_services_json_table.", 'yg', 'sharing_services')", yii\web\View::POS_END);	
-        echo '<h3 class="internal-title noneBG">Channel view per Sharing Service</h3>';
-        echo '<div class="internal-content circleChart adaptMargin34">';      
-            echo '<div id="sharing_services"></div>';
-        echo '</div>'; 
+        echo '<div id="sharing_services"></div>';
+    }else{
+    	echo '<div id="sharing_services"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/pie_no.png" /></div></div>';
     }
+	echo '</div>'; 
     ?>
 </div>
 <div class="col-md-6">

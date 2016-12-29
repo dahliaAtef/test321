@@ -4,7 +4,13 @@
 
 echo '<h3 class="internal-title facebook ">Majority</h3>';
 echo '<div class="internal-content"><ul>';
-echo '<li><span class="small-title">male : </span>'.round((($age_gender_array["male_count"]/$fans_count)*100), 2).'%</li>';
+if($fans_count == 0){
+	echo '<li><span class="small-title">.... : </span>....%</li>';
+}elseif($age_gender_array["male_count"] >= $age_gender_array["female_count"]){
+	echo '<li><span class="small-title">male : </span>'.round((($age_gender_array["male_count"]/$fans_count)*100), 2).'%</li>';
+}else{
+	echo '<li><span class="small-title">female : </span>'.round((($age_gender_array["female_count"]/$fans_count)*100), 2).'%</li>';
+}
 
 $sum = array();
 
@@ -16,7 +22,7 @@ foreach($age_gender_array['age_ranges'] as $age_range){
 
 if($sum){
 
-    ksort($sum); 
+    arsort($sum); 
 
     reset($sum);
 

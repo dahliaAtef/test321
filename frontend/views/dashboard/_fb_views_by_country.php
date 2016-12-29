@@ -1,10 +1,13 @@
 <?php
-//echo '<br/><br/>';
-//var_dump($countries_json_table); die;
-if($countries_json_table){
+use yii\helpers\Url;
+
+
     echo '<h3 class="internal-title facebook short">Facebook</h3>';
+	echo '<div class="internal-content">';
+if($countries_json_table){
     $this->registerJs("GoogleCharts.drawMap(".$countries_json_table.", 'fb', 'fb_view_by_country')", yii\web\View::POS_END);
-    echo '<div class="internal-content">';
 	echo '<div id="fb_view_by_country"></div>';
-    echo '</div>';
+}else{
+	echo '<div id="fb_view_by_country"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/map_no.png" /></div></div>';
 }
+echo '</div>';

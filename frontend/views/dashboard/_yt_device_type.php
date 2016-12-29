@@ -1,11 +1,13 @@
+<?php
+use digi\authclient\clients\Youtube;
+use yii\helpers\Url;
+?>
 <div class="row">
     <div class="col-md-12">
         <?php
-        use digi\authclient\clients\Youtube;
-
+        echo '<h3 class="internal-title youtube short">Youtube</h3>';
         $devices_json_table = Youtube::getDeviceTypeJsonTable($devices);
-        if($devices_json_table){
-            echo '<h3 class="internal-title youtube short">Youtube</h3>';
+        if($devices_json_table && (array_sum($devices) > 0)){
             $sum = array_sum($devices);
             $max = max($devices);
             switch($max){
@@ -25,6 +27,13 @@
             $this->registerJs("GoogleCharts.drawBars(".$devices_json_table.", 'yg', 'yt_view_by_device_type')", yii\web\View::POS_END);
             echo '<div class="internal-content">';
             echo '<div id="yt_view_by_device_type"></div>';
+            echo '</div>';
+        }else{
+        	echo '<div class="info-title">';
+            echo '<span class="bold-title">Majority : .... by .... Percentage  </span><span class="rounded youtube">....%</span>';
+            echo '</div>';
+            echo '<div class="internal-content">';
+            echo '<div id="yt_view_by_device_type"><div class="dummy_chart"><img src="'.Url::to('@frontThemeUrl').'/images/bar_no.png" /></div></div>';
             echo '</div>';
         }
         ?>

@@ -1,9 +1,9 @@
 <?php
-    $company_size = $linkedin->getCompanySize($followers_statistics['companySizes']['values']);
-    $country = $linkedin->getCountry($followers_statistics['countries']['values']);
-    $industry = $linkedin->getIndustry($followers_statistics['industries']['values']);
-    $seniority = $linkedin->getSeniority($followers_statistics['seniorities']['values']);
-    $function = $linkedin->getJobs($followers_statistics['functions']['values']);
+    $company_size = ($followers_statistics['companySizes']['_total'] > 0) ? $linkedin->getCompanySize($followers_statistics['companySizes']['values']) : null;
+    $country = ($followers_statistics['countries']['_total'] > 0) ? $linkedin->getCountry($followers_statistics['countries']['values']) : null;
+    $industry = ($followers_statistics['industries']['_total'] > 0) ? $linkedin->getIndustry($followers_statistics['industries']['values']) : null;
+    $seniority = ($followers_statistics['seniorities']['_total'] > 0) ? $linkedin->getSeniority($followers_statistics['seniorities']['values']) : null;
+    $function = ($followers_statistics['functions']['_total'] > 0) ? $linkedin->getJobs($followers_statistics['functions']['values']) : null;
 ?>
 
 

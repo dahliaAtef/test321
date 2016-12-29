@@ -35,11 +35,34 @@ return [
         'authManager' => [
             'class' => 'yii\rbac\DbManager', // or use 'yii\rbac\PhpManager'
         ],
+      	'session' => [
+            'class' => 'yii\web\Session',
+            'savePath' => '@common/runtime/session',
+            'cookieParams' => [
+                'path' => '/',
+                'domain' => '.hypeinsights.com',
+            ]
+        ],
+       /* 'user' => [
+            'class' => 'common\models\custom\User',
+            //'identityClass' => 'common\models\User',
+            'enableAutoLogin' => true,
+            'identityCookie' => [
+                'name' => '_local.hype',
+                'domain' => '.hypeinsights.com',
+                'path' => '/',
+            ]
+        ],*/
         'user' => [
             'class' => 'digi\web\User',
             'identityClass' => 'common\models\custom\User',
             'enableAutoLogin' => true,
             'loginUrl' => '/#login',
+          	'identityCookie' => [
+                'name' => '_local.hype',
+                'domain' => '.hypeinsights.com',
+                'path' => '/',
+            ]
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
