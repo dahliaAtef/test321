@@ -159,6 +159,8 @@ footer {padding: 10px 0;width:100%;position:absolute;bottom:0;left:0;}
 
 		footer .social-links div {float: right;margin:6px 10px;background: url(../images/social.png);cursor: pointer;}
 
+                footer .social-links div a {display: inline-block;width: 100%;height: 100%;}
+                
 		footer .social-links div:first-child {margin-right:0px}
 
 			footer .social-links div.fb {width:14px;height:26px;background-position:0 0;}
@@ -168,7 +170,7 @@ footer {padding: 10px 0;width:100%;position:absolute;bottom:0;left:0;}
 			footer .social-links div.twit {width:26px;height:24px;background-position:77px 0;}
 
 			footer .social-links div.youTube {width:26px;height:26px;background-position:50px 0;}
-
+                
 .page-content {padding:30px 0 60px;}
 
 	.page-depth {border-bottom: 1px solid;padding-bottom: 14px;}
