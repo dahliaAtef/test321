@@ -210,6 +210,7 @@ class SaveController extends \frontend\components\BaseController {
     
     public function actionTwitter(){
         //check if the save access is working
+        ini_set('max_execution_time', 900000);
         $twitter = new Twitter();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
         if($oAuthclient ){
@@ -236,6 +237,7 @@ class SaveController extends \frontend\components\BaseController {
     }
     
     public function actionFacebook(){
+        ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);

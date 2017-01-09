@@ -1261,7 +1261,7 @@ class Facebook extends \yii\authclient\clients\Facebook
             foreach($fans_by_source as $day){
                 if(array_key_exists('value', $day)){
                   foreach($day['value'] as $key => $value){
-                    (array_key_exists($key, $fans_by_source_array)) ? ($fans_by_source_array[$key] = $value) : ($fans_by_source_array[$key] += $value);
+                    (array_key_exists($key, $fans_by_source_array)) ? ($fans_by_source_array[$key] += $value) : ($fans_by_source_array[$key] = $value);
                   }
                 }
             }
@@ -1313,7 +1313,7 @@ class Facebook extends \yii\authclient\clients\Facebook
       if($reach_by_country_req){
         $reach_by_country = $reach_by_country_req[0]['values'];
       	$counter = $this->checkAndGetValueIndex($reach_by_country);
-      	if(array_key_exists('value', $reach_by_country[$count])){
+      	if(array_key_exists('value', $reach_by_country[$counter])){
         	return ((array_key_exists('value', $reach_by_country[$counter])) ? $reach_by_country[$counter]['value'] : null);
         }else{
         	return null;
@@ -1327,7 +1327,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     	if($reach_by_gender_age_req){
           $reach_by_gender_age = $reach_by_gender_age_req[0]['values'];
           $counter = $this->checkAndGetValueIndex($reach_by_gender_age);
-          if(array_key_exists('value', $reach_by_gender_age[$count])){
+          if(array_key_exists('value', $reach_by_gender_age[$counter])){
               return ((array_key_exists('value', $reach_by_gender_age[$counter])) ? $reach_by_gender_age[$counter]['value'] : null);
           }else{
               return null;
@@ -1341,7 +1341,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     	if($reach_by_lang_req){
           $reach_by_lang = $reach_by_lang_req[0]['values'];
           $counter = $this->checkAndGetValueIndex($reach_by_lang);
-          if(array_key_exists('value', $reach_by_lang[$count])){
+          if(array_key_exists('value', $reach_by_lang[$counter])){
               return ((array_key_exists('value', $reach_by_lang[$counter])) ? $reach_by_lang[$counter]['value'] : null);
           }else{
               return null;
@@ -1373,7 +1373,7 @@ class Facebook extends \yii\authclient\clients\Facebook
       	$insights['reach_by_age_gender'] = $this->getPageReachByAgeGenderArrays($page_id, $since, $until);
       	$insights['reach_by_language'] = $this->getPageReachByLanguageInEnglish($page_id, $since, $until);
         $insights['page_reach'] = $this->getPageReachArray($page_id, $since, $until);
-		$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
+	$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
       	$page_posts_paid_reach = $this->getPagePostsPaidReach($page_id, $since, $until);
         $page_posts_organic_reach = $this->getPagePostsOrganicReach($page_id, $since, $until);
       	$insights['page_posts_paid_reach'] = ($page_posts_paid_reach) ? $this->getSumOfValuesInArray($page_posts_paid_reach[0]['values']) : 0;
