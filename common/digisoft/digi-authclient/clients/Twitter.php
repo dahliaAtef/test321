@@ -984,9 +984,9 @@ class Twitter extends \yii\authclient\clients\Twitter
             
             $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
             $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
-            $statistics['last_month']['followers'] = $insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers;
+            $statistics['last_month']['followers'] = ($insights_last_month) ? ($insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers) : null;
             $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
-            $statistics['last_month']['listing'] = $insights_last_month[count($insights_last_month) -1]->listed - $insights_last_month[0]->listed;
+            $statistics['last_month']['listing'] = ($insights_last_month) ? ($insights_last_month[count($insights_last_month) -1]->listed - $insights_last_month[0]->listed) : null;
             $statistics['this_month']['listing'] = $insights_this_month[count($insights_this_month) -1]->listed - $insights_this_month[0]->listed;
 
             $tweets_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
