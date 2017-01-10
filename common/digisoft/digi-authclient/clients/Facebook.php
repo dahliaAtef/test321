@@ -923,7 +923,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getUserPostsByDay($days_in_range, $page_id, $since, $until){
         $user_posts_in_range = $this->getUserPostsInRange($page_id, $since, $until);
-        //echo '<pre>'; var_dump($user_posts_in_range); echo '</pre>'; die;
+        $days_in_range = array_slice($days_in_range, 1);
         $user_posts_per_day = [];
         foreach($days_in_range as $day){
             $date_day = date('M d', $day);
@@ -1019,6 +1019,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getPostsByDayStatistics($days_in_range, $posts_in_range){
         $statistics = array();
+        $days_in_range = array_slice($days_in_range, 1);
         $types_array = ['value' => 0, 'interaction' => 0, 'engagement' => 0];
         $statistics['posts_by_day'] = array(); $statistics['post_types'] = [
             'photo' => $types_array, 'video' => $types_array, 'status' => $types_array, 'event' => $types_array, 'link' => $types_array, 'offer' => $types_array
@@ -1205,7 +1206,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
 	
     public function getAccountInsightsInRange($account_model_id, $since, $until){
-	$since_str = date('Y-m-d H:i:s', strtotime('last day of last monyh'));
+	$since_str = date('Y-m-d H:i:s', strtotime('last day of last month'));
 	$until_str = date('Y-m-d H:i:s', $until);
 	$account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since_str, $until_str])->all();
 	return $account_insights;
