@@ -488,9 +488,9 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
         return $sum;
     }
     
-    public function statistics($oModel){
-        $since = strtotime('first day of this month') * 1000;
-        $until = time() * 1000;
+    public function statistics($oModel, $since, $until){
+        //$since = strtotime('first day of this month') * 1000;
+        //$until = time() * 1000;
         $historical_statistics = $this->getHistoricalStatisticsInTime($oModel->entity_id, $since)['values'];
         $days = [];
         $statistics_array = ['clicks' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'impressions' => 0, 'days' => []];
@@ -545,7 +545,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
                         $update_statistics_by_day[$day]['new_likes'] = $updates_statistics[$oUpdate->entity_id]['likes'];
                         $update_statistics_by_day[$day]['new_comments'] = $updates_statistics[$oUpdate->entity_id]['comments'];
                         $update_statistics_by_day[$day]['new_shares'] = $updates_statistics[$oUpdate->entity_id]['shares'];
-                        $update_statistics_by_day[$day]['new_interactions'] = ($update_statistics_by_day[$date]['new_likes'] + $update_statistics_by_day[$date]['new_comments'] + $update_statistics_by_day[$date]['new_shares']);
+                        $update_statistics_by_day[$day]['new_interactions'] = ($update_statistics_by_day[$day]['new_likes'] + $update_statistics_by_day[$day]['new_comments'] + $update_statistics_by_day[$day]['new_shares']);
                         $update_statistics_by_day[$day]['new_impressions'] = $updates_statistics[$oUpdate->entity_id]['impressions'];
                         $update_statistics_by_day[$day]['new_clicks'] = $updates_statistics[$oUpdate->entity_id]['clicks'];
                       	$counter++;
@@ -554,7 +554,7 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
                         $update_statistics_by_day[$day]['new_likes'] += $updates_statistics[$oUpdate->entity_id]['likes'];
                         $update_statistics_by_day[$day]['new_comments'] += $updates_statistics[$oUpdate->entity_id]['comments'];
                         $update_statistics_by_day[$day]['new_shares'] += $updates_statistics[$oUpdate->entity_id]['shares'];
-                        $update_statistics_by_day[$day]['new_interactions'] += ($update_statistics_by_day[$date]['new_likes'] + $update_statistics_by_day[$date]['new_comments'] + $update_statistics_by_day[$date]['new_shares']);
+                        $update_statistics_by_day[$day]['new_interactions'] += ($update_statistics_by_day[$day]['new_likes'] + $update_statistics_by_day[$day]['new_comments'] + $update_statistics_by_day[$day]['new_shares']);
                         $update_statistics_by_day[$day]['new_impressions'] += $updates_statistics[$oUpdate->entity_id]['impressions'];
                         $update_statistics_by_day[$day]['new_clicks'] += $updates_statistics[$oUpdate->entity_id]['clicks'];
                     }

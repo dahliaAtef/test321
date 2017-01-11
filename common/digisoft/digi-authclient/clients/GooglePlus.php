@@ -408,7 +408,7 @@ class GooglePlus extends OAuth2
     }
     
     public function getFollowersGrowthJsonTable($followers_growth){
-        $followers_growth_json_table = ($followers_growth) ? GoogleChartHelper::getDataTable('day', 'followers', $followers_growth) : '';
+        $followers_growth_json_table = ($followers_growth) ? GoogleChartHelper::getRegularTimeDataTable('day', 'followers', $followers_growth) : '';
         return $followers_growth_json_table;
     }
     
@@ -459,20 +459,20 @@ class GooglePlus extends OAuth2
         $this->statistics['profile'] = array();
         
         foreach($this->days_in_range as $day){
-          	$day_formated = date('M d, y', $day);
-            $date_day = date('M d', $day);
-            $refine_date = date('d', $day);
-            $date = ($refine_date != '01') ?  $refine_date : $date_day;
+            $day_formated = date('M d, y', $day);
+            //$date_day = date('M d', $day);
+            //$refine_date = date('d', $day);
+            //$date = ($refine_date != '01') ?  $refine_date : $date_day;
             
             foreach($this->posts_in_range as $post){
                 if(date('M d, y', $post->creation_time) == $day_formated){
-                    if(!array_key_exists($date, $this->statistics['profile'])){
-                        $this->statistics["profile"][$date]["amount"] = 1;
-                        $this->statistics["profile"][$date]["interaction"] = ($post->likes + $post->comments + $post->shares);
-                        $this->statistics['profile'][$date]['followers'] = $post->followers;
+                    if(!array_key_exists($day, $this->statistics['profile'])){
+                        $this->statistics["profile"][$day]["amount"] = 1;
+                        $this->statistics["profile"][$day]["interaction"] = ($post->likes + $post->comments + $post->shares);
+                        $this->statistics['profile'][$day]['followers'] = $post->followers;
                     }else{
-                        $this->statistics["profile"][$date]["amount"]++;
-                        $this->statistics["profile"][$date]["interaction"] += ($post->likes + $post->comments + $post->shares); 
+                        $this->statistics["profile"][$day]["amount"]++;
+                        $this->statistics["profile"][$day]["interaction"] += ($post->likes + $post->comments + $post->shares); 
                     }
                     $this->statistics['total_posts']++;
                     $this->statistics['total_post_likes'] += $post->likes;
@@ -481,26 +481,26 @@ class GooglePlus extends OAuth2
                     
                 }
             }
-            if(!array_key_exists($date, $this->statistics['profile'])){
-                $this->statistics["profile"][$date]["amount"] = 0;
-                $this->statistics["profile"][$date]["interaction"] = 0;
-                $this->statistics['profile'][$date]['followers'] = 0;
-                $this->statistics['profile'][$date]["profile_engagement"] = 0;
-                $this->statistics['profile'][$date]["post_engagement"] = 0;
+            if(!array_key_exists($day, $this->statistics['profile'])){
+                $this->statistics["profile"][$day]["amount"] = 0;
+                $this->statistics["profile"][$day]["interaction"] = 0;
+                $this->statistics['profile'][$day]['followers'] = 0;
+                $this->statistics['profile'][$day]["profile_engagement"] = 0;
+                $this->statistics['profile'][$day]["post_engagement"] = 0;
             }else{
-                if($this->statistics['profile'][$date]['followers']){
-                    (($this->statistics['profile'][$date]['interaction']) != 0) ? $this->statistics['days_with_engagement']++ : '';
-                    $this->statistics["profile"][$date]["profile_engagement"] = round(((($this->statistics["profile"][$date]['interaction'])/($this->statistics['profile'][$date]['followers']))*100), 2);
-                    $this->statistics['profile'][$date]["post_engagement"] = round(((($this->statistics["profile"][$date]['interaction'])/($this->statistics['profile'][$date]['amount'])/($this->statistics['profile'][$date]['followers']))*100),2);
+                if($this->statistics['profile'][$day]['followers']){
+                    (($this->statistics['profile'][$day]['interaction']) != 0) ? $this->statistics['days_with_engagement']++ : '';
+                    $this->statistics["profile"][$day]["profile_engagement"] = round(((($this->statistics["profile"][$day]['interaction'])/($this->statistics['profile'][$day]['followers']))*100), 2);
+                    $this->statistics['profile'][$day]["post_engagement"] = round(((($this->statistics["profile"][$day]['interaction'])/($this->statistics['profile'][$day]['amount'])/($this->statistics['profile'][$day]['followers']))*100),2);
                 }else{
-                    $this->statistics["profile"][$date]["profile_engagement"] = null;
-                    $this->statistics['profile'][$date]["post_engagement"] = null;
+                    $this->statistics["profile"][$day]["profile_engagement"] = null;
+                    $this->statistics['profile'][$day]["post_engagement"] = null;
                 }
                 
-                $this->statistics['total_post_engagement_rate'] += $this->statistics['profile'][$date]["post_engagement"];
-                ($this->statistics['profile'][$date]["post_engagement"] > $this->statistics['max_post_engagement_rate']) ? ($this->statistics['max_post_engagement_rate'] = $this->statistics['profile'][$date]["post_engagement"]) : '';
-                $this->statistics['total_profile_engagement_rate'] += $this->statistics['profile'][$date]["profile_engagement"];
-                ($this->statistics['profile'][$date]["profile_engagement"] > $this->statistics['max_profile_engagement_rate']) ? ($this->statistics['max_profile_engagement_rate'] = $this->statistics['profile'][$date]["profile_engagement"]) : '';
+                $this->statistics['total_post_engagement_rate'] += $this->statistics['profile'][$day]["post_engagement"];
+                ($this->statistics['profile'][$day]["post_engagement"] > $this->statistics['max_post_engagement_rate']) ? ($this->statistics['max_post_engagement_rate'] = $this->statistics['profile'][$day]["post_engagement"]) : '';
+                $this->statistics['total_profile_engagement_rate'] += $this->statistics['profile'][$day]["profile_engagement"];
+                ($this->statistics['profile'][$day]["profile_engagement"] > $this->statistics['max_profile_engagement_rate']) ? ($this->statistics['max_profile_engagement_rate'] = $this->statistics['profile'][$day]["profile_engagement"]) : '';
             }
         }
         
@@ -515,22 +515,22 @@ class GooglePlus extends OAuth2
     }
     
     public function getNumberOfPostsJsonTable($profile_statistics){
-        $posts_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyName('day', 'post', null, $profile_statistics, null, 'amount', null) : '';
+        $posts_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyNameTime('day', 'post', null, $profile_statistics, null, 'amount', null) : '';
 		return $posts_per_day_json_table;
     }
     
     public function getNumberOfInteractionsJsonTable($profile_statistics){
-        $interactions_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyName('day', 'post', null, $profile_statistics, null, 'interaction', null) : '';
+        $interactions_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyNameTime('day', 'post', null, $profile_statistics, null, 'interaction', null) : '';
         return $interactions_per_day_json_table;
     }
     
     public function getPostEngagementJsonTable($profile_statistics){
-        $post_engagement_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyName('day', 'post engagement', null, $profile_statistics, null, 'post_engagement', null) : '';
+        $post_engagement_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyNameTime('day', 'post engagement', null, $profile_statistics, null, 'post_engagement', null) : '';
         return $post_engagement_per_day_json_table;
     }
     
     public function getProfileEngagementJsonTable($profile_statistics){
-        $profile_engagement_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyName('day', 'profile engagement', null, $profile_statistics, null, 'profile_engagement', null) : '';
+        $profile_engagement_per_day_json_table = ($profile_statistics) ? InstagramGoogleChartHelper::getInstagramDataTableUsingKeyNameTime('day', 'profile engagement', null, $profile_statistics, null, 'profile_engagement', null) : '';
         return $profile_engagement_per_day_json_table;
     }
     

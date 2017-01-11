@@ -77,6 +77,43 @@ class GoogleChartHelper {
         }
     }
     
+    /**
+     * Get Data Table
+     * @author Dalia Atef <dahliaatef@hotmail.com>
+     * @param string $x_axis of graph
+     * @param string $y_axis of graph
+     * @param array $values to be graphed
+     * @return object $json_table of values
+     * y_axis is date
+     */
+    public static function getKeyValueDataTableWithValueKeyNameTime($x_axis, $y_axis, $values, $value_key_name) {
+        $table = array();
+        $table['cols'] = [
+            ['label' => $x_axis, 'type' => 'string'],
+            ['label' => $y_axis, 'type' => 'number'],
+        ];
+        $rows = array();
+        foreach($values as $key => $value){
+            $refine_date = date('d', $key);
+            $date_day = date('M d', $key);
+            $date = (($refine_date != '01') ? $refine_date : $date_day);
+                $rows[] = ['c' => [
+                ['v' => $date],
+                ['v' => $value[$value_key_name]],    
+                ]];
+        }
+        if($rows){
+            $table['rows'] = $rows;
+            $json_table = json_encode($table);
+            return $json_table;
+        }else{
+            $json_table = null;
+            return $json_table;
+        }
+    }
+    
+    
+    
     public static function getSameArrayThreeValuesDataTableUsingKeyNames($x_axis, $first_y_axis, $second_y_axis, $third_y_axis, $values, $first_key_name, $second_key_name, $third_key_name){
         $table = array();
         $table['cols'] = [

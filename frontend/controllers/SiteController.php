@@ -257,7 +257,7 @@ class SiteController extends \frontend\components\BaseController {
         	  return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
 			}
 		}else{
-          $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+            $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
           //if(!$session->has('dashboard_accounts')){
               $dashboard_accounts = [];
               $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
@@ -325,8 +325,9 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = $oAuthclient->model;
                 if($oModel){
                     $since = strtotime('first day of this month') * 1000;
+                    //$since = strtotime('-12 months') * 1000;
                     $until = time() * 1000;
-                    $statistics = $linkedin->statistics($oModel[0]);
+                    $statistics = $linkedin->statistics($oModel[0], $since, $until);
                     //$linkedin->saveAccountInsights($oModel[0], $since);
                     return $this->render('/linkedin/linkedinPage', ['statistics' => $statistics, 'linkedin' => $linkedin, 'oModel' => $oModel[0]]);
                 }
@@ -387,7 +388,7 @@ class SiteController extends \frontend\components\BaseController {
     }
     
     public function actionYoutube($p = null, $v = null){
-        ini_set('max_execution_time', 300000);
+        //ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
         $youtube = new Youtube();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
@@ -461,7 +462,7 @@ class SiteController extends \frontend\components\BaseController {
     }
 
     public function actionInstagram(){
-        ini_set('max_execution_time', 300000);
+        //ini_set('max_execution_time', 300000);
         $session = Yii::$app->session;
         $insta = new Instagram ();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
@@ -494,6 +495,7 @@ class SiteController extends \frontend\components\BaseController {
          $until = strtotime('last day of last month');
      }else{
          $since = strtotime('first day of this month');
+         //$since = strtotime('-12 months');
          $until = time();
     }
 	$days_in_range = $insta->getDaysInRange($since, $until);
@@ -532,7 +534,7 @@ class SiteController extends \frontend\components\BaseController {
     }
     
     public function actionTwitter(){
-       ini_set('max_execution_time', 900000);
+       //ini_set('max_execution_time', 900000);
         //check if the save access is working
         $twitter = new Twitter();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
@@ -575,6 +577,7 @@ class SiteController extends \frontend\components\BaseController {
                 	//$until_str = date('Y-m-d H:i:s', $until);
                 }else{
                     $since = strtotime('first day of this month');
+                    //$since = strtotime('-12 months');
                 	//$since_str = date('Y-m-d H:i:s', $since);
                     $until = time();
                 	//$until_str = date('Y-m-d H:i:s', $until);
@@ -608,7 +611,7 @@ class SiteController extends \frontend\components\BaseController {
       //$oUserPagesForm = new UserPagesForm();
       //$array['data'] = [['id' => 0, 'name' => 'A'], ['id' => 1, 'name' => 'B'], ['id' => 2, 'name' => 'C']];
       //return $this->render('/facebook/facebook',['user_pages' => $array, 'oUserPagesForm' => $oUserPagesForm]);
-        ini_set('max_execution_time', 900000);
+        //ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();
         $oUserPagesForm = new UserPagesForm();
@@ -652,7 +655,8 @@ class SiteController extends \frontend\components\BaseController {
                     $until = strtotime('last day of last month');
                 }else{
                     $since = strtotime('first day of this month');
-                  	$since = strtotime('-1 days', $since);
+                    //$since = strtotime('-3 months');
+                  //	$since = strtotime('-1 days', $since);
                     $until = time();
                 }
                 $page = $fb->getPageData($oModel[0]->entity_id);
