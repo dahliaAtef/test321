@@ -74,9 +74,9 @@ class SaveController extends \frontend\components\BaseController {
         $linkedin = new LinkedIn ();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'linkedin']);
         if($oAuthclient ){
-            if($oAuthclient->source_data != null){
+            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
                 //check stored token
-                LinkedIn::setClient( unserialize($oAuthclient->source_data));
+                LinkedIn::setClient($set_client);
                 $ReturnData = $linkedin->getUserAdminCompanies() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
@@ -114,8 +114,8 @@ class SaveController extends \frontend\components\BaseController {
 
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'google_plus']);
         if($oAuthclient ){
-            if($oAuthclient->source_data != null){
-                GooglePlus::setClient( unserialize($oAuthclient->source_data));
+            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
+                GooglePlus::setClient($set_client);
                 $ReturnData =$gPlus->getAccountDetails();
                 if( $ReturnData == null){
                    $oAuthclient->source_data =null;
@@ -151,9 +151,9 @@ class SaveController extends \frontend\components\BaseController {
         $youtube = new Youtube();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'youtube']);
         if($oAuthclient ){
-            if($oAuthclient->source_data != null){
+            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
                 //check stored token
-                Youtube::setClient( unserialize($oAuthclient->source_data));
+                Youtube::setClient($set_client);
               $ReturnData = $youtube->getChannelData() ;
                 if( $ReturnData == null){   // this case will hapen only when user revoke the access
                     $oAuthclient->source_data =null;
@@ -187,9 +187,9 @@ class SaveController extends \frontend\components\BaseController {
         $insta = new Instagram ();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
         if($oAuthclient ){
-            if($oAuthclient->source_data != null){
+            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
                 //check stored token
-                Instagram::setClient( unserialize($oAuthclient->source_data));
+                Instagram::setClient($set_client);
                 $ReturnData = $insta->getUserData() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
@@ -214,8 +214,8 @@ class SaveController extends \frontend\components\BaseController {
         $twitter = new Twitter();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
         if($oAuthclient ){
-            if($oAuthclient->source_data != null){
-                Twitter::setClient( unserialize($oAuthclient->source_data));
+            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
+                Twitter::setClient($set_client);
                 $ReturnData = $twitter->getAccountData() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
@@ -242,30 +242,25 @@ class SaveController extends \frontend\components\BaseController {
         $fb = new Facebook();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
         if($oAuthclient ){
-            if($oAuthclient->source_data != null){
-                Facebook::setClient( unserialize($oAuthclient->source_data));
-               $client = $fb->getClient();
-               $ReturnData = $client->getUserAttributes() ;
+            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
+                Facebook::setClient($set_client);
+                $client = $fb->getClient();
+                $ReturnData = $client->getUserAttributes() ;
                 if( $ReturnData == null){
                     $oAuthclient->source_data =null;
                     $oAuthclient->save();
                     Facebook::setClient( null);
                 }
-            }else{
-                $client = Facebook::getClient();
-                //$client->getUserAttributes() ;
-                $oAuthclient->source_data = serialize($client);
-                $oAuthclient->save();
             }
-          if($session->has('facebook')){
-              $oModel = $oAuthclient->model;
-            if($oModel){
-            	$page = $fb->getPageData($oModel[0]->entity_id);
-              	$fb->saveAccountInsights($oModel[0], $page['likes']);
-              	$fb->updateCompetitorsValues();
-              	return $this->render('/cron/cron');
+            if($session->has('facebook')){
+                $oModel = $oAuthclient->model;
+                if($oModel){
+                    $page = $fb->getPageData($oModel[0]->entity_id);
+                    $fb->saveAccountInsights($oModel[0], $page['likes']);
+                    $fb->updateCompetitorsValues();
+                    return $this->render('/cron/cron');
+                }
             }
-          }
         }
     }
 }
