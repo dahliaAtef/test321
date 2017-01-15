@@ -57,12 +57,15 @@ use yii\widgets\Pjax;
             </div>
             <div class="col-md-6">
               <h3 class="internal-title noneBG comp-tit">Competitors</h3>
-              <div class="comp-edit"  data-toggle="modal" data-target="#myModal2" ><span class="glyphicon glyphicon-pencil"></span></div>
+              <?php
+                    if($oCompetitors){ ?>
+                        <div class="comp-edit"  data-toggle="modal" data-target="#myModal2" ><span class="glyphicon glyphicon-pencil"></span></div>
+		<?php } ?>
               	<div class="internal-content circleChart" data-pjax>
 				<?php
-					if($competitors_existance = Dashboard::getUserCompetitors($total, $name)){ 
-						$this->registerJs("GoogleCharts.drawCircle(".Dashboard::getCompetitorsJsonTable($competitors_existance).", 'Competitors', 'competitors')", yii\web\View::POS_END); ?>
-						<div id="competitors"></div>
+					if($oCompetitors){ 
+                                            $this->registerJs("GoogleCharts.drawCircle(".Dashboard::getCompetitorsJsonTable(Dashboard::getUserCompetitors($total, $name, $oCompetitors)).", 'Competitors', 'competitors')", yii\web\View::POS_END); ?>
+                                            <div id="competitors"></div>
 				<?php	}else{
 				?>
                     <div class="dummyChart">

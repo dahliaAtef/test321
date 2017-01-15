@@ -11,6 +11,22 @@ $tw = array_key_exists('twitter', $dashboard_accounts);
 $insta = array_key_exists('instagram', $dashboard_accounts);
 $gp = array_key_exists('google_plus', $dashboard_accounts);
 ?>
+
+<div class="modal  bd-example-modal-lg" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="close" data-dismiss="modal" aria-label="Close" id="close_modal_2">
+          <span aria-hidden="true">&times;</span>
+        </div>
+        <div class="subsc-modal-title"><span>Edit Your Competitors</span></div> 
+        <!-- <h3 class="internal-title noneBG modal-title" id="myModalLabel">Name Your Compitators</h3> -->
+      </div>
+      <div class="modal-body">
+        		 
+            <div class="container">
+                <div class="row">
+                  
 <?php Pjax::begin(['id' => 'pjaxComp', 'enablePushState' => false]); ?>
 	<?php $form = ActiveForm::begin(['id' => 'comp-del-form','options' => ['data-pjax' => true ]]); ?>
 		<input type="hidden" name="del-comp" class ="dlt">
@@ -270,4 +286,11 @@ $gp = array_key_exists('google_plus', $dashboard_accounts);
           </div>
 
                       <?php Pjax::end(); ?>
-                      
+                </div>
+                
+            </div>
+         
+      </div>
+    </div>
+  </div>
+</div>

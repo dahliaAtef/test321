@@ -33,19 +33,7 @@ class Dashboard extends \common\models\base\Base
         	$until = time();
         }
         $session = Yii::$app->session;
-		$accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-        if(!$session['dashboard_accounts']){
-            $dashboard_accounts = [];
-            $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-            foreach($accounts as $account){
-                if($account->model){
-                    $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
-                    $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
-                  	$dashboard_accounts[$account['source']]['authclient'] = $account;
-                }
-            }
-            $session->set('dashboard_accounts', $dashboard_accounts);
-        }
+	$accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
         if(array_key_exists('facebook', $session['dashboard_accounts'])){
             $facebook = new Facebook();
 			//echo '<pre>'; var_dump($facebook->getAccountInsightsInRange($session['dashboard_accounts']['facebook']['model_id'], $since, $until)); echo '</pre>'; die;
@@ -431,10 +419,8 @@ class Dashboard extends \common\models\base\Base
 		}
 	}
 
-	public function getUserCompetitors($user_followers, $name){
-		$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->With('compChannels')->all();
-		if($oCompetitors){
-                    //echo '<pre>'; var_dump($oCompetitors[0]->compChannels); echo '</pre>'; die;
+	public function getUserCompetitors($user_followers, $name, $oCompetitors){
+		
 			foreach($oCompetitors as $oCompetitor){
 				$competitor_followers = 0;
 				foreach($oCompetitor->compChannels as $oChannel){
@@ -449,9 +435,7 @@ class Dashboard extends \common\models\base\Base
 				$comp_value = round(((($value)/($sum))*100),1);
  				$competitors_existance[$competitor.' '.$comp_value.'%'] = $comp_value;
 			}
-		}else{
-			$competitors_existance = null;
-		}
+		
 		return $competitors_existance;
 	}
 	

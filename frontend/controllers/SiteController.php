@@ -229,53 +229,51 @@ class SiteController extends \frontend\components\BaseController {
      * Dashboard page
      */
     public function actionDashboard() {
-		$session= Yii::$app->session;
+	$session= Yii::$app->session;
         $dashboard = new Dashboard();
       	$admin_accounts = Authclient::find()->where(['user_id' =>2])->all();
-		$oCompetitorsForm = new CompetitorsForm();
+	$oCompetitorsForm = new CompetitorsForm();
       	$oCompetitorTest = new CompetitorTest();
       	if(Yii::$app->request->post() && array_key_exists('del-comp', $_POST) && (!empty($_POST['del-comp']))){
-        	Competitors::deleteCompetitors($_POST['del-comp']);
-          	$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-          	return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
-        }elseif($oCompetitorTest->load(Yii::$app->request->post()) && $oCompetitorTest->validate()){
-          if($_POST['CompetitorTest']['compid']){
-            Dashboard::checkAndUpdateChannels($_POST['CompetitorTest']['compid'], $oCompetitorTest);
-          }else{
-          	Dashboard::createNewCompetitor($oCompetitorTest);
-          }
-          	Dashboard::checkAndUpdateChannels($_POST['CompetitorTest']['compid'], $oCompetitorTest);
-          	$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-              $insights = $dashboard->getDashboardAccountsInsights();
-              $dashboard->getGrowthPerMonth($insights);
-        	  return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
-        }elseif($oCompetitorsForm->load(Yii::$app->request->post()) && $oCompetitorsForm->validate()){
-			if($dashboard->saveCompetitors($oCompetitorsForm)){
-              $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-              $insights = $dashboard->getDashboardAccountsInsights();
-              $dashboard->getGrowthPerMonth($insights);
-        	  return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
-			}
-		}else{
+            Competitors::deleteCompetitors($_POST['del-comp']);
             $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-          //if(!$session->has('dashboard_accounts')){
-              $dashboard_accounts = [];
-              $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-              foreach($accounts as $account){
-                  if($account->model){
-                      $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
-                      $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
-                      $dashboard_accounts[$account['source']]['authclient'] = $account;
-                  }
-              } 
-              $session->set('dashboard_accounts', $dashboard_accounts);
-          //}
+            $insights = $dashboard->getDashboardAccountsInsights();
+            return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
+        }elseif($oCompetitorTest->load(Yii::$app->request->post()) && $oCompetitorTest->validate()){
+            if($_POST['CompetitorTest']['compid']){
+                Dashboard::checkAndUpdateChannels($_POST['CompetitorTest']['compid'], $oCompetitorTest);
+            }else{
+          	Dashboard::createNewCompetitor($oCompetitorTest);
+            }
+            Dashboard::checkAndUpdateChannels($_POST['CompetitorTest']['compid'], $oCompetitorTest);
+            $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+            $insights = $dashboard->getDashboardAccountsInsights();
+            return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
+        }elseif($oCompetitorsForm->load(Yii::$app->request->post()) && $oCompetitorsForm->validate()){
+            if($dashboard->saveCompetitors($oCompetitorsForm)){
+                $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+                $insights = $dashboard->getDashboardAccountsInsights();
+                return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
+            }
+	}else{
+            $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+            //if(!$session->has('dashboard_accounts')){
+            $dashboard_accounts = [];
+            $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+            foreach($accounts as $account){
+                if($account->model){
+                    $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
+                    $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
+                    $dashboard_accounts[$account['source']]['authclient'] = $account;
+                }
+            } 
+            $session->set('dashboard_accounts', $dashboard_accounts);
+            //}
           $insights = $dashboard->getDashboardAccountsInsights();
-          $dashboard->getGrowthPerMonth($insights);
-          return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $dashboard->getDashboardAccountsInsights(), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
-
+          return $this->render('/dashboard/dashboard', ['admin_accounts' => $admin_accounts,'insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oDashboard' => $dashboard, 'oCompetitorsForm' => $oCompetitorsForm, 'oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest]);
           }
     }
+    
     /**
      * Privacy Policy page
      */
