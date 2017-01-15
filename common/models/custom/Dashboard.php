@@ -33,51 +33,67 @@ class Dashboard extends \common\models\base\Base
         	$until = time();
         }
         $session = Yii::$app->session;
-		$accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-        if(!$session['dashboard_accounts']){
-            $dashboard_accounts = [];
-            $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-            foreach($accounts as $account){
-                if($account->model){
-                    $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
-                    $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
-                  	$dashboard_accounts[$account['source']]['authclient'] = $account;
-                }
-            }
-            $session->set('dashboard_accounts', $dashboard_accounts);
-        }
+	$accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
         if(array_key_exists('facebook', $session['dashboard_accounts'])){
             $facebook = new Facebook();
 			//echo '<pre>'; var_dump($facebook->getAccountInsightsInRange($session['dashboard_accounts']['facebook']['model_id'], $since, $until)); echo '</pre>'; die;
-            $insights['facebook']['all_insights'] = $facebook->getAccountInsightsInRange($session['dashboard_accounts']['facebook']['model_id'], $since, $until);
-            $insights['facebook']['last_insights'] = $insights['facebook']['all_insights'][count($insights['facebook']['all_insights']) - 1];
+            $all_insights = $facebook->getAccountInsightsInRange($session['dashboard_accounts']['facebook']['model_id'], $since, $until);
+            if($all_insights){
+                $insights['facebook']['all_insights'] = $all_insights;
+                $insights['facebook']['last_insights'] = $all_insights[count($all_insights) - 1];
+            }else{
+                unset($_SESSION['dashboard_accounts']['facebook']);
+            }
         }
         if(array_key_exists('twitter', $session['dashboard_accounts'])){
             $twitter = new Twitter();
-            $insights['twitter']['all_insights'] = $twitter->getTimeBasedAccountInsights($session['dashboard_accounts']['twitter']['model_id'], $since, $until);
-            $insights['twitter']['last_insights'] = $insights['twitter']['all_insights'][count($insights['twitter']['all_insights']) - 1];
+            $all_insights = $twitter->getTimeBasedAccountInsights($session['dashboard_accounts']['twitter']['model_id'], $since, $until);
+            if($all_insights){
+                $insights['twitter']['all_insights'] = $all_insights;
+                $insights['twitter']['last_insights'] = $all_insights[count($all_insights) - 1];
+            }else{
+                unset($_SESSION['dashboard_accounts']['twitter']);
+            }
         }
         if(array_key_exists('instagram', $session['dashboard_accounts'])){
             $instagram = new Instagram();
-            $insights['instagram']['all_insights'] = $instagram->getTimeBasedAccountInsights($session['dashboard_accounts']['instagram']['model_id'], $since, $until);
-			//echo '<pre>'; var_dump($insights['instagram']['all_insights']); echo '</pre>'; die;
-            $insights['instagram']['last_insights'] = $insights['instagram']['all_insights'][count($insights['instagram']['all_insights']) - 1];
+            $all_insights = $instagram->getTimeBasedAccountInsights($session['dashboard_accounts']['instagram']['model_id'], $since, $until);
+            if($all_insights){
+                $insights['instagram']['all_insights'] = $all_insights;
+                $insights['instagram']['last_insights'] = $all_insights[count($all_insights) - 1];
+            }else{
+                unset($_SESSION['dashboard_accounts']['instagram']);
+            }
         }
         if(array_key_exists('google_plus', $session['dashboard_accounts'])){
             $google_plus = new GooglePlus();
-            $insights['google_plus']['all_insights'] = $google_plus->getTimeBasedAccountInsights($session['dashboard_accounts']['google_plus']['model_id'], $since, $until);
-            $insights['google_plus']['last_insights'] = $insights['google_plus']['all_insights'][count($insights['google_plus']['all_insights']) - 1];
-            //echo '<pre>'; var_dump($gp_insights); echo '</pre>'; die;
+            $all_insights = $google_plus->getTimeBasedAccountInsights($session['dashboard_accounts']['google_plus']['model_id'], $since, $until);
+            if($all_insights){
+                $insights['google_plus']['all_insights'] = $all_insights;
+                $insights['google_plus']['last_insights'] = $all_insights[count($all_insights) - 1];
+            }else{
+                unset($_SESSION['dashboard_accounts']['google_plus']);
+            }
         }
         if(array_key_exists('youtube', $session['dashboard_accounts'])){
             $youtube = new Youtube();
-            $insights['youtube']['all_insights'] = $youtube->getAccountInsightsInRange($session['dashboard_accounts']['youtube']['model_id'], $since, $until);
-            $insights['youtube']['last_insights'] = $insights['youtube']['all_insights'][count($insights['youtube']['all_insights']) - 1];
+            $all_insights = $youtube->getAccountInsightsInRange($session['dashboard_accounts']['youtube']['model_id'], $since, $until);
+            if($all_insights){
+                $insights['youtube']['all_insights'] = $all_insights;
+                $insights['youtube']['last_insights'] = $all_insights[count($all_insights) - 1];
+            }else{
+                unset($_SESSION['dashboard_accounts']['youtube']);
+            }
         }
-		if(array_key_exists('linkedin', $session['dashboard_accounts'])){
+	if(array_key_exists('linkedin', $session['dashboard_accounts'])){
             $linkedin = new LinkedIn();
-            $insights['linkedin']['all_insights'] = $linkedin->getAccountInsightsInRange($session['dashboard_accounts']['linkedin']['model_id'], $since, $until);
-            $insights['linkedin']['last_insights'] = $insights['linkedin']['all_insights'][count($insights['linkedin']['all_insights']) - 1];
+            $all_insights = $linkedin->getAccountInsightsInRange($session['dashboard_accounts']['linkedin']['model_id'], $since, $until);
+            if($all_insights){
+                $insights['linkedin']['all_insights'] = $all_insights;
+                $insights['linkedin']['last_insights'] = $all_insights[count($all_insights) - 1];
+            }else{
+                unset($_SESSION['dashboard_accounts']['linkedin']);
+            }
         }
 		//echo '<pre>'; var_dump($insights); echo '</pre>'; die;
         return $insights;
@@ -403,10 +419,8 @@ class Dashboard extends \common\models\base\Base
 		}
 	}
 
-	public function getUserCompetitors($user_followers, $name){
-		$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->With('compChannels')->all();
-		if($oCompetitors){
-                    //echo '<pre>'; var_dump($oCompetitors[0]->compChannels); echo '</pre>'; die;
+	public function getUserCompetitors($user_followers, $name, $oCompetitors){
+		
 			foreach($oCompetitors as $oCompetitor){
 				$competitor_followers = 0;
 				foreach($oCompetitor->compChannels as $oChannel){
@@ -421,9 +435,7 @@ class Dashboard extends \common\models\base\Base
 				$comp_value = round(((($value)/($sum))*100),1);
  				$competitors_existance[$competitor.' '.$comp_value.'%'] = $comp_value;
 			}
-		}else{
-			$competitors_existance = null;
-		}
+		
 		return $competitors_existance;
 	}
 	

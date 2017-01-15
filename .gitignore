@@ -16,6 +16,7 @@ common/config/main.php
 images/medium
 .idea/*
 backend/web/assets
+.htaccess
 
 /index.php
 .sass-cache/*

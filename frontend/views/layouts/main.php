@@ -24,7 +24,7 @@ if(($action_id) == 'home'){
 		<title><?= $this->title ?> | Hype</title>        
 		<?= Html::csrfMetaTags() ?>       
 		<meta charset="<?= Yii::$app->charset ?>" />    
-		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">    
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">    
 		<link rel="icon" href="<?= Url::to('@frontThemeUrl') ?>/images/favicon.ico" />
 		
 		<?php $this->head() ?>
@@ -43,11 +43,6 @@ if(($action_id) == 'home'){
 
 				</div>
 
-				<div style ="display:none;">
-
-					   <img class="lable" src="<?= Url::to('@frontThemeUrl') ?>/images/food/inner/inside-bg.jpg">
-
-				</div>
 			<?php } ?>    
 		<div id="page-wrap">
 			<!-- BEGIN FLASH MSG -->            

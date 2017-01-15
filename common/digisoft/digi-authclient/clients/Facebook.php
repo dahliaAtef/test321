@@ -639,7 +639,8 @@ class Facebook extends \yii\authclient\clients\Facebook
         $counter = 0;
         $fan = $this->getFansAddsAndRemoves($page_id, $since, $until);
         foreach($fan['adds'] as $fan_add){
-          $date = (date('d', strtotime($fan_add['end_time'])) != '01') ?  date('d', strtotime($fan_add['end_time'])) : date('M d', strtotime($fan_add['end_time']));
+          $date = strtotime(date('d-m-Y', strtotime($fan_add['end_time'])));
+          //$date = (date('d', strtotime($fan_add['end_time'])) != '01') ?  date('d', strtotime($fan_add['end_time'])) : date('M d', strtotime($fan_add['end_time']));
           if(array_key_exists('value', $fan_add) && array_key_exists('value', $fan['removes'][$counter])){
           	$net[$date] = ($fan_add['value'] - $fan['removes'][$counter]['value']);
           }else{
@@ -654,7 +655,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Get Fans Groth Json Table
      **/
     public function getFanGrowthJsonTable($fan_growth){
-        $fan_growth_json_table = ($fan_growth) ? GoogleChartHelper::getDataTable('day', 'growth', $fan_growth) : '';
+        $fan_growth_json_table = ($fan_growth) ? GoogleChartHelper::getRegularTimeDataTable('day', 'growth', $fan_growth) : '';
         return $fan_growth_json_table;
     }
     
@@ -923,16 +924,16 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getUserPostsByDay($days_in_range, $page_id, $since, $until){
         $user_posts_in_range = $this->getUserPostsInRange($page_id, $since, $until);
-        //echo '<pre>'; var_dump($user_posts_in_range); echo '</pre>'; die;
+        $days_in_range = array_slice($days_in_range, 1);
         $user_posts_per_day = [];
         foreach($days_in_range as $day){
             $date_day = date('M d', $day);
-            $refine_date = date('d', $day);
-            $date = ($refine_date != '01') ?  $refine_date : $date_day;
-            $user_posts_per_day[$date] = 0;
+            //$refine_date = date('d', $day);
+            //$date = ($refine_date != '01') ?  $refine_date : $date_day;
+            $user_posts_per_day[$day] = 0;
             foreach($user_posts_in_range as $user_post){
                 if((date('M d', $user_post->creation_time)) == $date_day){
-                    $user_posts_per_day[$date] ++;
+                    $user_posts_per_day[$day] ++;
                 }
             }
         }
@@ -945,7 +946,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getUserPostsByDayJsonTable($user_posts_per_day){
         //echo '<pre>'; var_dump($user_posts_per_day); echo '</pre>'; die;
-        $user_posts_per_day_json_table =  ($user_posts_per_day) ? GoogleChartHelper::getDataTable('day', 'user posts', $user_posts_per_day) : '';
+        $user_posts_per_day_json_table =  ($user_posts_per_day) ? GoogleChartHelper::getRegularTimeDataTable('day', 'user posts', $user_posts_per_day) : '';
         return $user_posts_per_day_json_table;
     }
     
@@ -977,7 +978,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Get json table of the page posts
      **/
     public function getPagePostsJsonTable($page_posts_by_day){
-        $page_posts_by_day_json_table = ($page_posts_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'posts', $page_posts_by_day, 'posts') : '';
+        $page_posts_by_day_json_table = ($page_posts_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyNameTime('day', 'posts', $page_posts_by_day, 'posts') : '';
         return $page_posts_by_day_json_table;
     }
     
@@ -986,7 +987,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getPageEngagementJsonTable($page_engagement_by_day){
         //echo '<pre>'; var_dump($page_engagement_by_day); echo '</pre>'; die;
-        $page_engagement_by_day_json_table = ($page_engagement_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'interaction per 1000 fans', $page_engagement_by_day, 'engagement') : '';
+        $page_engagement_by_day_json_table = ($page_engagement_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyNameTime('day', 'interaction per 1000 fans', $page_engagement_by_day, 'engagement') : '';
         return $page_engagement_by_day_json_table;
     }
     
@@ -994,7 +995,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      * Get json table of the page interactions
      **/
     public function getPageInteractionJsonTable($page_interaction_by_day){
-        $page_interaction_by_day_json_table = ($page_interaction_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyName('day', 'Daily Interaction', $page_interaction_by_day, 'interactions') : '';
+        $page_interaction_by_day_json_table = ($page_interaction_by_day) ? GoogleChartHelper::getKeyValueDataTableWithValueKeyNameTime('day', 'Daily Interaction', $page_interaction_by_day, 'interactions') : '';
         return $page_interaction_by_day_json_table;
     }
     
@@ -1019,6 +1020,7 @@ class Facebook extends \yii\authclient\clients\Facebook
      **/
     public function getPostsByDayStatistics($days_in_range, $posts_in_range){
         $statistics = array();
+        $days_in_range = array_slice($days_in_range, 1);
         $types_array = ['value' => 0, 'interaction' => 0, 'engagement' => 0];
         $statistics['posts_by_day'] = array(); $statistics['post_types'] = [
             'photo' => $types_array, 'video' => $types_array, 'status' => $types_array, 'event' => $types_array, 'link' => $types_array, 'offer' => $types_array
@@ -1028,32 +1030,30 @@ class Facebook extends \yii\authclient\clients\Facebook
         $statistics['min_interaction'] = $posts_in_range[0]->interactions; $statistics['min_interaction_day'] = date('M d, y', $posts_in_range[0]->creation_time);
         $statistics['total_likes_count'] = $statistics['total_reactions_count'] = $statistics['total_comments_count'] = $statistics['total_shares_count'] = 0;
         foreach($days_in_range as $day){
-            $refine_date = date('d', $day);
             $date_day = date('M d', $day);
-            $date = (($refine_date != '01') ? $refine_date : $date_day);
-            $statistics['posts_by_day'][$date] = [];
-            $statistics['posts_by_day'][$date]['posts'] = 0;
-            $statistics['posts_by_day'][$date]['reactions'] = 0;
-            $statistics['posts_by_day'][$date]['likes'] = 0;
-            $statistics['posts_by_day'][$date]['comments'] = 0;
-            $statistics['posts_by_day'][$date]['shares'] = 0;
-            $statistics['posts_by_day'][$date]['interactions'] = 0;
-            $statistics['posts_by_day'][$date]['followers'] = 0;
-            $statistics['posts_by_day'][$date]['engagement'] = 0;
+            $statistics['posts_by_day'][$day] = [];
+            $statistics['posts_by_day'][$day]['posts'] = 0;
+            $statistics['posts_by_day'][$day]['reactions'] = 0;
+            $statistics['posts_by_day'][$day]['likes'] = 0;
+            $statistics['posts_by_day'][$day]['comments'] = 0;
+            $statistics['posts_by_day'][$day]['shares'] = 0;
+            $statistics['posts_by_day'][$day]['interactions'] = 0;
+            $statistics['posts_by_day'][$day]['followers'] = 0;
+            $statistics['posts_by_day'][$day]['engagement'] = 0;
             foreach($posts_in_range as $post){
                 //echo '<pre>'; var_dump(date('Y-m-d', $post->creation_time)); echo '</pre>'; die;
                 if(date('M d', $post->creation_time) == $date_day){
                     $statistics['post_types'][$this->getPostTypeName($post->post_type)]['value']++;
-                    $statistics['posts_by_day'][$date]['posts']++;
-                    $statistics['posts_by_day'][$date]['reactions'] += $post->reactions;
+                    $statistics['posts_by_day'][$day]['posts']++;
+                    $statistics['posts_by_day'][$day]['reactions'] += $post->reactions;
                     $statistics['total_reactions_count'] += $post->reactions;
-                    $statistics['posts_by_day'][$date]['likes'] += $post->likes;
+                    $statistics['posts_by_day'][$day]['likes'] += $post->likes;
                     $statistics['total_likes_count'] += $post->likes;
-                    $statistics['posts_by_day'][$date]['comments'] += $post->comments;
+                    $statistics['posts_by_day'][$day]['comments'] += $post->comments;
                     $statistics['total_comments_count'] += $post->comments;
-                    $statistics['posts_by_day'][$date]['shares'] += $post->shares;
+                    $statistics['posts_by_day'][$day]['shares'] += $post->shares;
                     $statistics['total_shares_count'] += $post->shares;
-                    $statistics['posts_by_day'][$date]['interactions'] += $post->interactions;
+                    $statistics['posts_by_day'][$day]['interactions'] += $post->interactions;
                     if($post->interactions > $statistics['max_interaction']){
                         $statistics['max_interaction'] = $post->interactions;
                         $statistics['max_interaction_day'] = date('M d, y', $post->creation_time);
@@ -1064,8 +1064,8 @@ class Facebook extends \yii\authclient\clients\Facebook
                     }
                     $statistics['total_interactions_count'] += $post->interactions;
                     $statistics['post_types'][$this->getPostTypeName($post->post_type)]['interaction'] += $post->interactions;
-                    $statistics['posts_by_day'][$date]['engagement'] += (($post->followers) ? round((((($post->interactions)/($post->followers)) * 1000)*100),1) : 0);
-                    $statistics['post_types'][$this->getPostTypeName($post->post_type)]['engagement'] += $statistics['posts_by_day'][$date]['engagement'];
+                    $statistics['posts_by_day'][$day]['engagement'] += (($post->followers) ? round((((($post->interactions)/($post->followers)) * 1000)*100),1) : 0);
+                    $statistics['post_types'][$this->getPostTypeName($post->post_type)]['engagement'] += $statistics['posts_by_day'][$day]['engagement'];
                 }
             }
         }
@@ -1205,7 +1205,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
 	
     public function getAccountInsightsInRange($account_model_id, $since, $until){
-	$since_str = date('Y-m-d H:i:s', strtotime('last day of last monyh'));
+	$since_str = date('Y-m-d H:i:s', strtotime('last day of last month'));
 	$until_str = date('Y-m-d H:i:s', $until);
 	$account_insights = Insights::find()->Where(['model_id' => $account_model_id])->andWhere(['between', 'created', $since_str, $until_str])->all();
 	return $account_insights;
@@ -1261,7 +1261,7 @@ class Facebook extends \yii\authclient\clients\Facebook
             foreach($fans_by_source as $day){
                 if(array_key_exists('value', $day)){
                   foreach($day['value'] as $key => $value){
-                    (array_key_exists($key, $fans_by_source_array)) ? ($fans_by_source_array[$key] = $value) : ($fans_by_source_array[$key] += $value);
+                    (array_key_exists($key, $fans_by_source_array)) ? ($fans_by_source_array[$key] += $value) : ($fans_by_source_array[$key] = $value);
                   }
                 }
             }
@@ -1313,7 +1313,7 @@ class Facebook extends \yii\authclient\clients\Facebook
       if($reach_by_country_req){
         $reach_by_country = $reach_by_country_req[0]['values'];
       	$counter = $this->checkAndGetValueIndex($reach_by_country);
-      	if(array_key_exists('value', $reach_by_country[$count])){
+      	if(array_key_exists('value', $reach_by_country[$counter])){
         	return ((array_key_exists('value', $reach_by_country[$counter])) ? $reach_by_country[$counter]['value'] : null);
         }else{
         	return null;
@@ -1327,7 +1327,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     	if($reach_by_gender_age_req){
           $reach_by_gender_age = $reach_by_gender_age_req[0]['values'];
           $counter = $this->checkAndGetValueIndex($reach_by_gender_age);
-          if(array_key_exists('value', $reach_by_gender_age[$count])){
+          if(array_key_exists('value', $reach_by_gender_age[$counter])){
               return ((array_key_exists('value', $reach_by_gender_age[$counter])) ? $reach_by_gender_age[$counter]['value'] : null);
           }else{
               return null;
@@ -1341,7 +1341,7 @@ class Facebook extends \yii\authclient\clients\Facebook
     	if($reach_by_lang_req){
           $reach_by_lang = $reach_by_lang_req[0]['values'];
           $counter = $this->checkAndGetValueIndex($reach_by_lang);
-          if(array_key_exists('value', $reach_by_lang[$count])){
+          if(array_key_exists('value', $reach_by_lang[$counter])){
               return ((array_key_exists('value', $reach_by_lang[$counter])) ? $reach_by_lang[$counter]['value'] : null);
           }else{
               return null;
@@ -1373,7 +1373,7 @@ class Facebook extends \yii\authclient\clients\Facebook
       	$insights['reach_by_age_gender'] = $this->getPageReachByAgeGenderArrays($page_id, $since, $until);
       	$insights['reach_by_language'] = $this->getPageReachByLanguageInEnglish($page_id, $since, $until);
         $insights['page_reach'] = $this->getPageReachArray($page_id, $since, $until);
-		$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
+	$insights['reach_by_country'] = $this->getPageReachByCountry($page_id, $since, $until);
       	$page_posts_paid_reach = $this->getPagePostsPaidReach($page_id, $since, $until);
         $page_posts_organic_reach = $this->getPagePostsOrganicReach($page_id, $since, $until);
       	$insights['page_posts_paid_reach'] = ($page_posts_paid_reach) ? $this->getSumOfValuesInArray($page_posts_paid_reach[0]['values']) : 0;
