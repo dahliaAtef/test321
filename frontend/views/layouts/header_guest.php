@@ -28,11 +28,13 @@ if(($action_id == 'subscribe') || ($action_id == 'contact-us')){
                         <a href="#">Login</a>
                         <ul class="sub-menu-ul">
                             <?php $form = ActiveForm::begin(['id' => 'login-form', 'action' => Url::to(['/login'])]); ?>
-									<p>Email<p>
+                                    <p>Email<p>
                                     <?= $form->field($oUserLoginForm, 'email')->textInput()->label(false) ?>
                                     
-									<p>Password<p>
+                                    <p>Password<p>
                                     <?= $form->field($oUserLoginForm, 'password')->passwordInput()->label(false); ?>
+                                        
+                                    <a class="forgotLink" href="<?= Url::to(['/forgot-password']) ?>">Forgot password</a>
                                     
                                 <?= Html::submitButton('login', ['id' => 'btn2', 'name' => 'submit2', 'class' => 'btn' ,   'data-error'=>'Something is wrong', 'data-success'=>'Success']) ?>
                             <?php ActiveForm::end(); ?>

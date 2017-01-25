@@ -40,7 +40,7 @@ return [
             'savePath' => '@common/runtime/session',
             'cookieParams' => [
                 'path' => '/',
-                'domain' => '.hypeinsights.com',
+                'domain' => '.local.hype.com',
             ]
         ],
        /* 'user' => [
@@ -60,7 +60,7 @@ return [
             'loginUrl' => '/#login',
           	'identityCookie' => [
                 'name' => '_hypeinsights',
-                'domain' => '.hypeinsights.com',
+                'domain' => '.local.hype.com',
                 'path' => '/',
             ]
         ],
@@ -109,6 +109,8 @@ return [
                 'signup' => 'user/signup',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
+                'forgot-password' => 'user/request-password-reset',
+                'reset-password' => 'user/reset-password',
               	'change-password' => 'user/change-password',
             ],
         ],
