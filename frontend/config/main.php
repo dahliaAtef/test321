@@ -40,7 +40,7 @@ return [
             'savePath' => '@common/runtime/session',
             'cookieParams' => [
                 'path' => '/',
-                'domain' => '.local.hype.com',
+                'domain' => '.hypeinsights.com',
             ]
         ],
        /* 'user' => [
@@ -59,8 +59,8 @@ return [
             'enableAutoLogin' => true,
             'loginUrl' => '/#login',
           	'identityCookie' => [
-                'name' => '_local.hype',
-                'domain' => '.local.hype.com',
+                'name' => '_hypeinsights',
+                'domain' => '.hypeinsights.com',
                 'path' => '/',
             ]
         ],
