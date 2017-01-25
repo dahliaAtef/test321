@@ -322,15 +322,25 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
-                    $since = strtotime('first day of this month') * 1000;
-                    //$since = strtotime('-12 months') * 1000;
+                    //$since = strtotime('first day of this month') * 1000;
+                    $since = strtotime('-3 months') * 1000;
                     $until = time() * 1000;
                     $statistics = $linkedin->statistics($oModel[0], $since, $until);
                     //$linkedin->saveAccountInsights($oModel[0], $since);
-                    return $this->render('/linkedin/linkedinPage', ['statistics' => $statistics, 'linkedin' => $linkedin, 'oModel' => $oModel[0]]);
+                    return $this->render('/linkedin/linkedinPage', [
+                        'statistics' => $statistics, 
+                        'linkedin' => $linkedin, 
+                        'oModel' => $oModel[0],
+                        'since' => $since,
+                        'until' => $until,
+                        'authclient_created' => strtotime($oAuthclient->created)
+                    ]);
                 }
             }else{
-                return $this->render('/linkedin/linkedin',['user_pages' => $linkedin->getUserAdminCompanies(), 'oUserPagesForm' => $oUserPagesForm]);
+                return $this->render('/linkedin/linkedin',[
+                    'user_pages' => $linkedin->getUserAdminCompanies(), 
+                    'oUserPagesForm' => $oUserPagesForm
+                ]);
             }
         }else{
             return $this->render('/linkedin/linkedinAuth');
@@ -431,8 +441,8 @@ class SiteController extends \frontend\components\BaseController {
                 $since = date('Y-m-d', strtotime('first day of last month'));
                 $until = date('Y-m-d', strtotime('last day of last month'));
             }else{
-              	$since = date('Y-m-d', strtotime('first day of this month'));
-              //$since = date('Y-m-d', strtotime('- 3 months', time()));
+              	//$since = date('Y-m-d', strtotime('first day of this month'));
+                $since = date('Y-m-d', strtotime('- 3 months', time()));
                 $until = date('Y-m-d', time());
             }
           $channel_analytics = $youtube->getChannelAnalytics($since, $until);
@@ -451,7 +461,8 @@ class SiteController extends \frontend\components\BaseController {
                 'youtube' => $youtube,
                 'start_date' => $since,
                 'end_date' => $until,
-              'model' => $models[0],
+                'model' => $models[0],
+                'authclient_created' => strtotime($oAuthclient->created)
             ]);
 
         }else{
@@ -492,8 +503,8 @@ class SiteController extends \frontend\components\BaseController {
          $since = strtotime('first day of last month');
          $until = strtotime('last day of last month');
      }else{
-         $since = strtotime('first day of this month');
-         //$since = strtotime('-12 months');
+         //$since = strtotime('first day of this month');
+         $since = strtotime('-2 months');
          $until = time();
     }
 	$days_in_range = $insta->getDaysInRange($since, $until);
@@ -525,6 +536,8 @@ class SiteController extends \frontend\components\BaseController {
 		'model' => $oModels[0],
 		'since' => $since,
 		'until' => $until,
+                'authclient_created' => strtotime($oAuthclient->created),
+                
                     ]);
         }else{
             return $this->render('/instagram/instagramAuth');
@@ -574,7 +587,8 @@ class SiteController extends \frontend\components\BaseController {
                     $until = strtotime('first day of this month');
                 	//$until_str = date('Y-m-d H:i:s', $until);
                 }else{
-                    $since = strtotime('first day of this month');
+                    $since = strtotime('2016-08-01');
+                    //$since = strtotime('first day of this month');
                     //$since = strtotime('-12 months');
                 	//$since_str = date('Y-m-d H:i:s', $since);
                     $until = time();
@@ -599,6 +613,9 @@ class SiteController extends \frontend\components\BaseController {
                 'statistics' => $twitter->getEngagementStatistics($oModels[0]->id, $days_in_range, $since, $until),
                 'top_ten_trends' => $twitter->getPublicTrends(),
                 'model' => $oModels[0],
+                'since' => $since,
+                'until' => $until,
+                'authclient_created' => strtotime($oAuthclient->created),
                     ]);
         }else{
             return $this->render('/twitter/twitterAuth');  
@@ -648,8 +665,8 @@ class SiteController extends \frontend\components\BaseController {
                   	$since = strtotime('-1 days', $since);
                     $until = strtotime('last day of last month');
                 }else{
-                    $since = strtotime('first day of this month');
-                    //$since = strtotime('-3 months');
+                    //$since = strtotime('first day of this month');
+                    $since = strtotime('-2 months');
                   //	$since = strtotime('-1 days', $since);
                     $until = time();
                 }
@@ -660,7 +677,8 @@ class SiteController extends \frontend\components\BaseController {
                     'id' => $oModel[0]->entity_id,
                     'since' => $since,
                     'until' => $until,
-                  	'model' => $oModel[0]
+                    'model' => $oModel[0],
+                    'authclient_created' => strtotime($oAuthclient->created),
                 ]);
             }else{
                 return $this->render('/facebook/facebook',['user_pages' => $fb->getUserPages(), 'oUserPagesForm' => $oUserPagesForm]);

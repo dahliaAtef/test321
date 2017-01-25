@@ -1,54 +1,5 @@
 [
     {
-        "name": "yiisoft/yii2-composer",
-        "version": "2.0.3",
-        "version_normalized": "2.0.3.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-composer.git",
-            "reference": "ca8d23707ae47d20b0454e4b135c156f6da6d7be"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/ca8d23707ae47d20b0454e4b135c156f6da6d7be",
-            "reference": "ca8d23707ae47d20b0454e4b135c156f6da6d7be",
-            "shasum": ""
-        },
-        "require": {
-            "composer-plugin-api": "1.0.0"
-        },
-        "time": "2015-03-01 06:22:44",
-        "type": "composer-plugin",
-        "extra": {
-            "class": "yii\\composer\\Plugin",
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "yii\\composer\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Qiang Xue",
-                "email": "qiang.xue@gmail.com"
-            }
-        ],
-        "description": "The composer plugin for Yii extension installer",
-        "keywords": [
-            "composer",
-            "extension installer",
-            "yii2"
-        ]
-    },
-    {
         "name": "ezyang/htmlpurifier",
         "version": "v4.6.0",
         "version_normalized": "4.6.0.0",
@@ -398,7 +349,8 @@
         "keywords": [
             "codeception",
             "yii2"
-        ]
+        ],
+        "abandoned": "codeception/codeception"
     },
     {
         "name": "yiisoft/yii2-debug",
@@ -740,107 +692,6 @@
         "description": "The nested sets behavior for the Yii framework",
         "keywords": [
             "nested sets",
-            "yii2"
-        ]
-    },
-    {
-        "name": "kartik-v/yii2-tree-manager",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/kartik-v/yii2-tree-manager.git",
-            "reference": "bf45a22f6bd9fe11bbe8378d1a4129867c9c5bbb"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/kartik-v/yii2-tree-manager/zipball/bf45a22f6bd9fe11bbe8378d1a4129867c9c5bbb",
-            "reference": "bf45a22f6bd9fe11bbe8378d1a4129867c9c5bbb",
-            "shasum": ""
-        },
-        "require": {
-            "creocoder/yii2-nested-sets": "~0.9",
-            "kartik-v/yii2-widget-activeform": "~1.4"
-        },
-        "time": "2015-08-10 16:44:56",
-        "type": "yii2-extension",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "kartik\\tree\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Kartik Visweswaran",
-                "email": "kartikv2@gmail.com",
-                "homepage": "http://www.krajee.com/"
-            }
-        ],
-        "description": "An enhanced tree management module with tree node selection and manipulation using nested sets.",
-        "homepage": "https://github.com/kartik-v/yii2-tree-manager",
-        "keywords": [
-            "ajax",
-            "bootstrap",
-            "hierarchy",
-            "jquery",
-            "krajee",
-            "nested",
-            "nestedset",
-            "set",
-            "tree",
-            "treeview"
-        ]
-    },
-    {
-        "name": "kotchuprik/yii2-sortable-widgets",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/kotchuprik/yii2-sortable-widgets.git",
-            "reference": "8d9d5bd88c63bc730743d6ab0af85448b458819d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/kotchuprik/yii2-sortable-widgets/zipball/30529fff17f9280c5670f1543d74955e16ef5715",
-            "reference": "8d9d5bd88c63bc730743d6ab0af85448b458819d",
-            "shasum": ""
-        },
-        "require": {
-            "yiisoft/yii2": "*"
-        },
-        "time": "2015-08-10 17:57:26",
-        "type": "yii2-extension",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "kotchuprik\\sortable\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Constantin Chuprik",
-                "email": "constantinchuprik@gmail.com"
-            }
-        ],
-        "description": "Implementation the jQuery UI Sortable for the Yii2 widgets. Sortable grid view.",
-        "homepage": "http://github.com/kotchuprik/yii2-sortable-widgets",
-        "keywords": [
-            "dnd",
-            "grid",
-            "gridview",
-            "jQueryUI",
-            "sortable",
-            "sorting",
             "yii2"
         ]
     },
@@ -2293,7 +2144,8 @@
             "http client",
             "rest",
             "web service"
-        ]
+        ],
+        "abandoned": "guzzlehttp/guzzle"
     },
     {
         "name": "omnipay/migs",
@@ -3972,6 +3824,165 @@
             "authclient",
             "instagram",
             "oauth",
+            "yii2"
+        ]
+    },
+    {
+        "name": "yiisoft/yii2-composer",
+        "version": "2.0.5",
+        "version_normalized": "2.0.5.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-composer.git",
+            "reference": "3f4923c2bde6caf3f5b88cc22fdd5770f52f8df2"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/3f4923c2bde6caf3f5b88cc22fdd5770f52f8df2",
+            "reference": "3f4923c2bde6caf3f5b88cc22fdd5770f52f8df2",
+            "shasum": ""
+        },
+        "require": {
+            "composer-plugin-api": "^1.0"
+        },
+        "require-dev": {
+            "composer/composer": "^1.0"
+        },
+        "time": "2016-12-20 13:26:02",
+        "type": "composer-plugin",
+        "extra": {
+            "class": "yii\\composer\\Plugin",
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "yii\\composer\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Qiang Xue",
+                "email": "qiang.xue@gmail.com"
+            }
+        ],
+        "description": "The composer plugin for Yii extension installer",
+        "keywords": [
+            "composer",
+            "extension installer",
+            "yii2"
+        ]
+    },
+    {
+        "name": "phpoffice/phpexcel",
+        "version": "1.8.1",
+        "version_normalized": "1.8.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/PHPOffice/PHPExcel.git",
+            "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
+            "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
+            "shasum": ""
+        },
+        "require": {
+            "ext-xml": "*",
+            "ext-xmlwriter": "*",
+            "php": ">=5.2.0"
+        },
+        "time": "2015-05-01 07:00:55",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "PHPExcel": "Classes/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL"
+        ],
+        "authors": [
+            {
+                "name": "Maarten Balliauw",
+                "homepage": "http://blog.maartenballiauw.be"
+            },
+            {
+                "name": "Mark Baker"
+            },
+            {
+                "name": "Franck Lefevre",
+                "homepage": "http://blog.rootslabs.net"
+            },
+            {
+                "name": "Erik Tilt"
+            }
+        ],
+        "description": "PHPExcel - OpenXML - Read, Create and Write Spreadsheet documents in PHP - Spreadsheet engine",
+        "homepage": "http://phpexcel.codeplex.com",
+        "keywords": [
+            "OpenXML",
+            "excel",
+            "php",
+            "spreadsheet",
+            "xls",
+            "xlsx"
+        ]
+    },
+    {
+        "name": "hscstudio/yii2-export",
+        "version": "v1.2.2",
+        "version_normalized": "1.2.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/hscstudio/yii2-export.git",
+            "reference": "1fd85e2e3672a411109f51a32235f4280c650d26"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/hscstudio/yii2-export/zipball/1fd85e2e3672a411109f51a32235f4280c650d26",
+            "reference": "1fd85e2e3672a411109f51a32235f4280c650d26",
+            "shasum": ""
+        },
+        "require": {
+            "phpoffice/phpexcel": "1.8.*",
+            "yiisoft/yii2": "*"
+        },
+        "time": "2016-02-13 08:57:40",
+        "type": "yii2-extension",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "hscstudio\\export\\": ""
+            },
+            "files": [
+                "libraries/tbs/tbs_class.php",
+                "libraries/tbs/plugins/tbs_plugin_opentbs.php",
+                "libraries/mpdf/mpdf.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Hafid Mukhlasin",
+                "email": "hafidmukhlasin@gmail.com"
+            }
+        ],
+        "description": "Excel, Word, PDF",
+        "keywords": [
+            "extension",
             "yii2"
         ]
     }

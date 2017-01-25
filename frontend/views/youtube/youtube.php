@@ -87,7 +87,7 @@ $locations = $youtube->getAnalyticsPerLocation($start_date, $end_date);
             ?>
 			<!-- sperated line -->  
             <?php
-                echo $this->render('_comparison', ['comparison' => $youtube->getComparison($model->id)]);
+                echo $this->render('_comparison', ['comparison' => $youtube->getComparison($model->id, $start_date, $end_date, $authclient_created)]);
             ?>
 
             <!-- sperated line -->  

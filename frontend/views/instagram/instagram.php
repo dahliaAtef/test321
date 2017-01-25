@@ -226,7 +226,7 @@ $this->title = 'Instagram';
 		</div>
 		<!-- sperated line -->  
 		<?php
-            echo $this->render('_comparison', ['comparison' => $insta->getComparison($model->id)]);
+            echo $this->render('_comparison', ['comparison' => $insta->getComparison($model->id, $since, $until, $authclient_created)]);
         ?>
       
         <!-- sperated line -->  

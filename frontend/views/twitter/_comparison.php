@@ -1,3 +1,6 @@
+<?php
+    rsort($comparison);
+?>
 <div class="row">
     <div class="col-md-12">        
         <h3 class="internal-title noneBG circleChart-title">Comparison</h3>
@@ -7,11 +10,11 @@
             <tr>
 
                 <th>Metric</th>
-
-                <th>Current Month</th>
-
-                <th>Last Month</th>
-
+                <?php
+                foreach($comparison as $month){
+                    ?>
+                    <th><?= $month['month'] ?></th>
+                <?php } ?>
             </tr>
 
             <tr>
@@ -24,9 +27,10 @@
 
                 <td>Followers</td>
 
-                <td><?= $comparison['this_month']['followers'] ?></td>
-
-                <td><?= $comparison['last_month']['followers'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['followers'] ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -34,9 +38,10 @@
 
                 <td>Listing</td>
 
-                <td><?= $comparison['this_month']['listing'] ?></td>
-
-                <td><?= $comparison['last_month']['listing'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['listing'] ?></td>
+                <?php } ?>
 
             </tr>
             <tr>
@@ -49,9 +54,10 @@
 
                 <td>Total Interactions</td>
 
-                <td><?= $comparison['this_month']['interactions'] ?></td>
-
-                <td><?= $comparison['last_month']['interactions'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['interactions'] ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -59,9 +65,10 @@
 
                 <td>Likes</td>
 
-                <td><?= $comparison['this_month']['likes'] ?></td>
-
-                <td><?= $comparison['last_month']['likes'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['likes'] ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -69,9 +76,10 @@
 
                 <td>Comments</td>
 
-                <td><?= $comparison['this_month']['comments'] ?></td>
-
-                <td><?= $comparison['last_month']['comments'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['comments'] ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -79,9 +87,10 @@
 
                 <td>Shares</td>
 
-                <td><?= $comparison['this_month']['shares'] ?></td>
-
-                <td><?= $comparison['last_month']['shares'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['shares'] ?></td>
+                <?php } ?>
 
             </tr>
 

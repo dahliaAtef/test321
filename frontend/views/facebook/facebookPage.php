@@ -223,7 +223,7 @@ $session = Yii::$app->session;
 			<?php
 				echo $this->render('_peakTimeChart', ['peak_time_json_table' => $fb->getPeakTimeJsonTable($page['id'])]);
 
-				echo $this->render('_comparison', ['comparison' => $fb->getComparisonInsights($page['id']), 'page_name' => $page['name']]);
+				echo $this->render('_comparison', ['comparison' => $fb->getComparisonInsights($page['id'], $since, $until, $authclient_created), 'page_name' => $page['name']]);
 
 				echo $this->render('_topPosts', ['top_posts' => $statistics['posts_in_range'], 'page_name' => $page['name']]);
 

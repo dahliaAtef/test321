@@ -943,84 +943,87 @@ class Twitter extends \yii\authclient\clients\Twitter
         return $sort_source;
     }
     
-	public function getDeviceTypeJsonTable($devices){
+    public function getDeviceTypeJsonTable($devices){
         if(!empty($devices)){
             asort($devices);
         }
 		$devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
         return $devices_json_table;
+    }
+        
+    public function getComparison($model_id, $since, $until, $authclient_created){
+	$start_month = date('Y-m', $since);
+	$end_month = date('Y-m', $until);
+        $months_limits = [];
+	if($start_month == $end_month){
+            array_push($months_limits, [
+                        'start' => strtotime(date('Y-m-01', strtotime('-1 month'))),
+                        'end' => strtotime(date('Y-m-t', strtotime('-1 month')))
+                        ]);
+            array_push($months_limits, [
+                        'start' => $since,
+                        'end' => $until
+                        ]);
+        }elseif($since < $authclient_created){
+            array_push($months_limits, [
+                        'start' => strtotime(date('Y-m-01', strtotime('-1 month'))),
+                        'end' => strtotime(date('Y-m-t', strtotime('-1 month')))
+                        ]);
+            array_push($months_limits, [
+                        'start' => strtotime('first day of this month'),
+                        'end' => time()
+                        ]);
+        }else{
+            $months = [];
+            $temp = 0;
+            while(strtotime(date('Y-m', $temp)) <= strtotime(date('Y-m', $until))){
+                if($temp === 0){
+                    array_push($months_limits, [
+                        'start' => $since,
+                        'end' => strtotime(date('Y-m-t 02:00:00', $since))
+                        ]);
+                    $temp = strtotime('+1 month', strtotime($start_month));
+                }elseif(date('Y-m', $temp) == $end_month){
+                    array_push($months_limits, [
+                        'start' => strtotime(date('Y-m-01 02:00:00', $until)),
+                        'end' => $until
+                        ]);
+                    $temp = strtotime('+1 month', $temp);
+                }else{
+                    array_push($months_limits, [
+                        'start' => strtotime(date('Y-m-01 02:00:00', $temp)),
+                        'end' => strtotime(date('Y-m-t 02:00:00', $temp))
+                        ]);
+                    $temp = strtotime('+1 month', $temp);
+                }
+                
+            }
 	}
 
-	public function getComparison($model_id){
-          if(date('d', time()) == '01'){
-              $last_month = date('m', strtotime('-2 months'));
-              $first_day_last_month = date('Y-m-d 02:00:00', strtotime('-2 months'));
-              $first_day_this_month = date('Y-m-d 02:00:00', strtotime('-1 months'));
-              $last_day_this_month = date('Y-m-d 02:00:00', strtotime('last day of last month'));
+	//echo '<pre>'; var_dump($months_limits); echo '</pre>'; die;
+        foreach($months_limits as $key => $value){
+            $insights = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', date('Y-m-d H:i:s', $value['start']), date('Y-m-d H:i:s', $value['end'])])->all();
+            $months_limits[$key]['month'] = date('M y', $value['start']);
+            $months_limits[$key]['followers'] = ($insights) ? ($insights[count($insights) -1]->followers - $insights[0]->followers) : '-';
+            $months_limits[$key]['listing'] = ($insights) ? ($insights[count($insights) -1]->listed - $insights[0]->listed) : '-';
             
-            $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
-            $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
-            $statistics['last_month']['followers'] = ($insights_last_month) ? ($insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers) : null;
-            $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
-            $statistics['last_month']['listing'] = ($insights_last_month) ? ($insights_last_month[count($insights_last_month) -1]->listed - $insights_last_month[0]->listed) : null;
-            $statistics['this_month']['listing'] = $insights_this_month[count($insights_this_month) -1]->listed - $insights_this_month[0]->listed;
-
-            $tweets_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('-2 months'), strtotime('-1 month')])->all();
-            $tweets_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
-
-            $statistics['last_month']['tweets'] = count($tweets_last_month);
-            $statistics['this_month']['tweets'] = count($tweets_this_month);
-
-            $mentions_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('-2 months'), strtotime('-1 month')])->all();
-            $mentions_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
-
-            $statistics['last_month']['mentions'] = count($mentions_last_month);
-            $statistics['this_month']['mentions'] = count($mentions_this_month);
-
-          }else{
-              $first_day_last_month = date('Y-m-d 02:00:00', strtotime('first day of last month'));
-              $first_day_this_month = date('Y-m-d 02:00:00', strtotime('first day of this month'));
-              $last_day_this_month = date('Y-m-d 02:00:00', strtotime('last day of this month'));
+            $mentions = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', $value['start'], $value['end']])->all();
+            $months_limits[$key]['mentions'] = count($mentions);
             
-            $insights_last_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_last_month, $first_day_this_month])->all();
-            $insights_this_month = Insights::find()->where(['model_id' => $model_id])->andWhere(['between', 'created', $first_day_this_month, $last_day_this_month])->all();
-            $statistics['last_month']['followers'] = ($insights_last_month) ? ($insights_last_month[count($insights_last_month) -1]->followers - $insights_last_month[0]->followers) : null;
-            $statistics['this_month']['followers'] = $insights_this_month[count($insights_this_month) -1]->followers - $insights_this_month[0]->followers;
-            $statistics['last_month']['listing'] = ($insights_last_month) ? ($insights_last_month[count($insights_last_month) -1]->listed - $insights_last_month[0]->listed) : null;
-            $statistics['this_month']['listing'] = $insights_this_month[count($insights_this_month) -1]->listed - $insights_this_month[0]->listed;
-
-            $tweets_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
-            $tweets_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', strtotime('first day of this month'), strtotime('last day of this month')])->all();
-
-            $statistics['last_month']['tweets'] = count($tweets_last_month);
-            $statistics['this_month']['tweets'] = count($tweets_this_month);
-
-            $mentions_last_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('first day of last month'), strtotime('last day of last month')])->all();
-            $mentions_this_month = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::MENTION])->andWhere(['between', 'creation_time', strtotime('first day of this month'), strtotime('last day of this month')])->all();
-
-            $statistics['last_month']['mentions'] = count($mentions_last_month);
-            $statistics['this_month']['mentions'] = count($mentions_this_month);
+            $tweets = Model::find()->where(['parent_id' => $model_id, 'post_type' => self::TWEET])->andWhere(['between', 'creation_time', $value['start'], $value['end']])->all();
+            $months_limits[$key]['tweets'] = count($tweets);
+            
+            $months_limits[$key]['likes'] = $months_limits[$key]['comments'] = $months_limits[$key]['shares'] = 0;
           
-          }
-          
-          $statistics['last_month']['likes'] = $statistics['last_month']['comments'] = $statistics['last_month']['shares'] = 0;
-          $statistics['this_month']['likes'] = $statistics['this_month']['comments'] = $statistics['this_month']['shares'] = 0;
-          
-          foreach($tweets_last_month as $tweet){
-          	$statistics['last_month']['likes'] += $tweet->likes;
-            $statistics['last_month']['comments'] += $tweet->comments;
-            $statistics['last_month']['shares'] += $tweet->shares;
-          }
-		  $statistics['last_month']['interactions'] = $statistics['last_month']['likes'] + $statistics['last_month']['comments'] + $statistics['last_month']['shares'];
-		  
-          foreach($tweets_this_month as $tweet){
-          	$statistics['this_month']['likes'] += $tweet->likes;
-            $statistics['this_month']['comments'] += $tweet->comments;
-            $statistics['this_month']['shares'] += $tweet->shares;
-          }
-          $statistics['this_month']['interactions'] = $statistics['this_month']['likes'] + $statistics['this_month']['comments'] + $statistics['this_month']['shares'];
-		  
-          return $statistics;
+            foreach($tweets as $tweet){
+                $months_limits[$key]['likes'] += $tweet->likes;
+                $months_limits[$key]['comments'] += $tweet->comments;
+                $months_limits[$key]['shares'] += $tweet->shares;
+            }
+            $months_limits[$key]['interactions'] = $months_limits[$key]['likes'] + $months_limits[$key]['comments'] + $months_limits[$key]['shares'];
+        }
+        //echo '<pre>'; var_dump($months_limits); echo '</pre>'; die;
+        return $months_limits;
     }
     
 }

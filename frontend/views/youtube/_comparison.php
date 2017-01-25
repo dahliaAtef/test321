@@ -7,11 +7,11 @@
             <tr>
 
                 <th>Metric</th>
-
-                <th>Current Month</th>
-
-                <th>Last Month</th>
-
+                <?php
+                foreach($comparison as $month){
+                    ?>
+                    <th><?= $month['month'] ?></th>
+                <?php } ?>
             </tr>
 
             <tr>
@@ -24,30 +24,33 @@
 
                 <td>Gained Subscribers</td>
 
-                <td><?= ($comparison['this_month']['gained_followers'] ? $comparison['this_month']['gained_followers'] : 0) ?></td>
-				
-				<td><?= ($comparison['last_month']['gained_followers'] ? $comparison['last_month']['gained_followers'] : 0) ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['gained_followers'] ? $month['gained_followers'] : 0) ?></td>
+                <?php } ?>
+                    
             </tr>
 			
-			<tr>
+            <tr>
 
                 <td>Lost Subscribers</td>
 
-                <td><?= ($comparison['this_month']['lost_followers'] ? $comparison['this_month']['lost_followers'] : 0) ?></td>
-				
-				<td><?= ($comparison['last_month']['lost_followers'] ? $comparison['last_month']['lost_followers'] : 0) ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['lost_followers'] ? $month['lost_followers'] : 0) ?></td>
+                <?php } ?>
+                    
             </tr>
 			
-			<tr>
+            <tr>
 
                 <td>Net Subscribers</td>
 
-                <td><?= ($comparison['this_month']['net_followers'] ? $comparison['this_month']['net_followers'] : 0) ?></td>
-				
-				<td><?= ($comparison['last_month']['net_followers'] ? $comparison['last_month']['net_followers'] : 0) ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['net_followers'] ? $month['net_followers'] : 0) ?></td>
+                <?php } ?>
+                    
             </tr>
 
             <tr>
@@ -60,9 +63,10 @@
 
                 <td>Views</td>
 
-                <td><?= ($comparison['this_month']['views'] ? $comparison['this_month']['views'] : 0) ?></td>
-
-                <td><?= ($comparison['last_month']['views'] ? $comparison['last_month']['views'] : 0) ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['views'] ? $month['views'] : 0) ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -70,9 +74,10 @@
 
                 <td>Likes</td>
 
-                <td><?= ($comparison['this_month']['likes'] ? $comparison['this_month']['likes'] : 0) ?></td>
-
-                <td><?= ($comparison['last_month']['likes'] ? $comparison['last_month']['likes'] : 0) ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['likes'] ? $month['likes'] : 0) ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -80,9 +85,10 @@
 
                 <td>Dislikes</td>
 
-                <td><?= ($comparison['this_month']['dislikes'] ? $comparison['this_month']['dislikes'] : 0) ?></td>
-
-                <td><?= ($comparison['last_month']['dislikes'] ? $comparison['last_month']['dislikes'] : 0) ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['dislikes'] ? $month['dislikes'] : 0) ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -90,9 +96,10 @@
 
                 <td>Comments</td>
 
-                <td><?= ($comparison['this_month']['comments'] ? $comparison['this_month']['comments'] : 0) ?></td>
-
-                <td><?= ($comparison['last_month']['comments'] ? $comparison['last_month']['comments'] : 0) ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['comments'] ? $month['comments'] : 0) ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -100,9 +107,10 @@
 
                 <td>Shares</td>
 
-                <td><?= ($comparison['this_month']['shares'] ? $comparison['this_month']['shares'] : 0) ?></td>
-
-                <td><?= ($comparison['last_month']['shares'] ? $comparison['last_month']['shares'] : 0) ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= ($month['shares'] ? $month['shares'] : 0) ?></td>
+                <?php } ?>
 
             </tr>
 

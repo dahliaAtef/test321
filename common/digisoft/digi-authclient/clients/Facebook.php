@@ -1098,101 +1098,112 @@ class Facebook extends \yii\authclient\clients\Facebook
     /***
      * compares insights of current month with last month's
      */
-    public function getComparisonInsights($id){
+    public function getComparisonInsights($id, $since, $until, $authclient_created){
         $client = $this->getClient();
-        $comparison = [];
-        $comparison_points = ['newlikes' => 0, 'dislikes' => 0, 'netlikes' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'post_reach' => 0];
-        $comparison['last_month'] = $comparison['this_month'] = [
-            'total' => $comparison_points,
-            'paid' => $comparison_points,
-            'unpaid' => $comparison_points,
-        ];
-        
-        $first_day_last_month = date('Y-m-2', (strtotime('first day of last month')));
-        $last_day_last_month = date('Y-m-d', (strtotime('first day of this month')));
-        $first_day_this_month = date('Y-m-2', (strtotime('first day of this month')));
-        $today = (strtotime(date('Y-m-d', time())) > (strtotime($first_day_this_month))) ? date('Y-m-d', time()) : (date($first_day_this_month, strtotime('+1 days')));
-        
-        $new_likes_last_month = $client->api($id."/insights/page_fan_adds_by_paid_non_paid_unique/day?since=".$first_day_last_month."&until=".$last_day_last_month)["data"];
-        if(array_key_exists(0, $new_likes_last_month)){
-            foreach($new_likes_last_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['last_month']['total']['newlikes'] += $new_like['value']['total'];
-                    $comparison['last_month']['paid']['newlikes'] += $new_like['value']['paid'];
-                    $comparison['last_month']['unpaid']['newlikes'] += $new_like['value']['unpaid'];
+        $start_month = date('Y-m', $since);
+	$end_month = date('Y-m', $until);
+	$months_limits = [];
+	if($start_month == $end_month){
+            array_push($months_limits, [
+                'start' => date('Y-m-01', strtotime('-1 month')),
+                'end' => date('Y-m-t', strtotime('-1 month'))
+            ]);
+            array_push($months_limits, [
+                'start' => date('Y-m-d', $since),
+                'end' => date('Y-m-d', $until)
+            ]);
+        }elseif($since < $authclient_created){
+            array_push($months_limits, [
+                'start' => date('Y-m-01', strtotime('-1 month')),
+                'end' => date('Y-m-t', strtotime('-1 month'))
+            ]);
+            array_push($months_limits, [
+                'start' => date('Y-m-d', strtotime('first day of this month')),
+                'end' => date('Y-m-d', time())
+            ]);
+        }else{
+            $months = [];
+            $temp = 0;
+            while(strtotime(date('Y-m', $temp)) <= strtotime(date('Y-m', $until))){
+                if($temp === 0){
+                    array_push($months_limits, [
+                        'start' => date('Y-m-d', $since),
+                        'end' => date('Y-m-t', $since)
+                    ]);
+                    $temp = strtotime('+1 month', strtotime($start_month));
+                }elseif(date('Y-m', $temp) == $end_month){
+                    array_push($months_limits, [
+                        'start' => date('Y-m-01', $until),
+                        'end' => date('Y-m-d', $until)
+                    ]);
+                    $temp = strtotime('+1 month', $temp);
+                }else{
+                    array_push($months_limits, [
+                        'start' => date('Y-m-01', $temp),
+                        'end' => date('Y-m-t', $temp)
+                    ]);
+                    $temp = strtotime('+1 month', $temp);
                 }
+					
             }
         }
-        $new_likes_this_month = $client->api($id."/insights/page_fan_adds_by_paid_non_paid_unique/day?since=".$first_day_this_month."&until=".$today)["data"];
-        if(array_key_exists(0, $new_likes_this_month)){
-            foreach($new_likes_this_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['this_month']['total']['newlikes'] += $new_like['value']['total'];
-                    $comparison['this_month']['paid']['newlikes'] += $new_like['value']['paid'];
-                    $comparison['this_month']['unpaid']['newlikes'] += $new_like['value']['unpaid'];
-                }
-            }
-        }
+		//////////////////////////////////////////////////////////
+	$comparison_points = ['newlikes' => 0, 'dislikes' => 0, 'netlikes' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'post_reach' => 0];
+	foreach($months_limits as $key => $value){
+            $months_limits[$key]['total'] = $months_limits[$key]['paid'] = $months_limits[$key]['unpaid'] = $comparison_points;
+            $months_limits[$key]['month'] = date('M y', strtotime($value['start']));
 
-        $new_dislikes_last_month = $client->api($id."/insights/page_fan_removes_unique/day?since=".$first_day_last_month."&until=".$last_day_last_month)["data"];
-        if(array_key_exists(0, $new_dislikes_last_month)){
-            foreach($new_dislikes_last_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['last_month']['total']['dislikes'] += $new_like['value'];
+		
+            $new_likes = $client->api($id."/insights/page_fan_adds_by_paid_non_paid_unique/day?since=".$value['start']."&until=".$value['end'])["data"];
+            if(array_key_exists(0, $new_likes)){
+                foreach($new_likes[0]['values'] as $new_like){
+                    if(array_key_exists('value', $new_like)){
+                        $months_limits[$key]['total']['newlikes'] += $new_like['value']['total'];
+                        $months_limits[$key]['paid']['newlikes'] += $new_like['value']['paid'];
+                        $months_limits[$key]['unpaid']['newlikes'] += $new_like['value']['unpaid'];
+                    }
                 }
             }
-        }
-        $new_dislikes_this_month = $client->api($id."/insights/page_fan_removes_unique/day?since=".$first_day_this_month."&until=".$today)["data"];
-        if(array_key_exists(0, $new_dislikes_this_month)){
-            foreach($new_dislikes_this_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['this_month']['total']['dislikes'] += $new_like['value'];
+			
+			
+            $new_dislikes = $client->api($id."/insights/page_fan_removes_unique/day?since=".$value['start']."&until=".$value['end'])["data"];
+            if(array_key_exists(0, $new_dislikes)){
+                foreach($new_dislikes[0]['values'] as $new_dislike){
+                    if(array_key_exists('value', $new_dislike)){
+                        $months_limits[$key]['total']['dislikes'] += $new_dislike['value'];
+                    }
+		}
+            }
+			
+			
+            $months_limits[$key]['total']['netlikes'] = ($months_limits[$key]['total']['newlikes']) - ($months_limits[$key]['total']['dislikes']);
+			
+			
+            $page_posts_reach = $client->api($id."/insights/page_impressions_by_paid_non_paid/day?since=".$value['start']."&until=".$value['end'])["data"];
+            if(array_key_exists(0, $page_posts_reach)){
+                foreach($page_posts_reach[0]['values'] as $new_reach){
+                    if(array_key_exists('value', $new_reach)){
+                        $months_limits[$key]['total']['post_reach'] += $new_reach['value']['total'];
+                        $months_limits[$key]['paid']['post_reach'] += $new_reach['value']['paid'];
+                        $months_limits[$key]['unpaid']['post_reach'] += $new_reach['value']['unpaid'];
+                    }
                 }
             }
-        }
-        $comparison['last_month']['total']['netlikes'] = ($comparison['last_month']['total']['newlikes']) - ($comparison['last_month']['total']['dislikes']);
-        $comparison['this_month']['total']['netlikes'] = ($comparison['this_month']['total']['newlikes']) - ($comparison['this_month']['total']['dislikes']);
-        $page_posts_reach_last_month = $client->api($id."/insights/page_impressions_by_paid_non_paid/day?since=".$first_day_last_month."&until=".$last_day_last_month)["data"];
-        if(array_key_exists(0, $page_posts_reach_last_month)){
-            foreach($page_posts_reach_last_month[0]['values'] as $new_reach){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['last_month']['total']['post_reach'] += $new_reach['value']['total'];
-                    $comparison['last_month']['paid']['post_reach'] += $new_reach['value']['paid'];
-                    $comparison['last_month']['unpaid']['post_reach'] += $new_reach['value']['unpaid'];
+			
+
+            $page_positive_feedbacks = $client->api($id."/insights/page_positive_feedback_by_type_unique/day?since=".$value['start']."&until=".$value['end'])['data'];
+            if(array_key_exists(0, $page_positive_feedbacks)){
+                foreach($page_positive_feedbacks[0]['values'] as $positive_feedback){
+                    if(array_key_exists('value', $new_reach)){
+                        $months_limits[$key]['total']['shares'] += $positive_feedback['value']['link'];
+                        $months_limits[$key]['total']['likes'] += $positive_feedback['value']['like'];
+                        $months_limits[$key]['total']['comments'] += $positive_feedback['value']['comment'];
+                    }
                 }
             }
+			
         }
-        $page_posts_reach_this_month = $client->api($id."/insights/page_impressions_by_paid_non_paid_unique/day?since=".$first_day_this_month."&until=".$today)["data"];
-        if(array_key_exists(0, $page_posts_reach_this_month)){
-            foreach($page_posts_reach_this_month[0]['values'] as $new_reach){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['this_month']['total']['post_reach'] += $new_reach['value']['total'];
-                    $comparison['this_month']['paid']['post_reach'] += $new_reach['value']['paid'];
-                    $comparison['this_month']['unpaid']['post_reach'] += $new_reach['value']['unpaid'];
-                }
-            }
-        }
-        $page_positive_feedbacks_last_month = $client->api($id."/insights/page_positive_feedback_by_type_unique/day?since=".$first_day_last_month."&until=".$last_day_last_month)['data'];
-        if(array_key_exists(0, $page_positive_feedbacks_last_month)){
-            foreach($page_positive_feedbacks_last_month[0]['values'] as $positive_feedback){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['last_month']['total']['shares'] += $positive_feedback['value']['link'];
-                    $comparison['last_month']['total']['likes'] += $positive_feedback['value']['like'];
-                    $comparison['last_month']['total']['comments'] += $positive_feedback['value']['comment'];
-                }
-            }
-        }
-        $page_positive_feedbacks_this_month = $client->api($id."/insights/page_positive_feedback_by_type_unique/day?since=".$first_day_this_month."&until=".$today)['data'];
-        if(array_key_exists(0, $page_positive_feedbacks_this_month)){
-            foreach($page_positive_feedbacks_this_month[0]['values'] as $positive_feedback){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['this_month']['total']['shares'] += $positive_feedback['value']['link'];
-                    $comparison['this_month']['total']['likes'] += $positive_feedback['value']['like'];
-                    $comparison['this_month']['total']['comments'] += $positive_feedback['value']['comment'];
-                }
-            }
-        }
-        return $comparison;
+        return $months_limits;
     }
     
     public function test($page_id, $since = '', $until = ''){

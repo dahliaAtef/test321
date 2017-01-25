@@ -7,11 +7,11 @@
             <tr>
 
                 <th>Metric</th>
-
-                <th>Current Month</th>
-
-                <th>Last Month</th>
-
+                <?php
+                foreach($comparison as $month){
+                    ?>
+                    <th><?= $month['month'] ?></th>
+                <?php } ?>
             </tr>
 
             <tr>
@@ -23,31 +23,34 @@
             <tr>
 
                 <td>New Organic Connections</td>
-
-                <td><?= $comparison['this_month']['organic_followers'] ?></td>
-				
-				<td><?= $comparison['last_month']['organic_followers'] ?></td>
+                
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['organic_followers'] ?></td>
+                <?php } ?>
 
             </tr>
 			
-			<tr>
+            <tr>
 
                 <td>New Paid Connections</td>
 
-                <td><?= $comparison['this_month']['paid_followers'] ?></td>
-				
-				<td><?= $comparison['last_month']['paid_followers'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['paid_followers'] ?></td>
+                <?php } ?>
+                    
             </tr>
 			
-			<tr>
+            <tr>
 
                 <td>Net New Connections</td>
 
-                <td><?= $comparison['this_month']['total_followers'] ?></td>
-				
-				<td><?= $comparison['last_month']['total_followers'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total_followers'] ?></td>
+                <?php } ?>
+                 
             </tr>
 
             <tr>
@@ -60,50 +63,55 @@
 
                 <td>Clicks</td>
 
-                <td><?= $comparison['this_month']['clicks'] ?></td>
-
-                <td><?= $comparison['last_month']['clicks'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['statistics']['clicks'] ?></td>
+                <?php } ?>
+                 
             </tr>
 
             <tr>
 
                 <td>Impressions</td>
 
-                <td><?= $comparison['this_month']['impressions'] ?></td>
-
-                <td><?= $comparison['last_month']['impressions'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['statistics']['impressions'] ?></td>
+                <?php } ?>
+                  
             </tr>
 
             <tr>
 
                 <td>Likes</td>
 
-                <td><?= $comparison['this_month']['likes'] ?></td>
-
-                <td><?= $comparison['last_month']['likes'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['statistics']['likes'] ?></td>
+                <?php } ?>
+                  
             </tr>
 
             <tr>
 
                 <td>Comments</td>
 
-                <td><?= $comparison['this_month']['comments'] ?></td>
-
-                <td><?= $comparison['last_month']['comments'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['statistics']['comments'] ?></td>
+                <?php } ?>
+                  
             </tr>
 
             <tr>
 
                 <td>Shares</td>
 
-                <td><?= $comparison['this_month']['shares'] ?></td>
-
-                <td><?= $comparison['last_month']['shares'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['statistics']['shares'] ?></td>
+                <?php } ?>
+                    
             </tr>
 
         </table>

@@ -828,46 +828,68 @@ class Youtube extends OAuth2
   }
 
   
-	public function getComparison($model_id){
-          if(date('d', time()) == '01' || date('d', time()) == '02'){
-              $first_day_last_month = date('Y-m-d', strtotime('-2 months'));
-              $first_day_this_month = date('Y-m-d', strtotime('-1 months'));
-              $last_day_this_month = date('Y-m-d', strtotime('last day of last month'));
-          }else{
-              $first_day_last_month = date('Y-m-d', strtotime('first day of last month'));
-              $first_day_this_month = date('Y-m-d', strtotime('first day of this month'));
-              $last_day_this_month = date('Y-m-d', strtotime('last day of this month'));
-          }
-          
-		  $last_month_analytics = $this->getChannelAnalytics($first_day_last_month, $first_day_this_month);
-		  $this_month_analytics = $this->getChannelAnalytics($first_day_this_month, $last_day_this_month);
-      
-          $statistics['last_month']['gained_followers'] = $last_month_analytics['rows'][0][8];
-		  $statistics['this_month']['gained_followers'] = $this_month_analytics['rows'][0][8];
-		  	
-          $statistics['last_month']['lost_followers'] = $last_month_analytics['rows'][0][9];
-		  $statistics['this_month']['lost_followers'] = $this_month_analytics['rows'][0][9];
-		  	
-          $statistics['last_month']['net_followers'] = $last_month_analytics['rows'][0][8] - $last_month_analytics['rows'][0][9];
-		  $statistics['this_month']['net_followers'] = $this_month_analytics['rows'][0][8] - $this_month_analytics['rows'][0][9];
-		  	
-          $statistics['last_month']['views'] = $last_month_analytics['rows'][0][0];
-		  $statistics['this_month']['views'] = $this_month_analytics['rows'][0][0];
-		  	
-          $statistics['last_month']['likes'] = $last_month_analytics['rows'][0][2];
-		  $statistics['this_month']['likes'] = $this_month_analytics['rows'][0][2];
-		  	
-          $statistics['last_month']['dislikes'] = $last_month_analytics['rows'][0][3];
-		  $statistics['this_month']['dislikes'] = $this_month_analytics['rows'][0][3];
-		  
-		  $statistics['last_month']['comments'] = $last_month_analytics['rows'][0][1];
-		  $statistics['this_month']['comments'] = $this_month_analytics['rows'][0][1];
-		  
-		  $statistics['last_month']['shares'] = $last_month_analytics['rows'][0][4];
-          $statistics['this_month']['shares'] = $this_month_analytics['rows'][0][4];
-
-          return $statistics;
+    public function getComparison($model_id, $since, $until, $authclient_created){
+	$start_month = date('Y-m', strtotime($since));
+	$end_month = date('Y-m', strtotime($until));
+	$months_limits = [];
+	if($start_month == $end_month){
+            array_push($months_limits, [
+		'start' => date('Y-m-01', strtotime('-1 month')),
+		'end' => date('Y-m-t', strtotime('-1 month'))
+            ]);
+            array_push($months_limits, [
+                'start' => $since,
+                'end' => $until
+            ]);
+        }elseif(strtotime($since) < $authclient_created){
+            array_push($months_limits, [
+                'start' => date('Y-m-01', strtotime('-1 month')),
+                'end' => date('Y-m-t', strtotime('-1 month'))
+            ]);
+            array_push($months_limits, [
+                'start' => date('Y-m-01', time()),
+                'end' => date('Y-m-d', time())
+            ]);
+        }else{
+            $months = [];
+            $temp = 0;
+            while(strtotime(date('Y-m', $temp)) <= strtotime(date('Y-m', strtotime($until)))){
+                if($temp === 0){
+                    array_push($months_limits, [
+                        'start' => $since,
+                        'end' => date('Y-m-t', strtotime($since))
+                    ]);
+                    $temp = strtotime('+1 month', strtotime($start_month));
+                }elseif(date('Y-m', $temp) == $end_month){
+                    array_push($months_limits, [
+                        'start' => date('Y-m-01', strtotime($until)),
+                        'end' => $until
+                    ]);
+                    $temp = strtotime('+1 month', $temp);
+                }else{
+                    array_push($months_limits, [
+                        'start' => date('Y-m-01', $temp),
+                        'end' => date('Y-m-t', $temp)
+                    ]);
+                    $temp = strtotime('+1 month', $temp);
+                }
+					
+            }
+        }
+        
+        foreach($months_limits as $key => $value){
+            $analytics = $this->getChannelAnalytics($value['start'], $value['end']);
+            $months_limits[$key]['month'] = date('M y', strtotime($value['start']));
+            $months_limits[$key]['gained_followers'] = $analytics['rows'][0][8];
+            $months_limits[$key]['lost_followers'] = $analytics['rows'][0][9];
+            $months_limits[$key]['net_followers'] = $analytics['rows'][0][8] - $analytics['rows'][0][9];
+            $months_limits[$key]['views'] = $analytics['rows'][0][0];
+            $months_limits[$key]['likes'] = $analytics['rows'][0][2];
+            $months_limits[$key]['dislikes'] = $analytics['rows'][0][3];
+            $months_limits[$key]['comments'] = $analytics['rows'][0][1];
+            $months_limits[$key]['shares'] = $analytics['rows'][0][4];
+        }
+	return $months_limits;
     }
-    
   
 }

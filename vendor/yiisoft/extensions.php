@@ -408,4 +408,13 @@ return array (
       '@yii/authclient' => $vendorDir . '/yiisoft/yii2-authclient',
     ),
   ),
+  'hscstudio/yii2-export' => 
+  array (
+    'name' => 'hscstudio/yii2-export',
+    'version' => '1.2.2.0',
+    'alias' => 
+    array (
+      '@hscstudio/export' => $vendorDir . '/hscstudio/yii2-export',
+    ),
+  ),
 );
