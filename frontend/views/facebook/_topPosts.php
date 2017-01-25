@@ -1,3 +1,6 @@
+<?php
+use yii\helpers\Url;
+?>
 <div class="row">
     <div class="col-md-12">
         <h3 class="internal-title sec-title">Top 10 Posts</h3>
@@ -22,7 +25,7 @@
 
             
 
-            <div class="post-img"><img src="<?= (($post->media_url) ? $post->media_url : $post->getFeaturedImgUrl('top_posts')) ?>" alt=""/></div>
+            <div class="post-img"><img src="<?= (($post->media_url) ? $post->media_url : (Url::to('@frontThemeUrl/images/twitter_posts_placeholder.png'))) ?>" alt=""/></div>
                 <div class="internal-content">
                     <ul>
                         <li><a href="<?= $post->url ?>"><p class="special-title"><?= $post->content ?></p></a></li>
