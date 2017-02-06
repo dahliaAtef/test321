@@ -5,6 +5,7 @@ backend/runtime/*
 partners/runtime/*
 frontend/runtime/*
 frontend/web/assets/*
+frontend/config/main.php
 nbproject
 nbproject/*
 uploads/*

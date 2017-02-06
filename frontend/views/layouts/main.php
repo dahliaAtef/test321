@@ -60,7 +60,7 @@ if(($action_id) == 'home'){
 				<?php echo $content; ?>
 			<!-- END CONTAINER -->		
                         <?php
-                        (!Yii::$app->user->isGuest && (Yii::$app->controller->action->id != 'support') && (Yii::$app->controller->action->id != 'change-password')) ? include_once '_social_tabs.php' : '';
+                        (!Yii::$app->user->isGuest && (Yii::$app->controller->action->id != 'support') && (Yii::$app->controller->id != 'competitors') && (Yii::$app->controller->action->id != 'change-password')) ? include_once '_social_tabs.php' : '';
                         ?>
 			<!-- BEGIN FOOTER -->            
 				<?php include_once 'footer.php'; ?>        

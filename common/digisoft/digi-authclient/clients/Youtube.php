@@ -286,10 +286,10 @@ class Youtube extends OAuth2
 		return $locations_views_json_table;
     }
     
-	public function getAnalyticsPerLocationsViewsDashboardJsonTable($locations){
-			$top_fifteen_locations = ($locations > 15) ? array_slice($locations, 0, 15) : $locations;
-			$locations_views_json_table = GoogleChartHelper::getKeyAndValueByValueIndexDataTable('country', 'views', $top_fifteen_locations, 1);
-		return $locations_views_json_table;
+    public function getAnalyticsPerLocationsViewsDashboardJsonTable($locations){
+        $top_fifteen_locations = ($locations > 15) ? array_slice($locations, 0, 15) : $locations;
+        $locations_views_json_table = ($top_fifteen_locations) ? (GoogleChartHelper::getKeyAndValueByValueIndexDataTable('country', 'views', $top_fifteen_locations, 1)) : null;
+        return $locations_views_json_table;
     }
 	
     public function getAnalyticsPerLocationsMinutesWatchedJsonTable($locations){
@@ -668,9 +668,13 @@ class Youtube extends OAuth2
     }
 	
 	public function getDeviceTypeJsonTable($devices){
+            if($devices){
 		asort($devices);
 		$devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
-        return $devices_json_table;
+                return $devices_json_table;
+            }else{
+                return null;
+            }
 	}
 	
     public function getcountriesJsonTable($countries){
@@ -792,40 +796,52 @@ class Youtube extends OAuth2
 
     }
 
-  public function getFansDemographics($insights){
-  	$males = $females = 0; $age = []; $youtube =[];
-	foreach($insights['gender_age'] as $value){
-    	(array_key_exists($value[0], $age)) ? ($age[$value[0]] += $value[2]) : ($age[$value[0]] = $value[2]);
-        ($value[1] == 'male') ? ($males += $value[2]) : ($females += $value[2]);
+    public function getFansDemographics($insights){
+        if($insights['gender_age']){
+            $males = $females = 0; $age = []; $youtube =[];
+            foreach($insights['gender_age'] as $value){
+                (array_key_exists($value[0], $age)) ? ($age[$value[0]] += $value[2]) : ($age[$value[0]] = $value[2]);
+                ($value[1] == 'male') ? ($males += $value[2]) : ($females += $value[2]);
+            }
+            $viweres = $males + $females;
+            $males_percentage = (round(($males/$viweres),1)*100);
+            $females_percentage = (round(($females/$viweres),1)*100);
+            if($males_percentage >= $females_percentage){
+                $max_gender_type = 'males';
+                 $max_gender_value = $males_percentage;
+            }else{
+                $max_gender_type = 'females';
+                 $max_gender_value = $females_percentage;
+            }
+            $youtube['gender'] = $max_gender_type.' '.$max_gender_value.'% ';
+            $max_age_range = array_keys($age, max($age))[0];
+            $max_age_range_value = ($viweres != 0) ? (round((($age[$max_age_range])/$viweres), 1)*100) : 0;
+            $youtube['age'] = substr($max_age_range,3).' '.$max_age_range_value.'% ';
+        }else{
+            $youtube['gender'] = $youtube['age'] = 'undefined'; 
+        }
+        if($insights['device']){
+            $devices_sum = array_sum($insights['device']);
+            $max_device_type = array_keys($insights['device'], max($insights['device']))[0];
+            $max_device_value = ($devices_sum != 0) ? (round((($insights['device'][$max_device_type])/$devices_sum), 1)*100) : 0;
+            $youtube['device'] = $max_device_type.' '.$max_device_value.'% ';
+        }else{
+            $youtube['device'] = 'undefined'; 
+        }
+        if($insights['location']){
+            foreach($insights['location'] as $value){
+                $country[$value[0]] = $value[1];
+            }
+            $countries_sum = array_sum($country);
+            $max_country_type = array_keys($country, max($country))[0];
+            $max_country_value = ($countries_sum != 0) ? (round((($country[$max_country_type])/$countries_sum), 1)*100) : 0;
+            $youtube['country'] = $max_country_type.' '.$max_country_value.'% ';
+        }else{
+            $youtube['country'] = 'undefined'; 
+        }
+        $youtube['language'] = $youtube['industry'] = $youtube['seniority'] = '...';
+        return $youtube;
     }
-	$viweres = $males + $females;
-	$males_percentage = (round(($males/$viweres),1)*100);
-	$females_percentage = (round(($females/$viweres),1)*100);
-	if($males_percentage >= $$females_percentage){
-    	$max_gender_type = 'males';
-     	 $max_gender_value = $males_percentage;
-    }else{
-    	$max_gender_type = 'females';
-     	 $max_gender_value = $females_percentage;
-    }
-    $youtube['gender'] = $max_gender_type.' '.$max_gender_value.'% ';
-	$max_age_range = array_keys($age, max($age))[0];
-	$max_age_range_value = ($viweres != 0) ? (round((($age[$max_age_range])/$viweres), 1)*100) : 0;
-    $youtube['age'] = substr($max_age_range,3).' '.$max_age_range_value.'% ';
-	$devices_sum = array_sum($insights['device']);
-	$max_device_type = array_keys($insights['device'], max($insights['device']))[0];
-	$max_device_value = ($devices_sum != 0) ? (round((($insights['device'][$max_device_type])/$devices_sum), 1)*100) : 0;
-    $youtube['device'] = $max_device_type.' '.$max_device_value.'% ';
-    foreach($insights['location'] as $value){
-    	$country[$value[0]] = $value[1];
-    }
-	$countries_sum = array_sum($country);
-	$max_country_type = array_keys($country, max($country))[0];
-	$max_country_value = ($countries_sum != 0) ? (round((($country[$max_country_type])/$countries_sum), 1)*100) : 0;
-    $youtube['country'] = $max_country_type.' '.$max_country_value.'% ';
-    $youtube['language'] = $youtube['industry'] = $youtube['seniority'] = '...';
-    return $youtube;
-  }
 
   
     public function getComparison($model_id, $since, $until, $authclient_created){

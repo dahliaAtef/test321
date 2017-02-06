@@ -20,7 +20,7 @@ if(($action_id == 'subscribe') || ($action_id == 'contact-us')){
             <div class="logo"><a href="<?= Url::to(['/']) ?>"><img src="<?= $logo ?>"></a></div>
             <nav class="nav-menu">
                    <ul class="menu-list">
-                    <li><a class="<?= ($action_id != 'support') ? 'active' : '' ?>" href="<?= Url::to(['/dashboard']) ?>">Dashboard</a></li>
+                    <li><a class="<?= (($action_id != 'support') && (Yii::$app->controller->id !== 'competitors')) ? 'active' : '' ?>" href="<?= Url::to(['/dashboard']) ?>">Dashboard</a></li>
                     <li><a class="<?= ($action_id == 'support') ? 'active' : '' ?>" href="<?= Url::to(['/support']) ?>">Support</a></li>
                     <li class="sub-menu setting">
                         <a href="#" class="acc-setting glyphicon glyphicon-cog"></a>

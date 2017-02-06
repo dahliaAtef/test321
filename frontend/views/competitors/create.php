@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 
+$this->title = 'Create Competitors';
 $dashboard_accounts = Yii::$app->session['dashboard_accounts'];
 $fb = array_key_exists('facebook', $dashboard_accounts);
 $yt = array_key_exists('youtube', $dashboard_accounts);
@@ -12,21 +13,22 @@ $insta = array_key_exists('instagram', $dashboard_accounts);
 $gp = array_key_exists('google_plus', $dashboard_accounts);
 ?>
 
-<div class="modal  bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
+<div class="page-content outSide  dashboard">
+    
         <?php $form = ActiveForm::begin(['id' => 'competitors-form', 'class' => 'competitors-form']); ?>
-      <div class="modal-header">
-        <div class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </div>
-        <div class="subsc-modal-title"><span>Name Your Competitors</span></div> 
-        <!-- <h3 class="internal-title noneBG modal-title" id="myModalLabel">Name Your Compitators</h3> -->
-      </div>
-      <div class="modal-body">
         
             <div class="container">
-                
+                <div class="inner-page">
+                <div class="row">  
+                    <div class="col-md-12 comptitors back-Btn-cont">                      
+                    <a class="back-Btn" href="<?= Url::to(['/dashboard']) ?>"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;Back</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                       <div class="subsc-modal-title"><span>Name Your Competitors</span></div> 
+                    </div> 
+                </div>
                 <div class="row">
                     <div class="col-md-4 comptitors">
                         <div class="compNum">competitor 1</div>
@@ -176,12 +178,10 @@ $gp = array_key_exists('google_plus', $dashboard_accounts);
                 </div>
                 
             </div>
-      </div>
+        </div>
       <div class="modal-footer">
 		<?= Html::submitButton('Submit', ['id' => 'btn-competitors', 'class' => 'btn btn-primary' , 'name' => 'submit-competitors']) ?>
         <!--button type="button" class="btn btn-primary">Submit</button-->
       </div>
 	  <?php ActiveForm::end(); ?>
     </div>
-  </div>
-</div>
