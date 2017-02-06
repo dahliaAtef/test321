@@ -337,8 +337,8 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
 <!-- page content -->
 
 <?php
-if(!$oCompetitors){
+/*if(!$oCompetitors){
     echo $this->render('/competitors/create', ['oCompetitorsForm' => $oCompetitorsForm, 'admin_accounts' => $admin_accounts]);
 }else{
     echo $this->render('/competitors/index', ['oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest, 'admin_accounts' => $admin_accounts]);
-} ?>
+}*/ ?>
