@@ -665,7 +665,7 @@ class SiteController extends \frontend\components\BaseController {
                 }else{
                     $since = strtotime('first day of this month');
                     //$since = strtotime('-2 months');
-                  	$since = strtotime('-1 days', $since);
+                  //	$since = strtotime('-1 days', $since);
                     $until = time();
                 }
                 $page = $fb->getPageData($oModel[0]->entity_id);
