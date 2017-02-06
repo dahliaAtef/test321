@@ -201,7 +201,7 @@ class SaveController extends \frontend\components\BaseController {
         if($session->has('instagram')){
             $oModels = $oAuthclient->model;
             if($oModels){
-				$insta->saveAccountInsights($oModels[0]);
+		$insta->saveAccountInsights($oModels[0]);
               	$insta->updateCompetitorsValues();
             }
             return $this->render('/cron/cron');

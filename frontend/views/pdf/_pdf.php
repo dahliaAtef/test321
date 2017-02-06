@@ -13,8 +13,8 @@ use common\models\custom\User;
 use yii\widgets\Pjax;
 
 $this->title = 'Dashboard';
+$dashboard_accounts = Yii::$app->session['dashboard_accounts'];
 $sx = $oDashboard->getSocialMediaExistance($insights); 
-//echo '<pre>'; var_dump(json_decode($insights['facebook']['last_insights']->insights_json, true)['page_posts_organic_reach']); echo '</pre>'; die;
 $fb = array_key_exists('facebook', $dashboard_accounts);
 $yt = array_key_exists('youtube', $dashboard_accounts);
 $tw = array_key_exists('twitter', $dashboard_accounts);
@@ -24,18 +24,7 @@ $in = array_key_exists('linkedin', $dashboard_accounts);
 $name = User::findOne(Yii::$app->user->getId())->brand_name;
 ?>
 <div class="page-content inside dashboard">
-    <?php
-	if(($fb && (strtotime('+3 days',strtotime($dashboard_accounts['facebook']['authclient']->created)) > time())) || ($tw && (strtotime('+3 days',strtotime($dashboard_accounts['twitter']['authclient']->created)) > time())) || ($insta && (strtotime('+3 days',strtotime($dashboard_accounts['instagram']['authclient']->created)) > time())) || ($yt && (strtotime('+3 days',strtotime($dashboard_accounts['youtube']['authclient']->created)) > time())) || ($gp && (strtotime('+3 days',strtotime($dashboard_accounts['google_plus']['authclient']->created)) > time())) || ($in && (strtotime('+3 days',strtotime($dashboard_accounts['linkedin']['authclient']->created)) > time()))){
-      ?>
- <div class="warning-msg">
-  <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>3 days</b> to analyse your full data
-</div><!-- warning msg -->
-  <?php } ?>
-  <div id="loadWh">
-    <div id="loadx">
-      <img src="http://hypeinsights.com/shared/themes/frontend/images/logoLoader.png" alt="">
-    </div>
-  </div><!-- loader -->
+
     <div class="container">
     <div class="inner-page">
       <?php
@@ -137,14 +126,12 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                 }
                 if($yt){
                     $fans_gender_age_per = json_decode($insights['youtube']['last_insights']->insights_json, true)['gender_age'];
-                    if($fans_gender_age_per){
-                        $counter = 0;
-                        foreach($fans_gender_age_per as $fans_gender_age){
-                            $fans_gender_age_per[$counter][2] = round((($fans_gender_age[2] * $insights['youtube']['last_insights']->followers)/100), 0);
-                            $counter++;
-                        }
-                        echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $insights['youtube']['last_insights']->followers]);
+                    $counter = 0;
+                    foreach($fans_gender_age_per as $fans_gender_age){
+                        $fans_gender_age_per[$counter][2] = round((($fans_gender_age[2] * $insights['youtube']['last_insights']->followers)/100), 0);
+                        $counter++;
                     }
+                    echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $insights['youtube']['last_insights']->followers]);
                 }
 				 ?>
                 
@@ -326,9 +313,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             </tr>
         </table>
         </div>
-		<?php }else{ ?>
-        <?= $this->render('_first_time'); ?>
-      <?php } ?>
+	<?php } ?>
     </div>
     <!-- inner page -->
 
@@ -336,4 +321,3 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
 
 </div>
 <!-- page content -->
-

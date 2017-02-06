@@ -1214,7 +1214,7 @@ h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: c
 .subsc-modal-title{text-align: center;
     font-size: 24px;
     color: #6d6e71;
-    margin: 40px 0 18px;
+    margin: 0 0 20px;
     font-weight: bold;}
 .subsc-modal-title span {display: inline-block;padding-bottom: 6px;
     border-bottom: 2px solid #ccc;}
@@ -1476,3 +1476,8 @@ padding:28px}
 
 
 .form-group {margin-bottom:10px}
+.back-Btn-cont{position: absolute;z-index: 1;margin-top: 4px;}
+.back-Btn {color: #de1271;text-decoration: none !important}
+.back-Btn span{border: 1px solid;padding: 6px;border-radius: 3px;}
+
+#yii-debug-toolbar {display:none !important;}

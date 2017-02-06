@@ -155,9 +155,9 @@ Frontend.globalEvents = function () {
  */
 
 Frontend.reInit = function () {
-	alert('here');
+	//alert('here');
 	Frontend.modalFunc();
-	alert('did');
+	//alert('did');
 };
 
 
@@ -383,6 +383,10 @@ Frontend.formValdiationSubscribe = function(){
 
 $(document).ready(function () {
 
+    $('#export-btn').on('click', function(){
+     window.print();
+    });
+
     Frontend.onReady();
 
 				$("form input:text, form textarea").first().focus();
@@ -404,7 +408,6 @@ $(document).ready(function () {
 //ajaxSuccess event callback  
 
 $(document).ajaxSuccess(function (event, xhr, options) {
-	alert('yup');
     Frontend.reInit();
 
 });

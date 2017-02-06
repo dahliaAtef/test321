@@ -818,19 +818,31 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
       return $account_insights;
     }
 
-	public function getFansDemographics($insights){
+    public function getFansDemographics($insights){
     	$linkedin = [];
-      	$max_country_value = max($insights['fans_countries']);
-      	$max_country_index = array_keys($insights['fans_countries'], $max_country_value)[0];
-      	$linkedin['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['fans_countries']))*100), 1).'%';
-		$max_industry_value = max($insights['fans_industries']);
-      	$max_industry_index = array_keys($insights['fans_industries'], $max_industry_value)[0];
-      	$linkedin['industry'] = $max_industry_index.' '.round(((($max_industry_value)/array_sum($insights['fans_industries']))*100), 1).'%';
-		$max_seniority_value = max($insights['fans_seniorities']);
-      	$max_seniority_index = array_keys($insights['fans_seniorities'], $max_seniority_value)[0];
-      	$linkedin['seniority'] = $max_seniority_index.' '.round(((($max_seniority_value)/array_sum($insights['fans_seniorities']))*100), 1).'%';
-		$linkedin['age'] = $linkedin['gender'] = $linkedin['language'] = $linkedin['device'] = '...';
-      return $linkedin;
+        if($insights['fans_countries']){
+            $max_country_value = max($insights['fans_countries']);
+            $max_country_index = array_keys($insights['fans_countries'], $max_country_value)[0];
+            $linkedin['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['fans_countries']))*100), 1).'%';
+        }else{
+            $linkedin['country'] = 'undefined'; 
+        }
+        if($insights['fans_industries']){
+            $max_industry_value = max($insights['fans_industries']);
+            $max_industry_index = array_keys($insights['fans_industries'], $max_industry_value)[0];
+            $linkedin['industry'] = $max_industry_index.' '.round(((($max_industry_value)/array_sum($insights['fans_industries']))*100), 1).'%';
+        }else{
+            $linkedin['industry'] = 'undefined'; 
+        }
+        if($insights['fans_seniorities']){
+            $max_seniority_value = max($insights['fans_seniorities']);
+            $max_seniority_index = array_keys($insights['fans_seniorities'], $max_seniority_value)[0];
+            $linkedin['seniority'] = $max_seniority_index.' '.round(((($max_seniority_value)/array_sum($insights['fans_seniorities']))*100), 1).'%';
+        }else{
+            $linkedin['seniority'] = 'undefined'; 
+        }
+        $linkedin['age'] = $linkedin['gender'] = $linkedin['language'] = $linkedin['device'] = '...';
+        return $linkedin;
     }	
   
     public function calculateStatisticsDistributionArray($statistics){

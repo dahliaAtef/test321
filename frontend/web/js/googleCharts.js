@@ -75,7 +75,7 @@ GoogleCharts.drawCircle = function (jsonTable, color, divId) {
             };
         var chart = new google.visualization.PieChart(document.getElementById(divId));
         google.visualization.events.addListener(chart, 'ready', selectHandler);
-        /*google.visualization.events.addListener(chart, 'load', function () {
+        /*google.visualization.events.addListener(chart, 'ready', function () {
             document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
           });*/
         chart.draw(data, options);
