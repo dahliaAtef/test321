@@ -269,7 +269,7 @@ class SiteController extends \frontend\components\BaseController {
             $session->set('dashboard_accounts', $dashboard_accounts);
         }
         $insights = $dashboard->getDashboardAccountsInsights();
-        return $this->render('/dashboard/dashboard', ['insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oCompetitors' => $oCompetitors, 'oDashboard' => $dashboard, 'dashboard_accounts' => $dashboard_accounts]);
+        return $this->render('/dashboard/dashboard', ['insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oCompetitors' => $oCompetitors, 'oDashboard' => $dashboard, 'dashboard_accounts' => $session['dashboard_accounts']]);
     }
     
     /**
