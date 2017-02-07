@@ -256,18 +256,18 @@ class SiteController extends \frontend\components\BaseController {
 	$session= Yii::$app->session;
         $dashboard = new Dashboard();
         $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-        //if(!$session->has('dashboard_accounts')){
-        $dashboard_accounts = [];
         $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-        foreach($accounts as $account){
-            if($account->model){
-                $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
-                $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
-                $dashboard_accounts[$account['source']]['authclient'] = $account;
-            }
-        } 
-        $session->set('dashboard_accounts', $dashboard_accounts);
-        //}
+        if(!$session->has('dashboard_accounts') || (count($accounts) > count($session['dashboard_accounts']))){
+            $dashboard_accounts = [];
+            foreach($accounts as $account){
+                if($account->model){
+                    $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
+                    $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
+                    $dashboard_accounts[$account['source']]['authclient'] = $account;
+                }
+            } 
+            $session->set('dashboard_accounts', $dashboard_accounts);
+        }
         $insights = $dashboard->getDashboardAccountsInsights();
         return $this->render('/dashboard/dashboard', ['insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oCompetitors' => $oCompetitors, 'oDashboard' => $dashboard, 'dashboard_accounts' => $dashboard_accounts]);
     }
@@ -653,7 +653,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
-                $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
+                $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient);
             }
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
