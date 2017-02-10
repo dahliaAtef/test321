@@ -18,7 +18,7 @@ class MailHelper {
      */
     public function sendPasswordResetToken($oUser) {
         
-        return Yii::$app->mailer->compose(['html' => 'passwordResetToken-html', 'text' => 'passwordResetToken-text'], ['oUser' => $oUser])
+        return Yii::$app->mailer->compose(['html' => 'passwordResetToken-html'], ['oUser' => $oUser])
                         ->setFrom([Yii::$app->params['supportEmail'] => Yii::$app->name])
                         ->setTo($oUser->email)
                         ->setSubject(Yii::t('app', 'Password reset for ') . Yii::$app->name)

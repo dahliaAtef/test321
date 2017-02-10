@@ -59,7 +59,8 @@ use yii\widgets\Pjax;
               <h3 class="internal-title noneBG comp-tit">Competitors</h3>
               <?php
                     if($oCompetitors){ ?>
-                        <div class="comp-edit"  data-toggle="modal" data-target="#myModal2" ><span class="glyphicon glyphicon-pencil"></span></div>
+              <div class="comp-edit" ><a href="<?= Url::to(['/competitors/edit']) ?>" ><span class="glyphicon glyphicon-pencil"></span></a></div>
+                        <!--<div class="comp-edit"  data-toggle="modal" data-target="#myModal2" ><span class="glyphicon glyphicon-pencil"></span></div>-->
 		<?php } ?>
               	<div class="internal-content circleChart" data-pjax>
 				<?php
@@ -72,9 +73,14 @@ use yii\widgets\Pjax;
                         <div class="dummy-img"><img src="<?= Url::to('@frontThemeUrl') ?>/images/dummy-chart.png"></div>
                     </div>
                     <div class="addCompatitors">
-                        <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                        <!--<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
                         Name Your Competitors
-                        </button>
+                        </button>-->
+                        <a href="<?= Url::to(['/competitors/create']) ?>" >
+                            <button type="button" class="btn btn-primary btn-lg">
+                            Name Your Competitors
+                            </button>
+                        </a>
                     </div>
 				<?php } ?>
                 </div>

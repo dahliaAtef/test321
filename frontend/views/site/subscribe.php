@@ -76,7 +76,7 @@ $this->title = Yii::t('app', 'Subscribe');
 				<div class="about-hype-success">
 					<p class="welcome-success">WELCOME TO HYPE</p>
 					<p class="thanks-success">Thank you for signing up with us</p>
-					<p class="stutas-success">Your account will be activated within 72 hours</p>
+					<p class="stutas-success">Your account will be activated within 24 hours</p>
 				</div>
 			</div>
 		</div>

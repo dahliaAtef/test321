@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
     'Omnipay\\Common\\' => array($vendorDir . '/omnipay/common/src'),
     'Mailchimp' => array($vendorDir . '/mailchimp/mailchimp/src'),
     'Imagine' => array($vendorDir . '/imagine/imagine/lib'),
@@ -13,5 +14,4 @@ return array(
     'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
     'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
     'Diff' => array($vendorDir . '/phpspec/php-diff/lib'),
-    'mPDF' => array($vendorDir . '/mpdf/mPDF'),
 );

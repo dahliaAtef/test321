@@ -818,19 +818,31 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
       return $account_insights;
     }
 
-	public function getFansDemographics($insights){
+    public function getFansDemographics($insights){
     	$linkedin = [];
-      	$max_country_value = max($insights['fans_countries']);
-      	$max_country_index = array_keys($insights['fans_countries'], $max_country_value)[0];
-      	$linkedin['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['fans_countries']))*100), 1).'%';
-		$max_industry_value = max($insights['fans_industries']);
-      	$max_industry_index = array_keys($insights['fans_industries'], $max_industry_value)[0];
-      	$linkedin['industry'] = $max_industry_index.' '.round(((($max_industry_value)/array_sum($insights['fans_industries']))*100), 1).'%';
-		$max_seniority_value = max($insights['fans_seniorities']);
-      	$max_seniority_index = array_keys($insights['fans_seniorities'], $max_seniority_value)[0];
-      	$linkedin['seniority'] = $max_seniority_index.' '.round(((($max_seniority_value)/array_sum($insights['fans_seniorities']))*100), 1).'%';
-		$linkedin['age'] = $linkedin['gender'] = $linkedin['language'] = $linkedin['device'] = '...';
-      return $linkedin;
+        if($insights['fans_countries']){
+            $max_country_value = max($insights['fans_countries']);
+            $max_country_index = array_keys($insights['fans_countries'], $max_country_value)[0];
+            $linkedin['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['fans_countries']))*100), 1).'%';
+        }else{
+            $linkedin['country'] = 'undefined'; 
+        }
+        if($insights['fans_industries']){
+            $max_industry_value = max($insights['fans_industries']);
+            $max_industry_index = array_keys($insights['fans_industries'], $max_industry_value)[0];
+            $linkedin['industry'] = $max_industry_index.' '.round(((($max_industry_value)/array_sum($insights['fans_industries']))*100), 1).'%';
+        }else{
+            $linkedin['industry'] = 'undefined'; 
+        }
+        if($insights['fans_seniorities']){
+            $max_seniority_value = max($insights['fans_seniorities']);
+            $max_seniority_index = array_keys($insights['fans_seniorities'], $max_seniority_value)[0];
+            $linkedin['seniority'] = $max_seniority_index.' '.round(((($max_seniority_value)/array_sum($insights['fans_seniorities']))*100), 1).'%';
+        }else{
+            $linkedin['seniority'] = 'undefined'; 
+        }
+        $linkedin['age'] = $linkedin['gender'] = $linkedin['language'] = $linkedin['device'] = '...';
+        return $linkedin;
     }	
   
     public function calculateStatisticsDistributionArray($statistics){
@@ -845,31 +857,70 @@ class LinkedIn extends \yii\authclient\clients\LinkedIn
       	return $statistics_distribution;
     }
   
-	public function getComparison($model_id){
-        if(date('d', time()) == '01'){
-            $first_day_last_month = strtotime('-2 months') * 1000;
-            $first_day_this_month = strtotime('-1 months') * 1000;
-            $last_day_last_month = strtotime('-1 days', (($first_day_this_month)/1000)) * 1000;
-            $last_day_this_month = strtotime('last day of last month') * 1000;
+    public function getComparison($model_id, $since, $until, $authclient_created){
+        $start_month = date('Y-m', ($since/1000));
+        $end_month = date('Y-m', ($until/1000));
+        $months_limits = [];
+        if($start_month == $end_month){
+            array_push($months_limits, [
+                'start' => strtotime(date('Y-m-01', strtotime('-1 month'))) * 1000,
+                'end' => strtotime(date('Y-m-t', strtotime('-1 month'))) * 1000
+            ]);
+            array_push($months_limits, [
+                'start' => $since,
+                'end' => $until
+            ]);
+        }elseif($since < $authclient_created){
+            array_push($months_limits, [
+                'start' => strtotime(date('Y-m-01', strtotime('-1 month'))) * 1000,
+                'end' => strtotime(date('Y-m-t', strtotime('-1 month'))) * 1000
+            ]);
+            array_push($months_limits, [
+                'start' => strtotime('first day of this month') * 1000,
+                'end' => time() * 1000
+            ]);
         }else{
-            $first_day_last_month = strtotime('first day of last month') * 1000;
-            $last_day_last_month = strtotime('last day of last month') * 1000;
-            $first_day_this_month = strtotime('first day of this month') * 1000;
-            $last_day_this_month = strtotime('last day of this month') * 1000;
+            $months = [];
+            $temp = 0;
+            while(strtotime(date('Y-m', $temp)) <= strtotime(date('Y-m', ($until/1000)))){
+                if($temp === 0){
+                    array_push($months_limits, [
+                        'start' => $since,
+                        'end' => strtotime(date('Y-m-t', ($since/1000)))* 1000
+                        ]);
+                    $temp = strtotime('+1 month', strtotime($start_month));
+                }elseif(date('Y-m', $temp) == $end_month){
+                    array_push($months_limits, [
+                        'start' => strtotime(date('Y-m-01', ($until/1000))) * 1000,
+                        'end' => $until
+                        ]);
+                    $temp = strtotime('+1 month', $temp);
+                }else{
+                    array_push($months_limits, [
+                        'start' => strtotime(date('Y-m-01', $temp)) * 1000,
+                        'end' => strtotime(date('Y-m-t', $temp)) * 1000
+                        ]);
+                    $temp = strtotime('+1 month', $temp);
+                }
+                
+            }
         }
-      	$followers_last_month = $this->getHistoricalFollowersStatisticsInTime($model_id, $first_day_last_month, $last_day_last_month)['values'];
-      	$followers_this_month = $this->getHistoricalFollowersStatisticsInTime($model_id, $first_day_this_month, $last_day_this_month)['values'];
-		$history_last_month = $this->getHistoricalStatisticsInTime($model_id, $first_day_last_month, $last_day_last_month)['values'];
-        $history_this_month = $this->getHistoricalStatisticsInTime($model_id, $first_day_this_month, $last_day_this_month)['values'];
-		$statistics['last_month'] = $this->calculateStatisticsDistributionArray($history_last_month);
-      	$statistics['this_month'] = $this->calculateStatisticsDistributionArray($history_this_month);
-      	$statistics['last_month']['total_followers'] = $followers_last_month[count($followers_last_month) - 1]['totalFollowerCount'] - $followers_last_month[0]['totalFollowerCount'];
-      	$statistics['this_month']['total_followers'] = $followers_this_month[count($followers_this_month) - 1]['totalFollowerCount'] - $followers_this_month[0]['totalFollowerCount'];
-      	$statistics['last_month']['organic_followers'] = $followers_last_month[count($followers_last_month) - 1]['organicFollowerCount'] - $followers_last_month[0]['organicFollowerCount'];
-      	$statistics['this_month']['organic_followers'] = $followers_this_month[count($followers_this_month) - 1]['organicFollowerCount'] - $followers_this_month[0]['organicFollowerCount'];
-      	$statistics['last_month']['paid_followers'] = $followers_last_month[count($followers_last_month) - 1]['paidFollowerCount'] - $followers_last_month[0]['paidFollowerCount'];
-      	$statistics['this_month']['paid_followers'] = $followers_this_month[count($followers_this_month) - 1]['paidFollowerCount'] - $followers_this_month[0]['paidFollowerCount'];
-      	return $statistics;
+
+        foreach($months_limits as $key => $value){
+            $months_limits[$key]['month'] = date('M y', (($value['start'])/1000));	
+            $followers = $this->getHistoricalFollowersStatisticsInTime($model_id, $value['start'], $value['end'])['values'];
+			
+            $history = $this->getHistoricalStatisticsInTime($model_id, $value['start'], $value['end'])['values'];
+			
+            $months_limits[$key]['statistics'] = $this->calculateStatisticsDistributionArray($history);
+			
+            $months_limits[$key]['total_followers'] = $followers[count($followers) - 1]['totalFollowerCount'] - $followers[0]['totalFollowerCount'];
+			
+            $months_limits[$key]['organic_followers'] = $followers[count($followers) - 1]['organicFollowerCount'] - $followers[0]['organicFollowerCount'];
+			
+            $months_limits[$key]['paid_followers'] = $followers[count($followers) - 1]['paidFollowerCount'] - $followers[0]['paidFollowerCount'];
+        }
+        return $months_limits;
     }
   
 }

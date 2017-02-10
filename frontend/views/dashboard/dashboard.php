@@ -13,7 +13,6 @@ use common\models\custom\User;
 use yii\widgets\Pjax;
 
 $this->title = 'Dashboard';
-$dashboard_accounts = Yii::$app->session['dashboard_accounts'];
 $sx = $oDashboard->getSocialMediaExistance($insights); 
 //echo '<pre>'; var_dump(json_decode($insights['facebook']['last_insights']->insights_json, true)['page_posts_organic_reach']); echo '</pre>'; die;
 $fb = array_key_exists('facebook', $dashboard_accounts);
@@ -138,12 +137,14 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                 }
                 if($yt){
                     $fans_gender_age_per = json_decode($insights['youtube']['last_insights']->insights_json, true)['gender_age'];
-                    $counter = 0;
-                    foreach($fans_gender_age_per as $fans_gender_age){
-                        $fans_gender_age_per[$counter][2] = round((($fans_gender_age[2] * $insights['youtube']['last_insights']->followers)/100), 0);
-                        $counter++;
+                    if($fans_gender_age_per){
+                        $counter = 0;
+                        foreach($fans_gender_age_per as $fans_gender_age){
+                            $fans_gender_age_per[$counter][2] = round((($fans_gender_age[2] * $insights['youtube']['last_insights']->followers)/100), 0);
+                            $counter++;
+                        }
+                        echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $insights['youtube']['last_insights']->followers]);
                     }
-                    echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $insights['youtube']['last_insights']->followers]);
                 }
 				 ?>
                 
@@ -336,9 +337,3 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
 </div>
 <!-- page content -->
 
-<?php
-if(!$oCompetitors){
-    echo $this->render('/competitors/create', ['oCompetitorsForm' => $oCompetitorsForm, 'admin_accounts' => $admin_accounts]);
-}else{
-    echo $this->render('/competitors/index', ['oCompetitors' => $oCompetitors, 'oCompetitorTest' => $oCompetitorTest, 'admin_accounts' => $admin_accounts]);
-} ?>

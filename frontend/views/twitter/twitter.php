@@ -233,7 +233,7 @@ $this->title = "Twitter";
       
       
 		<?php
-            echo $this->render('_comparison', ['comparison' => $twitter->getComparison($model->id)]);
+            echo $this->render('_comparison', ['comparison' => $twitter->getComparison($model->id, $since, $until, $authclient_created)]);
         ?>
       
       <!-- sperated line -->

@@ -40,7 +40,7 @@ class UserController extends \frontend\components\BaseController {
                 'except' => ['auth'],
                 'rules' => [
                     [
-                        'actions' => ['signup', 'login', 'verify', /*'request-password-reset', 'reset-password'*/],
+                        'actions' => ['signup', 'login', 'verify', 'request-password-reset', 'reset-password'],
                         'allow' => true,
                         'roles' => ['?'],
                     ],
@@ -152,7 +152,7 @@ class UserController extends \frontend\components\BaseController {
         }
 
         if ($oResetPasswordForm->load(Yii::$app->request->post()) && $oResetPasswordForm->validate() && $oResetPasswordForm->resetPassword()) {
-            Yii::$app->getSession()->setFlash('success', Yii::t('app', 'New password was saved.'));
+            Yii::$app->getSession()->setFlash('success', Yii::t('app', 'New password has been saved.'));
 
             return $this->goHome();
         }

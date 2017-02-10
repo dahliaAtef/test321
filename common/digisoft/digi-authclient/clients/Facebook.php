@@ -156,13 +156,17 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
     
     public function getCountryName($countries_codes){
-        $countries_json = '{"BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria", "BA": "Bosnia and Herzegovina", "BB": "Barbados", "WF": "Wallis and Futuna", "BL": "Saint Barthelemy", "BM": "Bermuda", "BN": "Brunei", "BO": "Bolivia", "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BT": "Bhutan", "JM": "Jamaica", "BV": "Bouvet Island", "BW": "Botswana", "WS": "Samoa", "BQ": "Bonaire, Saint Eustatius and Saba ", "BR": "Brazil", "BS": "Bahamas", "JE": "Jersey", "BY": "Belarus", "BZ": "Belize", "RU": "Russia", "RW": "Rwanda", "RS": "Serbia", "TL": "East Timor", "RE": "Reunion", "TM": "Turkmenistan", "TJ": "Tajikistan", "RO": "Romania", "TK": "Tokelau", "GW": "Guinea-Bissau", "GU": "Guam", "GT": "Guatemala", "GS": "South Georgia and the South Sandwich Islands", "GR": "Greece", "GQ": "Equatorial Guinea", "GP": "Guadeloupe", "JP": "Japan", "GY": "Guyana", "GG": "Guernsey", "GF": "French Guiana", "GE": "Georgia", "GD": "Grenada", "GB": "United Kingdom", "GA": "Gabon", "SV": "El Salvador", "GN": "Guinea", "GM": "Gambia", "GL": "Greenland", "GI": "Gibraltar", "GH": "Ghana", "OM": "Oman", "TN": "Tunisia", "JO": "Jordan", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary", "HK": "Hong Kong", "HN": "Honduras", "HM": "Heard Island and McDonald Islands", "VE": "Venezuela", "PR": "Puerto Rico", "PS": "Palestinian Territory", "PW": "Palau", "PT": "Portugal", "SJ": "Svalbard and Jan Mayen", "PY": "Paraguay", "IQ": "Iraq", "PA": "Panama", "PF": "French Polynesia", "PG": "Papua New Guinea", "PE": "Peru", "PK": "Pakistan", "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PM": "Saint Pierre and Miquelon", "ZM": "Zambia", "EH": "Western Sahara", "EE": "Estonia", "EG": "Egypt", "ZA": "South Africa", "EC": "Ecuador", "IT": "Italy", "VN": "Vietnam", "SB": "Solomon Islands", "ET": "Ethiopia", "SO": "Somalia", "ZW": "Zimbabwe", "SA": "Saudi Arabia", "ES": "Spain", "ER": "Eritrea", "ME": "Montenegro", "MD": "Moldova", "MG": "Madagascar", "MF": "Saint Martin", "MA": "Morocco", "MC": "Monaco", "UZ": "Uzbekistan", "MM": "Myanmar", "ML": "Mali", "MO": "Macao", "MN": "Mongolia", "MH": "Marshall Islands", "MK": "Macedonia", "MU": "Mauritius", "MT": "Malta", "MW": "Malawi", "MV": "Maldives", "MQ": "Martinique", "MP": "Northern Mariana Islands", "MS": "Montserrat", "MR": "Mauritania", "IM": "Isle of Man", "UG": "Uganda", "TZ": "Tanzania", "MY": "Malaysia", "MX": "Mexico", "IL": "Israel", "FR": "France", "IO": "British Indian Ocean Territory", "SH": "Saint Helena", "FI": "Finland", "FJ": "Fiji", "FK": "Falkland Islands", "FM": "Micronesia", "FO": "Faroe Islands", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway", "NA": "Namibia", "VU": "Vanuatu", "NC": "New Caledonia", "NE": "Niger", "NF": "Norfolk Island", "NG": "Nigeria", "NZ": "New Zealand", "NP": "Nepal", "NR": "Nauru", "NU": "Niue", "CK": "Cook Islands", "XK": "Kosovo", "CI": "Ivory Coast", "CH": "Switzerland", "CO": "Colombia", "CN": "China", "CM": "Cameroon", "CL": "Chile", "CC": "Cocos Islands", "CA": "Canada", "CG": "Republic of the Congo", "CF": "Central African Republic", "CD": "Democratic Republic of the Congo", "CZ": "Czech Republic", "CY": "Cyprus", "CX": "Christmas Island", "CR": "Costa Rica", "CW": "Curacao", "CV": "Cape Verde", "CU": "Cuba", "SZ": "Swaziland", "SY": "Syria", "SX": "Sint Maarten", "KG": "Kyrgyzstan", "KE": "Kenya", "SS": "South Sudan", "SR": "Suriname", "KI": "Kiribati", "KH": "Cambodia", "KN": "Saint Kitts and Nevis", "KM": "Comoros", "ST": "Sao Tome and Principe", "SK": "Slovakia", "KR": "South Korea", "SI": "Slovenia", "KP": "North Korea", "KW": "Kuwait", "SN": "Senegal", "SM": "San Marino", "SL": "Sierra Leone", "SC": "Seychelles", "KZ": "Kazakhstan", "KY": "Cayman Islands", "SG": "Singapore", "SE": "Sweden", "SD": "Sudan", "DO": "Dominican Republic", "DM": "Dominica", "DJ": "Djibouti", "DK": "Denmark", "VG": "British Virgin Islands", "DE": "Germany", "YE": "Yemen", "DZ": "Algeria", "US": "United States", "UY": "Uruguay", "YT": "Mayotte", "UM": "United States Minor Outlying Islands", "LB": "Lebanon", "LC": "Saint Lucia", "LA": "Laos", "TV": "Tuvalu", "TW": "Taiwan", "TT": "Trinidad and Tobago", "TR": "Turkey", "LK": "Sri Lanka", "LI": "Liechtenstein", "LV": "Latvia", "TO": "Tonga", "LT": "Lithuania", "LU": "Luxembourg", "LR": "Liberia", "LS": "Lesotho", "TH": "Thailand", "TF": "French Southern Territories", "TG": "Togo", "TD": "Chad", "TC": "Turks and Caicos Islands", "LY": "Libya", "VA": "Vatican", "VC": "Saint Vincent and the Grenadines", "AE": "United Arab Emirates", "AD": "Andorra", "AG": "Antigua and Barbuda", "AF": "Afghanistan", "AI": "Anguilla", "VI": "U.S. Virgin Islands", "IS": "Iceland", "IR": "Iran", "AM": "Armenia", "AL": "Albania", "AO": "Angola", "AQ": "Antarctica", "AS": "American Samoa", "AR": "Argentina", "AU": "Australia", "AT": "Austria", "AW": "Aruba", "IN": "India", "AX": "Aland Islands", "AZ": "Azerbaijan", "IE": "Ireland", "ID": "Indonesia", "UA": "Ukraine", "QA": "Qatar", "MZ": "Mozambique"}';
-        $countries_arr = json_decode($countries_json, true);
-        foreach($countries_codes as $country_code => $value){
-            $country_name = (array_key_exists($country_code, $countries_arr)) ? ($countries_arr[$country_code]) : $country_code;
-            $countries_names[$country_name] = $value;
+        if($countries_codes){
+            $countries_json = '{"BD": "Bangladesh", "BE": "Belgium", "BF": "Burkina Faso", "BG": "Bulgaria", "BA": "Bosnia and Herzegovina", "BB": "Barbados", "WF": "Wallis and Futuna", "BL": "Saint Barthelemy", "BM": "Bermuda", "BN": "Brunei", "BO": "Bolivia", "BH": "Bahrain", "BI": "Burundi", "BJ": "Benin", "BT": "Bhutan", "JM": "Jamaica", "BV": "Bouvet Island", "BW": "Botswana", "WS": "Samoa", "BQ": "Bonaire, Saint Eustatius and Saba ", "BR": "Brazil", "BS": "Bahamas", "JE": "Jersey", "BY": "Belarus", "BZ": "Belize", "RU": "Russia", "RW": "Rwanda", "RS": "Serbia", "TL": "East Timor", "RE": "Reunion", "TM": "Turkmenistan", "TJ": "Tajikistan", "RO": "Romania", "TK": "Tokelau", "GW": "Guinea-Bissau", "GU": "Guam", "GT": "Guatemala", "GS": "South Georgia and the South Sandwich Islands", "GR": "Greece", "GQ": "Equatorial Guinea", "GP": "Guadeloupe", "JP": "Japan", "GY": "Guyana", "GG": "Guernsey", "GF": "French Guiana", "GE": "Georgia", "GD": "Grenada", "GB": "United Kingdom", "GA": "Gabon", "SV": "El Salvador", "GN": "Guinea", "GM": "Gambia", "GL": "Greenland", "GI": "Gibraltar", "GH": "Ghana", "OM": "Oman", "TN": "Tunisia", "JO": "Jordan", "HR": "Croatia", "HT": "Haiti", "HU": "Hungary", "HK": "Hong Kong", "HN": "Honduras", "HM": "Heard Island and McDonald Islands", "VE": "Venezuela", "PR": "Puerto Rico", "PS": "Palestinian Territory", "PW": "Palau", "PT": "Portugal", "SJ": "Svalbard and Jan Mayen", "PY": "Paraguay", "IQ": "Iraq", "PA": "Panama", "PF": "French Polynesia", "PG": "Papua New Guinea", "PE": "Peru", "PK": "Pakistan", "PH": "Philippines", "PN": "Pitcairn", "PL": "Poland", "PM": "Saint Pierre and Miquelon", "ZM": "Zambia", "EH": "Western Sahara", "EE": "Estonia", "EG": "Egypt", "ZA": "South Africa", "EC": "Ecuador", "IT": "Italy", "VN": "Vietnam", "SB": "Solomon Islands", "ET": "Ethiopia", "SO": "Somalia", "ZW": "Zimbabwe", "SA": "Saudi Arabia", "ES": "Spain", "ER": "Eritrea", "ME": "Montenegro", "MD": "Moldova", "MG": "Madagascar", "MF": "Saint Martin", "MA": "Morocco", "MC": "Monaco", "UZ": "Uzbekistan", "MM": "Myanmar", "ML": "Mali", "MO": "Macao", "MN": "Mongolia", "MH": "Marshall Islands", "MK": "Macedonia", "MU": "Mauritius", "MT": "Malta", "MW": "Malawi", "MV": "Maldives", "MQ": "Martinique", "MP": "Northern Mariana Islands", "MS": "Montserrat", "MR": "Mauritania", "IM": "Isle of Man", "UG": "Uganda", "TZ": "Tanzania", "MY": "Malaysia", "MX": "Mexico", "IL": "Israel", "FR": "France", "IO": "British Indian Ocean Territory", "SH": "Saint Helena", "FI": "Finland", "FJ": "Fiji", "FK": "Falkland Islands", "FM": "Micronesia", "FO": "Faroe Islands", "NI": "Nicaragua", "NL": "Netherlands", "NO": "Norway", "NA": "Namibia", "VU": "Vanuatu", "NC": "New Caledonia", "NE": "Niger", "NF": "Norfolk Island", "NG": "Nigeria", "NZ": "New Zealand", "NP": "Nepal", "NR": "Nauru", "NU": "Niue", "CK": "Cook Islands", "XK": "Kosovo", "CI": "Ivory Coast", "CH": "Switzerland", "CO": "Colombia", "CN": "China", "CM": "Cameroon", "CL": "Chile", "CC": "Cocos Islands", "CA": "Canada", "CG": "Republic of the Congo", "CF": "Central African Republic", "CD": "Democratic Republic of the Congo", "CZ": "Czech Republic", "CY": "Cyprus", "CX": "Christmas Island", "CR": "Costa Rica", "CW": "Curacao", "CV": "Cape Verde", "CU": "Cuba", "SZ": "Swaziland", "SY": "Syria", "SX": "Sint Maarten", "KG": "Kyrgyzstan", "KE": "Kenya", "SS": "South Sudan", "SR": "Suriname", "KI": "Kiribati", "KH": "Cambodia", "KN": "Saint Kitts and Nevis", "KM": "Comoros", "ST": "Sao Tome and Principe", "SK": "Slovakia", "KR": "South Korea", "SI": "Slovenia", "KP": "North Korea", "KW": "Kuwait", "SN": "Senegal", "SM": "San Marino", "SL": "Sierra Leone", "SC": "Seychelles", "KZ": "Kazakhstan", "KY": "Cayman Islands", "SG": "Singapore", "SE": "Sweden", "SD": "Sudan", "DO": "Dominican Republic", "DM": "Dominica", "DJ": "Djibouti", "DK": "Denmark", "VG": "British Virgin Islands", "DE": "Germany", "YE": "Yemen", "DZ": "Algeria", "US": "United States", "UY": "Uruguay", "YT": "Mayotte", "UM": "United States Minor Outlying Islands", "LB": "Lebanon", "LC": "Saint Lucia", "LA": "Laos", "TV": "Tuvalu", "TW": "Taiwan", "TT": "Trinidad and Tobago", "TR": "Turkey", "LK": "Sri Lanka", "LI": "Liechtenstein", "LV": "Latvia", "TO": "Tonga", "LT": "Lithuania", "LU": "Luxembourg", "LR": "Liberia", "LS": "Lesotho", "TH": "Thailand", "TF": "French Southern Territories", "TG": "Togo", "TD": "Chad", "TC": "Turks and Caicos Islands", "LY": "Libya", "VA": "Vatican", "VC": "Saint Vincent and the Grenadines", "AE": "United Arab Emirates", "AD": "Andorra", "AG": "Antigua and Barbuda", "AF": "Afghanistan", "AI": "Anguilla", "VI": "U.S. Virgin Islands", "IS": "Iceland", "IR": "Iran", "AM": "Armenia", "AL": "Albania", "AO": "Angola", "AQ": "Antarctica", "AS": "American Samoa", "AR": "Argentina", "AU": "Australia", "AT": "Austria", "AW": "Aruba", "IN": "India", "AX": "Aland Islands", "AZ": "Azerbaijan", "IE": "Ireland", "ID": "Indonesia", "UA": "Ukraine", "QA": "Qatar", "MZ": "Mozambique"}';
+            $countries_arr = json_decode($countries_json, true);
+            foreach($countries_codes as $country_code => $value){
+                $country_name = (array_key_exists($country_code, $countries_arr)) ? ($countries_arr[$country_code]) : $country_code;
+                $countries_names[$country_name] = $value;
+            }
+            return $countries_names;
+        }else{
+            return null;
         }
-        return $countries_names;
     }
     
     public function getFansByCountryJsonTable($fans_country){
@@ -1098,101 +1102,112 @@ class Facebook extends \yii\authclient\clients\Facebook
     /***
      * compares insights of current month with last month's
      */
-    public function getComparisonInsights($id){
+    public function getComparisonInsights($id, $since, $until, $authclient_created){
         $client = $this->getClient();
-        $comparison = [];
-        $comparison_points = ['newlikes' => 0, 'dislikes' => 0, 'netlikes' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'post_reach' => 0];
-        $comparison['last_month'] = $comparison['this_month'] = [
-            'total' => $comparison_points,
-            'paid' => $comparison_points,
-            'unpaid' => $comparison_points,
-        ];
-        
-        $first_day_last_month = date('Y-m-2', (strtotime('first day of last month')));
-        $last_day_last_month = date('Y-m-d', (strtotime('first day of this month')));
-        $first_day_this_month = date('Y-m-2', (strtotime('first day of this month')));
-        $today = (strtotime(date('Y-m-d', time())) > (strtotime($first_day_this_month))) ? date('Y-m-d', time()) : (date($first_day_this_month, strtotime('+1 days')));
-        
-        $new_likes_last_month = $client->api($id."/insights/page_fan_adds_by_paid_non_paid_unique/day?since=".$first_day_last_month."&until=".$last_day_last_month)["data"];
-        if(array_key_exists(0, $new_likes_last_month)){
-            foreach($new_likes_last_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['last_month']['total']['newlikes'] += $new_like['value']['total'];
-                    $comparison['last_month']['paid']['newlikes'] += $new_like['value']['paid'];
-                    $comparison['last_month']['unpaid']['newlikes'] += $new_like['value']['unpaid'];
+        $start_month = date('Y-m', $since);
+	$end_month = date('Y-m', $until);
+	$months_limits = [];
+	if($start_month == $end_month){
+            array_push($months_limits, [
+                'start' => date('Y-m-01', strtotime('-1 month')),
+                'end' => date('Y-m-t', strtotime('-1 month'))
+            ]);
+            array_push($months_limits, [
+                'start' => date('Y-m-d', $since),
+                'end' => date('Y-m-d', $until)
+            ]);
+        }elseif($since < $authclient_created){
+            array_push($months_limits, [
+                'start' => date('Y-m-01', strtotime('-1 month')),
+                'end' => date('Y-m-t', strtotime('-1 month'))
+            ]);
+            array_push($months_limits, [
+                'start' => date('Y-m-d', strtotime('first day of this month')),
+                'end' => date('Y-m-d', time())
+            ]);
+        }else{
+            $months = [];
+            $temp = 0;
+            while(strtotime(date('Y-m', $temp)) <= strtotime(date('Y-m', $until))){
+                if($temp === 0){
+                    array_push($months_limits, [
+                        'start' => date('Y-m-d', $since),
+                        'end' => date('Y-m-t', $since)
+                    ]);
+                    $temp = strtotime('+1 month', strtotime($start_month));
+                }elseif(date('Y-m', $temp) == $end_month){
+                    array_push($months_limits, [
+                        'start' => date('Y-m-01', $until),
+                        'end' => date('Y-m-d', $until)
+                    ]);
+                    $temp = strtotime('+1 month', $temp);
+                }else{
+                    array_push($months_limits, [
+                        'start' => date('Y-m-01', $temp),
+                        'end' => date('Y-m-t', $temp)
+                    ]);
+                    $temp = strtotime('+1 month', $temp);
                 }
+					
             }
         }
-        $new_likes_this_month = $client->api($id."/insights/page_fan_adds_by_paid_non_paid_unique/day?since=".$first_day_this_month."&until=".$today)["data"];
-        if(array_key_exists(0, $new_likes_this_month)){
-            foreach($new_likes_this_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['this_month']['total']['newlikes'] += $new_like['value']['total'];
-                    $comparison['this_month']['paid']['newlikes'] += $new_like['value']['paid'];
-                    $comparison['this_month']['unpaid']['newlikes'] += $new_like['value']['unpaid'];
-                }
-            }
-        }
+		//////////////////////////////////////////////////////////
+	$comparison_points = ['newlikes' => 0, 'dislikes' => 0, 'netlikes' => 0, 'likes' => 0, 'comments' => 0, 'shares' => 0, 'post_reach' => 0];
+	foreach($months_limits as $key => $value){
+            $months_limits[$key]['total'] = $months_limits[$key]['paid'] = $months_limits[$key]['unpaid'] = $comparison_points;
+            $months_limits[$key]['month'] = date('M y', strtotime($value['start']));
 
-        $new_dislikes_last_month = $client->api($id."/insights/page_fan_removes_unique/day?since=".$first_day_last_month."&until=".$last_day_last_month)["data"];
-        if(array_key_exists(0, $new_dislikes_last_month)){
-            foreach($new_dislikes_last_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['last_month']['total']['dislikes'] += $new_like['value'];
+		
+            $new_likes = $client->api($id."/insights/page_fan_adds_by_paid_non_paid_unique/day?since=".$value['start']."&until=".$value['end'])["data"];
+            if(array_key_exists(0, $new_likes)){
+                foreach($new_likes[0]['values'] as $new_like){
+                    if(array_key_exists('value', $new_like)){
+                        $months_limits[$key]['total']['newlikes'] += $new_like['value']['total'];
+                        $months_limits[$key]['paid']['newlikes'] += $new_like['value']['paid'];
+                        $months_limits[$key]['unpaid']['newlikes'] += $new_like['value']['unpaid'];
+                    }
                 }
             }
-        }
-        $new_dislikes_this_month = $client->api($id."/insights/page_fan_removes_unique/day?since=".$first_day_this_month."&until=".$today)["data"];
-        if(array_key_exists(0, $new_dislikes_this_month)){
-            foreach($new_dislikes_this_month[0]['values'] as $new_like){
-                if(array_key_exists('value', $new_like)){
-                    $comparison['this_month']['total']['dislikes'] += $new_like['value'];
+			
+			
+            $new_dislikes = $client->api($id."/insights/page_fan_removes_unique/day?since=".$value['start']."&until=".$value['end'])["data"];
+            if(array_key_exists(0, $new_dislikes)){
+                foreach($new_dislikes[0]['values'] as $new_dislike){
+                    if(array_key_exists('value', $new_dislike)){
+                        $months_limits[$key]['total']['dislikes'] += $new_dislike['value'];
+                    }
+		}
+            }
+			
+			
+            $months_limits[$key]['total']['netlikes'] = ($months_limits[$key]['total']['newlikes']) - ($months_limits[$key]['total']['dislikes']);
+			
+			
+            $page_posts_reach = $client->api($id."/insights/page_impressions_by_paid_non_paid/day?since=".$value['start']."&until=".$value['end'])["data"];
+            if(array_key_exists(0, $page_posts_reach)){
+                foreach($page_posts_reach[0]['values'] as $new_reach){
+                    if(array_key_exists('value', $new_reach)){
+                        $months_limits[$key]['total']['post_reach'] += $new_reach['value']['total'];
+                        $months_limits[$key]['paid']['post_reach'] += $new_reach['value']['paid'];
+                        $months_limits[$key]['unpaid']['post_reach'] += $new_reach['value']['unpaid'];
+                    }
                 }
             }
-        }
-        $comparison['last_month']['total']['netlikes'] = ($comparison['last_month']['total']['newlikes']) - ($comparison['last_month']['total']['dislikes']);
-        $comparison['this_month']['total']['netlikes'] = ($comparison['this_month']['total']['newlikes']) - ($comparison['this_month']['total']['dislikes']);
-        $page_posts_reach_last_month = $client->api($id."/insights/page_impressions_by_paid_non_paid/day?since=".$first_day_last_month."&until=".$last_day_last_month)["data"];
-        if(array_key_exists(0, $page_posts_reach_last_month)){
-            foreach($page_posts_reach_last_month[0]['values'] as $new_reach){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['last_month']['total']['post_reach'] += $new_reach['value']['total'];
-                    $comparison['last_month']['paid']['post_reach'] += $new_reach['value']['paid'];
-                    $comparison['last_month']['unpaid']['post_reach'] += $new_reach['value']['unpaid'];
+			
+
+            $page_positive_feedbacks = $client->api($id."/insights/page_positive_feedback_by_type_unique/day?since=".$value['start']."&until=".$value['end'])['data'];
+            if(array_key_exists(0, $page_positive_feedbacks)){
+                foreach($page_positive_feedbacks[0]['values'] as $positive_feedback){
+                    if(array_key_exists('value', $new_reach)){
+                        $months_limits[$key]['total']['shares'] += $positive_feedback['value']['link'];
+                        $months_limits[$key]['total']['likes'] += $positive_feedback['value']['like'];
+                        $months_limits[$key]['total']['comments'] += $positive_feedback['value']['comment'];
+                    }
                 }
             }
+			
         }
-        $page_posts_reach_this_month = $client->api($id."/insights/page_impressions_by_paid_non_paid_unique/day?since=".$first_day_this_month."&until=".$today)["data"];
-        if(array_key_exists(0, $page_posts_reach_this_month)){
-            foreach($page_posts_reach_this_month[0]['values'] as $new_reach){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['this_month']['total']['post_reach'] += $new_reach['value']['total'];
-                    $comparison['this_month']['paid']['post_reach'] += $new_reach['value']['paid'];
-                    $comparison['this_month']['unpaid']['post_reach'] += $new_reach['value']['unpaid'];
-                }
-            }
-        }
-        $page_positive_feedbacks_last_month = $client->api($id."/insights/page_positive_feedback_by_type_unique/day?since=".$first_day_last_month."&until=".$last_day_last_month)['data'];
-        if(array_key_exists(0, $page_positive_feedbacks_last_month)){
-            foreach($page_positive_feedbacks_last_month[0]['values'] as $positive_feedback){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['last_month']['total']['shares'] += $positive_feedback['value']['link'];
-                    $comparison['last_month']['total']['likes'] += $positive_feedback['value']['like'];
-                    $comparison['last_month']['total']['comments'] += $positive_feedback['value']['comment'];
-                }
-            }
-        }
-        $page_positive_feedbacks_this_month = $client->api($id."/insights/page_positive_feedback_by_type_unique/day?since=".$first_day_this_month."&until=".$today)['data'];
-        if(array_key_exists(0, $page_positive_feedbacks_this_month)){
-            foreach($page_positive_feedbacks_this_month[0]['values'] as $positive_feedback){
-                if(array_key_exists('value', $new_reach)){
-                    $comparison['this_month']['total']['shares'] += $positive_feedback['value']['link'];
-                    $comparison['this_month']['total']['likes'] += $positive_feedback['value']['like'];
-                    $comparison['this_month']['total']['comments'] += $positive_feedback['value']['comment'];
-                }
-            }
-        }
-        return $comparison;
+        return $months_limits;
     }
     
     public function test($page_id, $since = '', $until = ''){
@@ -1391,9 +1406,14 @@ class Facebook extends \yii\authclient\clients\Facebook
     }
 	
     public function getDeviceTypeJsonTable($devices){
-	asort($devices);
-	$devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
-        return $devices_json_table;
+        if($devices){
+            asort($devices);
+            $devices_json_table = ($devices) ? GoogleChartHelper::getDataTable('device', 'views', $devices) : '';
+            return $devices_json_table;
+        }else{
+            return null;
+        }
+        
     }
 	
     public function getcountriesJsonTable($countries){
@@ -1508,21 +1528,33 @@ class Facebook extends \yii\authclient\clients\Facebook
       	$facebook = [];
       	$followers = $insights['gender_age']['male_count'] + $insights['gender_age']['female_count'];
     	$facebook['gender'] = (($insights['gender_age']['male_count'] != 0) && $insights['gender_age']['male_count'] >= $insights['gender_age']['female_count']) ? ('males '.round(((($insights['gender_age']['male_count'])/$followers)*100),1).'%') : (($insights['gender_age']['male_count'] < $insights['gender_age']['female_count']) ? ('females '.round(((($insights['gender_age']['female_count'])/$followers)*100), 2).'%') : '0%');
-      	foreach($insights['gender_age']['age_ranges'] as $age){
-        	$ages[$age] = $insights['gender_age']['male'][$age] + $insights['gender_age']['female'][$age];
+      	if($insights['gender_age']['age_ranges']){
+            foreach($insights['gender_age']['age_ranges'] as $age){
+                    $ages[$age] = $insights['gender_age']['male'][$age] + $insights['gender_age']['female'][$age];
+            }
+            $max_age_value = max($ages);
+            $max_age_index = array_keys($ages, $max_age_value)[0];
+            $facebook['age'] = $max_age_index.' '.round((($max_age_value)/$followers), 1).'%';
+        }else{
+            $facebook['age'] = 'undefined'; 
         }
-      	$max_age_value = max($ages);
-      	$max_age_index = array_keys($ages, $max_age_value)[0];
-      	$facebook['age'] = $max_age_index.' '.round((($max_age_value)/$followers), 1).'%';
-      
-        $max_country_value = max($insights['country']);
-        $max_country_index = array_keys($insights['country'], $max_country_value)[0];
-        $facebook['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['country']))*100), 1).'%';
-        $max_language_value = max($insights['language']);
-        $max_language_index = array_keys($insights['language'], $max_language_value)[0];
-        $facebook['language'] = $max_language_index.' '.round(((($max_language_value)/array_sum($insights['language']))*100), 1).'%';
-      	$facebook['device'] = $facebook['industry'] = $facebook['seniority'] = '...';
-      return $facebook;
+      	
+        if($insights['country']){
+            $max_country_value = max($insights['country']);
+            $max_country_index = array_keys($insights['country'], $max_country_value)[0];
+            $facebook['country'] = $max_country_index.' '.round(((($max_country_value)/array_sum($insights['country']))*100), 1).'%';
+        }else{
+            $facebook['country'] = 'undefined'; 
+        }
+        if($insights['language']){
+            $max_language_value = max($insights['language']);
+            $max_language_index = array_keys($insights['language'], $max_language_value)[0];
+            $facebook['language'] = $max_language_index.' '.round(((($max_language_value)/array_sum($insights['language']))*100), 1).'%';
+        }else{
+            $facebook['language'] = 'undefined'; 
+        }
+        $facebook['device'] = $facebook['industry'] = $facebook['seniority'] = '...';
+        return $facebook;
     }
   
   	public function checkAndGetValueIndex($array){

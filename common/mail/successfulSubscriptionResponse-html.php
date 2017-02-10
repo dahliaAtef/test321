@@ -595,7 +595,7 @@
                             <h1 style="text-align: center;"><br>
 <span style="font-family:trebuchet ms,lucida grande,lucida sans unicode,lucida sans,tahoma,sans-serif"><span style="color:#dd1371;font-size:32px">WELCOME TO HYPE</span></span></h1>
 
-<div style="text-align: center;"><span style="color:#8c767f;font-size:22px">Your account will be activated within 72 hours</span><br>
+<div style="text-align: center;"><span style="color:#8c767f;font-size:22px">Your account will be activated within 24 hours</span><br>
 <br>
 <span style="font-size:11px"><a href="https://digitreeinc.com/" id="© Hype 2016 powered By Digitree." name="© Hype 2016 powered By Digitree." target="_blank">© Hype 2016 powered By Digitree.</a></span></div>
 

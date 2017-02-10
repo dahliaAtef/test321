@@ -7,11 +7,11 @@
             <tr>
 
                 <th>Metric</th>
-
-                <th>Current Month</th>
-
-                <th>Last Month</th>
-
+                <?php
+                foreach($comparison as $month){
+                    ?>
+                    <th><?= $month['month'] ?></th>
+                <?php } ?>
             </tr>
 
             <tr>
@@ -24,30 +24,30 @@
 
                 <td>New Likes</td>
 
-                <td><?= $comparison['this_month']['total']['newlikes'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['newlikes'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['newlikes'] ?></td>
+                <?php } ?>
             </tr>
 
             <tr>
 
                 <td>New Dislikes</td>
 
-                <td><?= $comparison['this_month']['total']['dislikes'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['dislikes'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['dislikes'] ?></td>
+                <?php } ?>
             </tr>
 
             <tr>
 
                 <td>Net Likes</td>
 
-                <td><?= $comparison['this_month']['total']['netlikes'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['netlikes'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['netlikes'] ?></td>
+                <?php } ?>
             </tr>
 
             <tr>
@@ -60,29 +60,30 @@
 
                 <td>Total Interactions</td>
 
-                <td><?= (($comparison['this_month']['total']['likes']) + ($comparison['this_month']['total']['comments']) + ($comparison['this_month']['total']['shares'])) ?></td>
-
-                <td><?= (($comparison['last_month']['total']['likes']) + ($comparison['last_month']['total']['comments']) + ($comparison['last_month']['total']['shares'])) ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= (($month['total']['likes']) + ($month['total']['comments']) + ($month['total']['shares'])) ?></td>
+                <?php } ?>
             </tr>
 
             <tr>
 
                 <td>Likes</td>
 
-                <td><?= $comparison['this_month']['total']['likes'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['likes'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['likes'] ?></td>
+                <?php } ?>
             </tr>
 
             <tr>
 
                 <td>Comments</td>
 
-                <td><?= $comparison['this_month']['total']['comments'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['comments'] ?></td>
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['comments'] ?></td>
+                <?php } ?>
 
             </tr>
 
@@ -90,10 +91,11 @@
 
                 <td>Shares</td>
 
-                <td><?= $comparison['this_month']['total']['shares'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['shares'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['shares'] ?></td>
+                <?php } ?>
+                
             </tr>
 
             <tr>
@@ -106,10 +108,11 @@
 
                 <td>Post Reach</td>
 
-                <td><?= $comparison['this_month']['total']['post_reach'] ?></td>
-
-                <td><?= $comparison['last_month']['total']['post_reach'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['total']['post_reach'] ?></td>
+                <?php } ?>
+                
             </tr>
 
         </table>
@@ -130,42 +133,42 @@
 
                 <th class="second">Time range</th>
 
-                <th class="second">Prev month</th>
-
-                <th class="second">Current month</th>
-
-                <th class="second">Prev month</th>
-
-                <th class="second">Current month</th>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <th class="second"><?= $month['month'] ?></th>
+                <?php }
+                foreach($comparison as $month){ ?>
+                    <th class="second"><?= $month['month'] ?></th>
+                <?php }
+                ?>
             </tr>
 
             <tr>
 
                 <td>New Likes</td>
 
-                <td><?= $comparison['last_month']['paid']['newlikes'] ?></td>
-
-                <td><?= $comparison['this_month']['paid']['newlikes'] ?></td>
-
-                <td><?= $comparison['last_month']['unpaid']['newlikes'] ?></td>
-
-                <td><?= $comparison['this_month']['unpaid']['newlikes'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['paid']['newlikes'] ?></td>
+                <?php } 
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['unpaid']['newlikes'] ?></td>
+                <?php }
+                ?>
             </tr>
 
             <tr>
 
                 <td>Post Reach</td>
 
-                <td><?= $comparison['last_month']['paid']['post_reach'] ?></td>
-
-                <td><?= $comparison['this_month']['paid']['post_reach'] ?></td>
-
-                <td><?= $comparison['last_month']['unpaid']['post_reach'] ?></td>
-
-                <td><?= $comparison['this_month']['unpaid']['post_reach'] ?></td>
-
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['paid']['post_reach'] ?></td>
+                <?php } 
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['unpaid']['post_reach'] ?></td>
+                <?php } 
+                ?>
             </tr>
 
         </table>

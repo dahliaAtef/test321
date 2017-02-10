@@ -59,7 +59,7 @@ return [
             'enableAutoLogin' => true,
             'loginUrl' => '/#login',
           	'identityCookie' => [
-                'name' => '_local.hype',
+                'name' => '_hypeinsights',
                 'domain' => '.local.hype.com',
                 'path' => '/',
             ]
@@ -109,6 +109,8 @@ return [
                 'signup' => 'user/signup',
                 'login' => 'user/login',
                 'logout' => 'user/logout',
+                'forgot-password' => 'user/request-password-reset',
+                'reset-password' => 'user/reset-password',
               	'change-password' => 'user/change-password',
             ],
         ],

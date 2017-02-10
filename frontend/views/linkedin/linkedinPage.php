@@ -159,7 +159,7 @@ $days_count = count($statistics['days']);
             </div>
         <!-- sperated line -->  
 		<?php
-            echo $this->render('_comparison', ['comparison' => $linkedin->getComparison($oModel->entity_id)]);
+            echo $this->render('_comparison', ['comparison' => $linkedin->getComparison($oModel->entity_id, $since, $until, $authclient_created)]);
         ?>
       
         <!-- sperated line -->      
