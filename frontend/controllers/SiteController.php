@@ -55,27 +55,26 @@ class SiteController extends \frontend\components\BaseController {
                 ],
             ],
 
-            'pageCache' => [
+            [
                 'class' => 'yii\filters\PageCache',
-                'only' => ['linkedin'],
+                'only' => ['dashboard'],
                 'duration' => 60*60*12, // 12 h
-                    'dependency' => [
+                'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
+                    'sql' => 'SELECT COUNT(*) FROM authclient where  user_id='.Yii::$app->user->getId(),
                 ],
-
             ],
-            'pageCache' => [
+
+           [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['facebook'],
                 'duration' => 60*60*12, // 12 h
                 'dependency' => [
                     'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
+                   'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
                 ],
-
             ],
-            'pageCache' => [
+            [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['twitter'],
                 'duration' => 60*60*12, // 12 h
@@ -83,19 +82,29 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "twitter" and user_id='.Yii::$app->user->getId(),
                 ],
-
             ],
-            'pageCache' => [
-                        'class' => 'yii\filters\PageCache',
-                        'only' => ['instagram'],
-                        'duration' => 60*60*12, // 12 h
-                        'dependency' => [
-                            'class' => 'yii\caching\DbDependency',
-                            'sql' => 'SELECT COUNT( id ) FROM authclient where source= "instagram" and user_id='.Yii::$app->user->getId(),
-                        ],
 
-                    ],
-            'pageCache' => [
+            [
+                'class' => 'yii\filters\PageCache',
+                'only' => ['linkedin'],
+                'duration' => 60*60*12, // 12 h
+                'dependency' => [
+                    'class' => 'yii\caching\DbDependency',
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
+                ],
+            ],
+
+            [
+                'class' => 'yii\filters\PageCache',
+                'only' => ['instagram'],
+                'duration' => 60*60*12, // 12 h
+                'dependency' => [
+                    'class' => 'yii\caching\DbDependency',
+                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "instagram" and user_id='.Yii::$app->user->getId(),
+                ],
+            ],
+
+            [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['youtube'],
                 'duration' => 60*60*12, // 12 h
@@ -103,9 +112,9 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
                 ],
-
             ],
-            'pageCache' => [
+
+            [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['google-plus'],
                 'duration' => 60*60*12, // 12 h
@@ -113,10 +122,7 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
-
             ],
-
-
         ];
 
     }
