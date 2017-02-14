@@ -18,6 +18,8 @@ class UIAsset extends AssetBundle {
 
     public $css = [
         'css/bootstrap.min.css',
+        //'css//daterangepicker.css',
+        //'css/datepicker.css',
         'css/animate.css',
         'css/style.css',
     ];
@@ -25,8 +27,11 @@ class UIAsset extends AssetBundle {
     public $js = [
         'js/jquery-2.2.2.min.js',
         'js/bootstrap.min.js',
-        'https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/0.9.9/jquery.magnific-popup.min.js',
+      	//'js/moment.min.js',
+      	//'js//daterangepicker.js',
         'js/frontend.js',
+        //'js/datepicker.js',
+        'js/app.js',
     ];
 
     public $depends = [

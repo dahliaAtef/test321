@@ -16,7 +16,7 @@
 
             <tr>
 
-                <td colspan="3">Subscribers Overview</td>
+                <td colspan="12">Subscribers Overview</td>
 
             </tr>
 
@@ -55,7 +55,7 @@
 
             <tr>
 
-                <td colspan="3">Interactions Overview</td>
+                <td colspan="12">Interactions Overview</td>
 
             </tr>
 

@@ -16,7 +16,7 @@
 
             <tr>
 
-                <td colspan="3">Connections Overview</td>
+                <td colspan="12">Connections Overview</td>
 
             </tr>
 
@@ -55,7 +55,7 @@
 
             <tr>
 
-                <td colspan="3">Interactions Overview</td>
+                <td colspan="12">Interactions Overview</td>
 
             </tr>
 

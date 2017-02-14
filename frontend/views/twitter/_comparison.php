@@ -19,7 +19,7 @@
 
             <tr>
 
-                <td colspan="3">Followers & Listing Overview</td>
+                <td colspan="12">Followers & Listing Overview</td>
 
             </tr>
 
@@ -46,7 +46,7 @@
             </tr>
             <tr>
 
-                <td colspan="3">Interactions Overview</td>
+                <td colspan="12">Interactions Overview</td>
 
             </tr>
 
