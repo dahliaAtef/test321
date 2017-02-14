@@ -627,7 +627,6 @@ class SiteController extends \frontend\components\BaseController {
     }
     
     public function actionFacebook(){
-        //ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();
         $oUserPagesForm = new UserPagesForm();

@@ -16,7 +16,7 @@
 
             <tr>
 
-                <td colspan="12">Likes Overview</td>
+                <td colspan="3">Likes Overview</td>
 
             </tr>
 
@@ -52,7 +52,7 @@
 
             <tr>
 
-                <td colspan="12">Interactions Overview</td>
+                <td colspan="3">Interactions Overview</td>
 
             </tr>
 
@@ -100,7 +100,7 @@
 
             <tr>
 
-                <td colspan="12">Reach Overview</td>
+                <td colspan="3">Reach Overview</td>
 
             </tr>
 
@@ -123,9 +123,9 @@
 
                 <th>Metric</th>
 
-                <th colspan="12">Paid</th>
+                <th colspan="2">Paid</th>
 
-                <th colspan="12">Unpaid</th>
+                <th colspan="2">Unpaid</th>
 
             </tr>
 

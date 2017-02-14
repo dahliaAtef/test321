@@ -905,7 +905,7 @@ table.twitter tr:last-child {border-bottom: 2px solid #25aae1}
   th{text-align: center;color: #fff;line-height: 32px;font-size: 14px;}
     th:first-child{border-radius:10px 0 0 0}
     th:last-child{border-radius:0 10px 0px 0}
-  th.second , [colspan ~= '3'] ,[colspan]{background:#adadad!important;color: #fff;font-size: 15px}
+  th.second , [colspan ~= '3']{background:#adadad!important;color: #fff;font-size: 15px}
     th.second {border-right: .5px solid #b3b3b3;}
     th.second:first-child{border-radius:0;}
     th.second:last-child{border-radius:0;border-right: 0}
@@ -1474,18 +1474,10 @@ padding:28px}
 .dummy_chart {text-align:center;opacity:.7}
 .dummy_chart img{width:90%}
 
+
 .form-group {margin-bottom:10px}
 .back-Btn-cont{position: absolute;z-index: 1;margin-top: 4px;}
 .back-Btn {color: #de1271;text-decoration: none !important}
 .back-Btn span{border: 1px solid;padding: 6px;border-radius: 3px;}
 
 #yii-debug-toolbar {display:none !important;}
-
-.page-options {background: #eeeeee;
-    border-bottom: 1px solid #4066ab;
-    padding: 20px 0;
-    padding-left: 68px;
-    margin-top: -36px;}
-.page-options input , h4 {margin:0 !important}
-.page-options  h4{line-height: 34px;
-    font-size: 14px;}
