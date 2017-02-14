@@ -54,7 +54,7 @@ class SiteController extends \frontend\components\BaseController {
                     ],
                 ],
             ],
-
+/*
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['dashboard'],
@@ -64,7 +64,7 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT(*) FROM authclient where  user_id='.Yii::$app->user->getId(),
                 ],
             ],
-
+*/
            [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['facebook'],
