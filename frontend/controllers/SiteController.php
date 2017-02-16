@@ -24,8 +24,7 @@ use frontend\models\ContactForm;
 use frontend\models\SubscribeForm;
 use frontend\models\UserPagesForm;
 use frontend\models\SupportForm;
-use frontend\models\CompetitorsForm;
-use frontend\models\CompetitorTest;
+use frontend\models\RangeForm;
 
 /**
  * Site controller
@@ -65,7 +64,7 @@ class SiteController extends \frontend\components\BaseController {
                 ],
             ],
 */
-           [
+           /*[
                 'class' => 'yii\filters\PageCache',
                 'only' => ['facebook'],
                 'duration' => 60*60*12, // 12 h
@@ -122,7 +121,7 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],
+            ],*/
         ];
 
     }
@@ -152,6 +151,7 @@ class SiteController extends \frontend\components\BaseController {
 	/*
 	EXPORT WITH MPDF
 	*/
+    /*
     public function actionExportPdf()
     {
 		
@@ -182,7 +182,7 @@ class SiteController extends \frontend\components\BaseController {
         $mpdf->Output();
         exit;
     }
-    
+    */
 	
     /**
      * Home page
@@ -326,9 +326,15 @@ class SiteController extends \frontend\components\BaseController {
                 $oModel = [];
                 $oModel = $oAuthclient->model;
                 if($oModel){
-                    $since = strtotime('first day of this month') * 1000;
-                    //$since = strtotime('-3 months') * 1000;
-                    $until = time() * 1000;
+                    $oRangeForm = new RangeForm();
+                    if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
+                        $since = strtotime($oRangeForm->start_date) * 1000;
+                        $until = strtotime($oRangeForm->end_date) * 1000;
+                    }else{  
+                        $since = strtotime('first day of this month') * 1000;
+                        //$since = strtotime('-3 months') * 1000;
+                        $until = time() * 1000;
+                    }
                     $statistics = $linkedin->statistics($oModel[0], $since, $until);
                     //$linkedin->saveAccountInsights($oModel[0], $since);
                     return $this->render('/linkedin/linkedinPage', [
@@ -337,6 +343,7 @@ class SiteController extends \frontend\components\BaseController {
                         'oModel' => $oModel[0],
                         'since' => $since,
                         'until' => $until,
+                        'oRangeForm' => $oRangeForm,
                         'authclient_created' => strtotime($oAuthclient->created)
                     ]);
                 }
@@ -441,7 +448,11 @@ class SiteController extends \frontend\components\BaseController {
                 }
             }
             $models = $oAuthclient->model;
-          	if((date('d M', time()) == date('d M', strtotime('first day of this month'))) || date('d', time()) == '02'){
+            $oRangeForm = new RangeForm();
+            if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
+                $since = date('Y-m-d', strtotime($oRangeForm->start_date));
+                $until = date('Y-m-d', strtotime($oRangeForm->end_date));
+            }elseif((date('d M', time()) == date('d M', strtotime('first day of this month'))) || date('d', time()) == '02'){
                 $since = date('Y-m-d', strtotime('first day of last month'));
                 $until = date('Y-m-d', strtotime('last day of last month'));
             }else{
@@ -466,6 +477,7 @@ class SiteController extends \frontend\components\BaseController {
                 'start_date' => $since,
                 'end_date' => $until,
                 'model' => $models[0],
+                'oRangeForm' => $oRangeForm,
                 'authclient_created' => strtotime($oAuthclient->created)
             ]);
 
@@ -474,79 +486,70 @@ class SiteController extends \frontend\components\BaseController {
         }
     }
 
-    public function actionInstagram(){
-        //ini_set('max_execution_time', 300000);
-        $session = Yii::$app->session;
-        $insta = new Instagram ();
-        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
-        if($oAuthclient ){
-            if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
-                //check stored token
-                Instagram::setClient($set_client);
-                $ReturnData = $insta->getUserData() ;
-                if( $ReturnData == null){
-                    $oAuthclient->source_data =null;
-                    $oAuthclient->save();
-                    Instagram::setClient( null);
-                }
-            }
-        }
-
-        //echo '<pre>'; var_dump($insta->getCompetitorNameAndFollowers()); echo '</pre>'; die;
-	/*if(Yii::$app->request->post() && isset($_POST['since'])){
-            $since = $_POST['since'];
-	}else{
-            $since =  strtotime('first day of this month');
-	}
-	if(Yii::$app->request->post() && isset($_POST['until'])){
-            $until = $_POST['until'];
-	}else{
-            $until = time();
-	}*/
-      if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
-         $since = strtotime('first day of last month');
-         $until = strtotime('last day of last month');
-     }else{
-         $since = strtotime('first day of this month');
-         //$since = strtotime('-2 months');
-         $until = time();
-    }
-	$days_in_range = $insta->getDaysInRange($since, $until);
-        if($session->has('instagram')){
-            $user_data = $insta->getUserData();
-            if(!$oAuthclient or ($oAuthclient->source_data ==null )){
-                $client = $insta->getClient();
-                $oAuthclient= !$oAuthclient ?  new Authclient() : $oAuthclient;
-                $oAuthclient->user_id = Yii::$app->user->getId();
-                $oAuthclient->source = $client->name;
-                $oAuthclient->source_id = $user_data["id"];
-                $oAuthclient->source_data = serialize($client);
+public function actionInstagram(){
+    //ini_set('max_execution_time', 300000);
+    $session = Yii::$app->session;
+    $insta = new Instagram ();
+    $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);
+    if($oAuthclient ){
+        if($oAuthclient->source_data != null && (is_object($set_client = unserialize($oAuthclient->source_data)))){
+            //check stored token
+            Instagram::setClient($set_client);
+            $ReturnData = $insta->getUserData() ;
+            if( $ReturnData == null){
+                $oAuthclient->source_data =null;
                 $oAuthclient->save();
-		$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
+                Instagram::setClient( null);
             }
-            //$oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'instagram']); 
-            $oModels = $oAuthclient->model;
-            if(!$oModels){
-                $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
-            }else{
-		//$insta->saveAccountInsights($oModels[0]);
-                $insta->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
-            }
-            return $this->render('/instagram/instagram', [
-                'user' => $user_data,
-                'insta' => $insta,
-                'followers_growth' => $insta->getFollowersGrowth($days_in_range),
-                'statistics' => $insta->getEngagementStatistics($oModels[0]->id, $days_in_range, $since, $until),
-		'model' => $oModels[0],
-		'since' => $since,
-		'until' => $until,
-                'authclient_created' => strtotime($oAuthclient->created),
-                
-                    ]);
-        }else{
-            return $this->render('/instagram/instagramAuth');
         }
     }
+
+    $oRangeForm = new RangeForm();
+    if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
+        $since = strtotime($oRangeForm->start_date);
+        $until = strtotime($oRangeForm->end_date);
+    }elseif(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+        $since = strtotime('first day of last month');
+        $until = strtotime('last day of last month');
+    }else{
+        $since = strtotime('first day of this month');
+        //$since = strtotime('-2 months');
+        $until = time();
+    }
+    $days_in_range = $insta->getDaysInRange($since, $until);
+    if($session->has('instagram')){
+        $user_data = $insta->getUserData();
+        if(!$oAuthclient or ($oAuthclient->source_data ==null )){
+            $client = $insta->getClient();
+            $oAuthclient= !$oAuthclient ?  new Authclient() : $oAuthclient;
+            $oAuthclient->user_id = Yii::$app->user->getId();
+            $oAuthclient->source = $client->name;
+            $oAuthclient->source_id = $user_data["id"];
+            $oAuthclient->source_data = serialize($client);
+            $oAuthclient->save();
+            $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
+        }
+        $oModels = $oAuthclient->model;
+        if(!$oModels){
+            $oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
+        }else{
+            $insta->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
+        }
+        return $this->render('/instagram/instagram', [
+            'user' => $user_data,
+            'insta' => $insta,
+            'followers_growth' => $insta->getFollowersGrowth($days_in_range),
+            'statistics' => $insta->getEngagementStatistics($oModels[0]->id, $days_in_range, $since, $until),
+            'model' => $oModels[0],
+            'since' => $since,
+            'until' => $until,
+            'oRangeForm' => $oRangeForm,
+            'authclient_created' => strtotime($oAuthclient->created),
+            ]);
+    }else{
+        return $this->render('/instagram/instagramAuth');
+    }
+}
     
     public function actionTwitter(){
        //ini_set('max_execution_time', 900000);
@@ -566,12 +569,9 @@ class SiteController extends \frontend\components\BaseController {
         }
 
         $session = Yii::$app->session;
-		//echo '<pre>'; var_dump($twitter->getCompetitorsNamesAndFollowers("https://twitter.com/GoldDerby")); echo '</pre>'; die;
         if($session->has('twitter')){
             $client = $twitter->getClient();
-            //echo '<pre>'; var_dump($client->api('application/rate_limit_status.json', 'GET', ['resources' => 'statuses'])); echo '</pre>'; die;
             $user_data = $twitter->getAccountData();
-           // $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'twitter']);
             if(!$oAuthclient or ($oAuthclient->source_data==null)){
                 $client = $twitter->getClient();
                 $oAuthclient= !$oAuthclient ?  new Authclient() : $oAuthclient;
@@ -582,10 +582,12 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->save();
                 //$oModel = $insta->firstTimeToLog($user_data, $oAuthclient->id);
             }
-			
-            //$oAuthclient = Authclient::findOne(['user_id' => 75, 'source' => 'instagram']);
             $oModels = $oAuthclient->model;
-              if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+              $oRangeForm = new RangeForm();
+                if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
+                    $since = strtotime($oRangeForm->start_date);
+                    $until = strtotime($oRangeForm->end_date);
+                }elseif(date('d M', time()) == date('d M', strtotime('first day of this month'))){
                     $since = strtotime('first day of last month');
                 	//$since_str = date('Y-m-d H:i:s', $since);
                     $until = strtotime('first day of this month');
@@ -596,15 +598,12 @@ class SiteController extends \frontend\components\BaseController {
                     //$since = strtotime('-12 months');
                 	//$since_str = date('Y-m-d H:i:s', $since);
                     $until = time();
-                	//$until_str = date('Y-m-d H:i:s', $until);
                 }
-          //var_dump(date('Y-m-d H:i:s', $until)); die;
             if(!$oModels){
                 $oModels[0] = $twitter->firstTimeToLog($user_data, $oAuthclient->id);
-				$twitter->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
+		$twitter->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
               	$days_in_range = $twitter->getDaysInRange($since, $until);
             }else{
-				//$twitter->saveAccountInsights($oModels[0]);
               $twitter->getTimeBasedAccountInsights($oModels[0]->id, $since, $until);
               $days_in_range = $twitter->getDaysInRange($since, $until);
             }
@@ -619,6 +618,7 @@ class SiteController extends \frontend\components\BaseController {
                 'model' => $oModels[0],
                 'since' => $since,
                 'until' => $until,
+                'oRangeForm' => $oRangeForm,
                 'authclient_created' => strtotime($oAuthclient->created),
                     ]);
         }else{
@@ -644,7 +644,6 @@ class SiteController extends \frontend\components\BaseController {
                 }
             }else{
                 $client = Facebook::getClient();
-                //$client->getUserAttributes() ;
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->save();
             }
@@ -664,9 +663,14 @@ class SiteController extends \frontend\components\BaseController {
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
             if($oModel){
-				if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+                $oRangeForm = new RangeForm();
+                if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
+                    $since = strtotime($oRangeForm->start_date);
+                    $since = strtotime('-1 days', $since);
+                    $until = strtotime($oRangeForm->end_date);
+                }elseif(date('d M', time()) == date('d M', strtotime('first day of this month'))){
                     $since = strtotime('first day of last month');
-                  	$since = strtotime('-1 days', $since);
+                    $since = strtotime('-1 days', $since);
                     $until = strtotime('last day of last month');
                 }else{
                     $since = strtotime('first day of this month');
@@ -682,6 +686,7 @@ class SiteController extends \frontend\components\BaseController {
                     'since' => $since,
                     'until' => $until,
                     'model' => $oModel[0],
+                    'oRangeForm' => $oRangeForm,
                     'authclient_created' => strtotime($oAuthclient->created),
                 ]);
             }else{

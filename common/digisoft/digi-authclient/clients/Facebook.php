@@ -1207,6 +1207,7 @@ class Facebook extends \yii\authclient\clients\Facebook
             }
 			
         }
+        rsort($months_limits);
         return $months_limits;
     }
     

@@ -16,7 +16,7 @@
 
             <tr>
 
-                <td colspan="3">Likes Overview</td>
+                <td colspan="12" class="second">Likes Overview</td>
 
             </tr>
 
@@ -52,7 +52,7 @@
 
             <tr>
 
-                <td colspan="3">Interactions Overview</td>
+                <td colspan="12" class="second">Interactions Overview</td>
 
             </tr>
 
@@ -100,7 +100,7 @@
 
             <tr>
 
-                <td colspan="3">Reach Overview</td>
+                <td colspan="12" class="second">Reach Overview</td>
 
             </tr>
 
@@ -117,15 +117,56 @@
 
         </table>
 
+        <?php
+        if(count($comparison) > 6){ ?>
+            <table class="facebook">
+
+            <tr>
+
+                <th>Metric</th>
+
+                <th colspan="<?= count($comparison) ?>">Paid</th>
+
+            </tr>
+
+            <tr>
+
+                <th class="second">Time range</th>
+
+                <?php
+                foreach($comparison as $month){ ?>
+                    <th class="second"><?= $month['month'] ?></th>
+                <?php } ?>
+            </tr>
+
+            <tr>
+
+                <td>New Likes</td>
+
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['paid']['newlikes'] ?></td>
+                <?php } ?>
+            </tr>
+
+            <tr>
+
+                <td>Post Reach</td>
+
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['paid']['post_reach'] ?></td>
+                <?php } ?>
+            </tr>
+
+        </table>
         <table class="facebook">
 
             <tr>
 
                 <th>Metric</th>
 
-                <th colspan="2">Paid</th>
-
-                <th colspan="2">Unpaid</th>
+                <th colspan="<?= count($comparison) ?>">Unpaid</th>
 
             </tr>
 
@@ -137,6 +178,54 @@
                 foreach($comparison as $month){ ?>
                     <th class="second"><?= $month['month'] ?></th>
                 <?php }
+                ?>
+            </tr>
+
+            <tr>
+
+                <td>New Likes</td>
+
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['unpaid']['newlikes'] ?></td>
+                <?php }
+                ?>
+            </tr>
+
+            <tr>
+
+                <td>Post Reach</td>
+
+                <?php
+                foreach($comparison as $month){ ?>
+                    <td><?= $month['unpaid']['post_reach'] ?></td>
+                <?php } 
+                ?>
+            </tr>
+
+        </table>
+        <?php }else{
+        ?>
+        <table class="facebook">
+
+            <tr>
+
+                <th>Metric</th>
+
+                <th colspan="<?= count($comparison) ?>">Paid</th>
+
+                <th colspan="<?= count($comparison) ?>">Unpaid</th>
+
+            </tr>
+
+            <tr>
+
+                <th class="second">Time range</th>
+
+                <?php
+                foreach($comparison as $month){ ?>
+                    <th class="second"><?= $month['month'] ?></th>
+                <?php } 
                 foreach($comparison as $month){ ?>
                     <th class="second"><?= $month['month'] ?></th>
                 <?php }
@@ -172,5 +261,6 @@
             </tr>
 
         </table>
+        <?php } ?>
     </div>
 </div>

@@ -959,7 +959,7 @@ class Instagram extends OAuth2
             }
             $months_limits[$key]['interactions'] = $months_limits[$key]['likes'] + $months_limits[$key]['comments'] + $months_limits[$key]['shares'];
         }
-        //echo '<pre>'; var_dump($months_limits); echo '</pre>'; die;
+        rsort($months_limits);
         return $months_limits;
     }
  
