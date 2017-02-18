@@ -16,7 +16,7 @@
 
             <tr>
 
-                <td colspan="3">Followers</td>
+                <td colspan="12" class="second">Followers</td>
 
             </tr>
 
@@ -33,7 +33,7 @@
 
             <tr>
 
-                <td colspan="3">Interactions Overview</td>
+                <td colspan="12" class="second">Interactions Overview</td>
 
             </tr>
 

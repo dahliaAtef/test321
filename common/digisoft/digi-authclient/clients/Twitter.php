@@ -964,7 +964,7 @@ class Twitter extends \yii\authclient\clients\Twitter
                         'start' => $since,
                         'end' => $until
                         ]);
-        }elseif($since < $authclient_created){
+        }elseif(strtotime(date('Y-m-d', $since)) < strtotime(date($authclient_created))){
             array_push($months_limits, [
                         'start' => strtotime(date('Y-m-01', strtotime('-1 month'))),
                         'end' => strtotime(date('Y-m-t', strtotime('-1 month')))
@@ -1022,7 +1022,7 @@ class Twitter extends \yii\authclient\clients\Twitter
             }
             $months_limits[$key]['interactions'] = $months_limits[$key]['likes'] + $months_limits[$key]['comments'] + $months_limits[$key]['shares'];
         }
-        //echo '<pre>'; var_dump($months_limits); echo '</pre>'; die;
+        rsort($months_limits);
         return $months_limits;
     }
     
