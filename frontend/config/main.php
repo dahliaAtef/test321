@@ -96,6 +96,7 @@ return [
                 'contact-us' => 'site/contact-us',
                 'support' => 'site/support',
                 'subscribe' => 'site/subscribe',
+                'dashboard/<username:\w+>' => 'site/dashboard',
                 'dashboard' => 'site/dashboard',
                 'linkedin' => 'site/linkedin',
                 'facebook' => 'site/facebook',
@@ -112,6 +113,13 @@ return [
                 'forgot-password' => 'user/request-password-reset',
                 'reset-password' => 'user/reset-password',
               	'change-password' => 'user/change-password',
+                'linkedin/<username:\w+>' => 'site/linkedin',
+                'facebook/<username:\w+>' => 'site/facebook',
+                'twitter/<username:\w+>' => 'site/twitter',
+                'instagram/<username:\w+>' => 'site/instagram',
+                'youtube/<username:\w+>' => 'site/youtube',
+                'google-plus/<username:\w+>' => 'site/google-plus',
+
             ],
         ],
         'metaTags' => [
