@@ -54,7 +54,7 @@ class SiteController extends \frontend\components\BaseController {
                 ],
             ],
 
-            [
+            /*[
                 'class' => 'yii\filters\PageCache',
                 'only' => ['facebook'],
                 'duration' => 60*60*12, // 12 h
@@ -62,7 +62,7 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],
+            ],*/
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['twitter'],
@@ -645,7 +645,7 @@ public function actionInstagram(){
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
-                $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient);
+                $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
             }
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
