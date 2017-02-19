@@ -7,14 +7,15 @@ use yii\widgets\ActiveForm;
 use digi\authclient\clients\Facebook;
 
 $client = $fb->getClient();
-//var_dump($page['id']); die;
 $statistics = $fb->statistics($page['id'], $page['likes'], $since, $until);
 $top_fifteen_cities = $fb->getFansByCityFifteenCities($statistics['fans_by_city']);
 $colors = ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00","#00CC00","#00CC66","#00CCCC","#0066CC","#FFCC66","#FFFF99","#003399","#000066"];
 $this->title = 'Facebook';
 $session = Yii::$app->session;
 
-$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."');", yii\web\View::POS_END);
+$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."'); 
+    tripDatePicker.range_limit = 92;
+    $('.startDate').prop('autofocus', false);", yii\web\View::POS_END);
 ?>
 <div class="page-content inside facebook">
   <div id="loadWh">
@@ -29,8 +30,6 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
         <div class="col-md-12">          
             <div class="row">
                
-                
-                    
                 <?php $form = ActiveForm::begin(['id' => 'range-form','options' => ['data-pjax' => true ]]); ?>
                  
                 <div class="range-item">
@@ -38,16 +37,13 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
                 </div>
                 <div class="range-item">
                     <div class="right-inner-addon">
-                        <?= $form->field($oRangeForm, 'start_date')->textInput(['class' => 'form-control startDate', 'placeholder' => 'Start Date', 'onblur' => 'openEndDate()', 'readonly' => true])->label(false) ?>
-                       
-                        <!--<input type="text" class="form-control startDate" onblur="openEndDate()" placeholder="Start Date">-->
+                        <?= $form->field($oRangeForm, 'start_date')->textInput(['class' => 'form-control startDate', 'placeholder' => 'Start Date', 'readonly' => true])->label(false) ?>
                         <i class="glyphicon glyphicon-calendar"></i>
                     </div>
                 </div>
                 <div class="range-item">
                     <div class="right-inner-addon">
-                        <?= $form->field($oRangeForm, 'end_date')->textInput(['class' => 'form-control endDate', 'placeholder' => 'End Date', 'onfocus' => 'getValue()', 'disabled' => true, 'readonly' => true])->label(false) ?>
-                        <!--<input type="text" class="form-control endDate" onfocus="getValue()" placeholder="End Date" disabled>-->
+                        <?= $form->field($oRangeForm, 'end_date')->textInput(['class' => 'form-control endDate', 'placeholder' => 'End Date', 'disabled' => true, 'readonly' => true])->label(false) ?>
                         <i class="glyphicon glyphicon-calendar"></i>
                     </div>
                 </div>
@@ -55,20 +51,6 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
                         <?= Html::submitButton('Calculate', ['id' => 'bttn-range-form', 'name' => 'submit-range', 'autofocus' => 'true' ]) ?>
                 </div>
                 <?php $form = ActiveForm::end() ?>
-                <?php
-                    $this->registerJs(
-                    "function openEndDate(){ "
-                        //. "if(tripDatePicker.startBox.value !== ''){"
-                            . "$('.endDate').prop('disabled', false); "
-                        //."}"
-                    . "}"
-                    ."function getValue(){ "
-                        ."untilDate = tripDatePicker.startDate.getTime()+(92*24*60*60*1000);"
-                        . "tripDatePicker.untilDate = (untilDate > new Date().getTime()) ? new Date() : new Date(untilDate); "
-                    . "}"
-                    , yii\web\View::POS_END);
-                ?>
-                
             </div>
         </div>
       </div>
@@ -178,13 +160,7 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
 		?>		
             </div>
 	</div>
-		<!--<div class="row">
-			<div class="col-md-6">
-				
-					echo $this->render('_fansByCityColorsTable', ['top_fifteen_cities' => $top_fifteen_cities, 'colors' => $colors]);
-				
-			</div>
-		</div>-->
+
 		<div class="row">
 			<div class="col-md-12">
 				<?php

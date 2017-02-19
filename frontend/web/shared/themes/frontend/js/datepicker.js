@@ -3,6 +3,7 @@ class datePicker {
     constructor(config) {
         var vm = this;
         vm.untilDate;
+        vm.range_limit;
         vm.today = new Date(config.test);
         vm.startBox   = config.start[0];
         vm.endBox     = config.end[0];
@@ -100,9 +101,6 @@ class datePicker {
         }else{
             sinceDate = vm.startDate.getTime() >= vm.today.getTime() ? vm.startDate : vm.today;
         }
-        //check = new Date(sinceDate.getTime()+(92*24*60*60*1000));
-        //untilDate = (check.getTime() > new Date().getTime()) ? (new Date()) : check;
-        //untilDate = new Date();
         
         vm.calendar = vm.getMonts(startDate);
         vm.renderCalendar(sinceDate, element);
@@ -272,6 +270,10 @@ class datePicker {
 
                             td.addEventListener('click', function(e){
                                 vm._setDate(element, week[day].date);
+                                var untilDate;
+                                untilDate = vm.startDate.getTime()+(vm.range_limit * 24 * 60 * 60 * 1000);
+                                vm.untilDate = (untilDate > new Date().getTime()) ? new Date() : new Date(untilDate);
+                                $('.endDate').prop('disabled', false).focus();
                             });
                         }else{
                             td.className = 'disabled';

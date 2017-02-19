@@ -7,7 +7,9 @@ $this->title = 'LinkedIn';
 $updates = count($statistics['updates']);
 $days_count = count($statistics['days']);
 
-$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."');", yii\web\View::POS_END)
+$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."'); 
+    tripDatePicker.range_limit = 365;
+    $('.startDate').prop('autofocus', false);", yii\web\View::POS_END)
 ?>
 <div class="page-content inside linkeidn">
    <div id="loadWh">
@@ -19,13 +21,14 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
     
   <div class="page-options">   
     <div class="row">
-        <div class="col-md-6">          
+        <div class="col-md-12">          
             <div class="row">
+               
+                <?php $form = ActiveForm::begin(['id' => 'range-form','options' => ['data-pjax' => true ]]); ?>
+                 
                 <div class="range-item">
                     <h4>Choose your range</h4>
                 </div>
-                    
-                <?php $form = ActiveForm::begin(['id' => 'range-form','options' => ['data-pjax' => true ]]); ?>
                 <div class="range-item">
                     <div class="right-inner-addon">
                         <?= $form->field($oRangeForm, 'start_date')->textInput(['class' => 'form-control startDate', 'placeholder' => 'Start Date', 'readonly' => true])->label(false) ?>
@@ -34,12 +37,12 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
                 </div>
                 <div class="range-item">
                     <div class="right-inner-addon">
-                        <?= $form->field($oRangeForm, 'end_date')->textInput(['class' => 'form-control endDate', 'placeholder' => 'End Date', 'readonly' => true])->label(false) ?>
+                        <?= $form->field($oRangeForm, 'end_date')->textInput(['class' => 'form-control endDate', 'placeholder' => 'End Date', 'disabled' => true, 'readonly' => true])->label(false) ?>
                         <i class="glyphicon glyphicon-calendar"></i>
                     </div>
                 </div>
                 <div class="range-item">
-                        <?= Html::submitButton('Calculate', ['id' => 'bttn-range-form', 'name' => 'submit-range']) ?>
+                        <?= Html::submitButton('Calculate', ['id' => 'bttn-range-form', 'name' => 'submit-range', 'autofocus' => 'true' ]) ?>
                 </div>
                 <?php $form = ActiveForm::end() ?>
             </div>
