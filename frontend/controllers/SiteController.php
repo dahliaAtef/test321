@@ -53,18 +53,8 @@ class SiteController extends \frontend\components\BaseController {
                     ],
                 ],
             ],
-/*
+
             [
-                'class' => 'yii\filters\PageCache',
-                'only' => ['dashboard'],
-                'duration' => 60*60*12, // 12 h
-                'dependency' => [
-                    'class' => 'yii\caching\DbDependency',
-                    'sql' => 'SELECT COUNT(*) FROM authclient where  user_id='.Yii::$app->user->getId(),
-                ],
-            ],
-*/
-           /*[
                 'class' => 'yii\filters\PageCache',
                 'only' => ['facebook'],
                 'duration' => 60*60*12, // 12 h
@@ -82,7 +72,6 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "twitter" and user_id='.Yii::$app->user->getId(),
                 ],
             ],
-
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['linkedin'],
@@ -92,7 +81,6 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
                 ],
             ],
-
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['instagram'],
@@ -102,7 +90,6 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "instagram" and user_id='.Yii::$app->user->getId(),
                 ],
             ],
-
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['youtube'],
@@ -112,7 +99,6 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
                 ],
             ],
-
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['google-plus'],
@@ -121,7 +107,8 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],*/
+            ],
+
         ];
 
     }
@@ -258,8 +245,8 @@ class SiteController extends \frontend\components\BaseController {
     /**
      * Dashboard page
      */
-    public function actionDashboard() {
-	$session= Yii::$app->session;
+    public function actionDashboard($username=null) {
+	    $session= Yii::$app->session;
         $dashboard = new Dashboard();
         $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
         $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
@@ -706,27 +693,28 @@ public function actionInstagram(){
      */
 	 
     public function onAuthSuccess($client) {
+        $ActiveUser=Yii::$app->session->get('ActiveUser');
         if($client->name == 'facebook'){
             Facebook::setClient($client);
-            return $this->action->redirect( Url::to(['facebook'],true) );
+            return $this->action->redirect( Url::to(['facebook/'.$ActiveUser],true) );
         }elseif($client->name == 'twitter'){
                 Twitter::setClient($client);
-                return $this->action->redirect( Url::to(['twitter'],true) );
+                return $this->action->redirect( Url::to(['twitter/'.$ActiveUser],true) );
         }elseif($client->name == 'instagram'){
             Instagram::setClient($client);
-            return $this->action->redirect( Url::to(['instagram'],true));
+            return $this->action->redirect( Url::to(['instagram/'.$ActiveUser],true));
         }elseif($client->name == 'youtube'){
             Youtube::setClient($client);
-            return $this->action->redirect( Url::to(['youtube'],true) );
+            return $this->action->redirect( Url::to(['youtube/'.$ActiveUser],true) );
         }elseif($client->name == 'google_plus'){
             GooglePlus::setClient($client);
-            return $this->action->redirect( Url::to(['google-plus'],true) );
+            return $this->action->redirect( Url::to(['google-plus/'.$ActiveUser],true) );
         }elseif($client->name == 'foursquare'){
             Foursquare::setClient($client);
             return $this->action->redirect( Url::to(['foursquare'],true) );
         }elseif($client->name == 'linkedin'){
             LinkedIn::setClient($client);
-            return $this->action->redirect( Url::to(['linkedin'],true) );
+            return $this->action->redirect( Url::to(['linkedin/'.$ActiveUser],true) );
         }else{
             echo '<pre>'; var_dump($client); echo '</pre>'; die;
         }

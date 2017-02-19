@@ -64,7 +64,12 @@ class UserController extends \frontend\components\BaseController {
     public function actionLogin() {
         $oLoginForm = new Login();
         if ($oLoginForm->load(Yii::$app->request->post()) && $oLoginForm->login()) {
-            return $this->redirect(Url::to(['/dashboard']));
+           // var_dump($oLoginForm->username);die;
+           $id=  Yii::$app->user->getId() ;
+           $userObj= \common\models\base\User::findByUserId($id);
+            Yii::$app->session->set('ActiveUser', $userObj->username);
+
+            return $this->redirect(Url::to(['/dashboard/'.$userObj->username]));
         } else {
             Yii::$app->getSession()->setFlash('error', Yii::t('app', 'Sorry, wrong email or password. Please try again.'));
             return $this->goBack(); //$this->goHome();
