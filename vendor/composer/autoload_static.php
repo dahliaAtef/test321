@@ -9,9 +9,9 @@ class ComposerStaticInitc954656b4348d318f6274aefe5c2f07b
     public static $files = array (
         '2cffec82183ee1cea088009cef9a6fc3' => __DIR__ . '/..' . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
-        '8f60802bf3ab1b5d3fe027b2a30fc63c' => __DIR__ . '/..' . '/hscstudio/yii2-export/libraries/tbs/tbs_class.php',
-        'c97615380d0d24e0adcb1db6edeb8a28' => __DIR__ . '/..' . '/hscstudio/yii2-export/libraries/tbs/plugins/tbs_plugin_opentbs.php',
-        'ef4236948f18f73b21dfa5a2df084116' => __DIR__ . '/..' . '/hscstudio/yii2-export/libraries/mpdf/mpdf.php',
+        //'8f60802bf3ab1b5d3fe027b2a30fc63c' => __DIR__ . '/..' . '/hscstudio/yii2-export/libraries/tbs/tbs_class.php',
+        //'c97615380d0d24e0adcb1db6edeb8a28' => __DIR__ . '/..' . '/hscstudio/yii2-export/libraries/tbs/plugins/tbs_plugin_opentbs.php',
+        //'ef4236948f18f73b21dfa5a2df084116' => __DIR__ . '/..' . '/hscstudio/yii2-export/libraries/mpdf/mpdf.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -75,6 +75,10 @@ class ComposerStaticInitc954656b4348d318f6274aefe5c2f07b
         'i' => 
         array (
             'infoweb\\analytics\\' => 18,
+        ),
+        'r' => 
+        array (
+            'robregonm\\pdf\\' => 14,
         ),
         'h' => 
         array (
@@ -151,6 +155,14 @@ class ComposerStaticInitc954656b4348d318f6274aefe5c2f07b
         'yii\\' => 
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2',
+        ),
+        'robregonm\\pdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/robregonm/yii2-pdf',
+        ),
+        'hscstudio\\export\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/hscstudio/yii2-export',
         ),
         'yii2mod\\enum\\' => 
         array (
@@ -3927,6 +3939,39 @@ class ComposerStaticInitc954656b4348d318f6274aefe5c2f07b
         'Google_Verifier_Pem' => __DIR__ . '/..' . '/google/apiclient/src/Google/Verifier/Pem.php',
         'Omnipay\\Omnipay' => __DIR__ . '/..' . '/omnipay/common/src/Omnipay/Omnipay.php',
         'SessionHandlerInterface' => __DIR__ . '/..' . '/symfony/http-foundation/Resources/stubs/SessionHandlerInterface.php',
+        'CGIF' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
+        'CGIFCOLORTABLE' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
+        'CGIFFILEHEADER' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
+        'CGIFIMAGE' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
+        'CGIFIMAGEHEADER' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
+        'CGIFLZW' => __DIR__ . '/..' . '/mpdf/mpdf/classes/gif.php',
+        'FPDF_TPL' => __DIR__ . '/..' . '/setasign/fpdi/fpdf_tpl.php',
+        'FPDI' => __DIR__ . '/..' . '/setasign/fpdi/fpdi.php',
+        'FilterASCII85' => __DIR__ . '/..' . '/setasign/fpdi/filters/FilterASCII85.php',
+        'FilterASCIIHexDecode' => __DIR__ . '/..' . '/setasign/fpdi/filters/FilterASCIIHexDecode.php',
+        'FilterLZW' => __DIR__ . '/..' . '/setasign/fpdi/filters/FilterLZW.php',
+        'INDIC' => __DIR__ . '/..' . '/mpdf/mpdf/classes/indic.php',
+        'MYANMAR' => __DIR__ . '/..' . '/mpdf/mpdf/classes/myanmar.php',
+        'OTLdump' => __DIR__ . '/..' . '/mpdf/mpdf/classes/otl_dump.php',
+        'PDFBarcode' => __DIR__ . '/..' . '/mpdf/mpdf/classes/barcode.php',
+        'PclZip' => __DIR__ . '/..' . '/pclzip/pclzip/pclzip.lib.php',
+        'SEA' => __DIR__ . '/..' . '/mpdf/mpdf/classes/sea.php',
+        'SVG' => __DIR__ . '/..' . '/mpdf/mpdf/classes/svg.php',
+        'TTFontFile' => __DIR__ . '/..' . '/mpdf/mpdf/classes/ttfontsuni.php',
+        'TTFontFile_Analysis' => __DIR__ . '/..' . '/mpdf/mpdf/classes/ttfontsuni_analysis.php',
+        'UCDN' => __DIR__ . '/..' . '/mpdf/mpdf/classes/ucdn.php',
+        'bmp' => __DIR__ . '/..' . '/mpdf/mpdf/classes/bmp.php',
+        'cssmgr' => __DIR__ . '/..' . '/mpdf/mpdf/classes/cssmgr.php',
+        'directw' => __DIR__ . '/..' . '/mpdf/mpdf/classes/directw.php',
+        'fpdi_pdf_parser' => __DIR__ . '/..' . '/setasign/fpdi/fpdi_pdf_parser.php',
+        'grad' => __DIR__ . '/..' . '/mpdf/mpdf/classes/grad.php',
+        'mPDF' => __DIR__ . '/..' . '/mpdf/mpdf/mpdf.php',
+        'meter' => __DIR__ . '/..' . '/mpdf/mpdf/classes/meter.php',
+        'mpdfform' => __DIR__ . '/..' . '/mpdf/mpdf/classes/mpdfform.php',
+        'otl' => __DIR__ . '/..' . '/mpdf/mpdf/classes/otl.php',
+        'pdf_context' => __DIR__ . '/..' . '/setasign/fpdi/pdf_context.php',
+        'tocontents' => __DIR__ . '/..' . '/mpdf/mpdf/classes/tocontents.php',
+        'wmf' => __DIR__ . '/..' . '/mpdf/mpdf/classes/wmf.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

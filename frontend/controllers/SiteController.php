@@ -25,6 +25,7 @@ use frontend\models\SubscribeForm;
 use frontend\models\UserPagesForm;
 use frontend\models\SupportForm;
 use frontend\models\RangeForm;
+use frontend\models\ExportForm;
 
 /**
  * Site controller
@@ -47,7 +48,7 @@ class SiteController extends \frontend\components\BaseController {
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['/logout', '/change-password', 'dashboard', 'facebook', 'twitter', 'instagram', 'youtube', 'google-plus', 'linkedin', 'support', 'home', 'testmail', 'delete-competitor', 'admin', 'competitors/index', 'competitors/delete', 'competitors/update', 'export-pdf'],
+                        'actions' => ['/logout', '/change-password', 'dashboard', 'facebook', 'twitter', 'instagram', 'youtube', 'google-plus', 'linkedin', 'support', 'home', 'testmail', 'delete-competitor', 'admin', 'competitors/index', 'competitors/delete', 'competitors/update', 'export-pdf', 'facebook-pdf'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -134,6 +135,53 @@ class SiteController extends \frontend\components\BaseController {
         ];
     }
 
+    
+    public function actionFacebookPdf(){
+        $session = Yii::$app->session;
+        $fb = new Facebook();
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
+
+            $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
+
+                $oExportForm = new ExportForm();
+                if($oExportForm->load(Yii::$app->request->post()) && $oExportForm->validate()){
+                    $count = 0; $images = []; 
+                    $images_id = json_decode($oExportForm->images_id, true);
+                    $images_src = json_decode($oExportForm->images_src, true);
+                    foreach($images_id as $id){
+                        $images[$id] = $images_src[$count];
+                        $count++;
+                    }
+                    //echo '<pre>'; var_dump($images); echo '</pre>'; die;
+                }
+                    $since = strtotime('first day of this month');
+                    //$since = strtotime('-2 months');
+                  	$since = strtotime('-1 days', $since);
+                    $until = time();
+                $page = $fb->getPageData($oModel[0]->entity_id);
+                Yii::$app->response->format = 'pdf';
+
+                // Rotate the page
+                Yii::$container->set(Yii::$app->response->formatters['pdf']['class'], [
+                    'format' => [216, 356], // Legal page size in mm
+                    'orientation' => 'Landscape', // This value will be used when 'format' is an array only. Skipped when 'format' is empty or is a string
+                    'beforeRender' => function($mpdf, $data) {},
+                    ]);
+
+                //$this->layout = '//print';
+                return $this->render('/facebook-pdf/facebookPage', [
+                    'page' => $page,
+                    'fb' => $fb,
+                    'id' => $oModel[0]->entity_id,
+                    'since' => $since,
+                    'until' => $until,
+                    'model' => $oModel[0],
+                    'authclient_created' => strtotime($oAuthclient->created),
+                    'images' => $images
+                ]);
+    }
+	
+    
 	
 	/*
 	EXPORT WITH MPDF
@@ -614,6 +662,7 @@ public function actionInstagram(){
     }
     
     public function actionFacebook(){
+        ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();
         $oUserPagesForm = new UserPagesForm();
@@ -651,6 +700,7 @@ public function actionInstagram(){
 
             if($oModel){
                 $oRangeForm = new RangeForm();
+                $oExportForm = new ExportForm();
                 if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
                     $since = strtotime($oRangeForm->start_date);
                     $since = strtotime('-1 days', $since);
@@ -666,7 +716,7 @@ public function actionInstagram(){
                     $until = time();
                 }
                 $page = $fb->getPageData($oModel[0]->entity_id);
-                return $this->render('/facebook/facebookPage',[
+                return $this->render('/facebook/facebookPage', [
                     'page' => $page,
                     'fb' => $fb,
                     'id' => $oModel[0]->entity_id,
@@ -674,6 +724,7 @@ public function actionInstagram(){
                     'until' => $until,
                     'model' => $oModel[0],
                     'oRangeForm' => $oRangeForm,
+                    'oExportForm' => $oExportForm,
                     'authclient_created' => strtotime($oAuthclient->created),
                 ]);
             }else{

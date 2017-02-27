@@ -6,6 +6,8 @@ use yii\helpers\Url;
 use yii\widgets\ActiveForm;
 use digi\authclient\clients\Facebook;
 
+
+
 $client = $fb->getClient();
 $statistics = $fb->statistics($page['id'], $page['likes'], $since, $until);
 $top_fifteen_cities = $fb->getFansByCityFifteenCities($statistics['fans_by_city']);
@@ -16,6 +18,27 @@ $session = Yii::$app->session;
 $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."'); 
     tripDatePicker.range_limit = 92;
     $('.startDate').prop('autofocus', false);", yii\web\View::POS_END);
+
+$this->registerJs("
+var images_id = [];
+var images_src = [];
+$('#bttn-export-form').on('click', function (){
+    $('.inner-page').find('img').map(function() {
+    
+        if($( this ).parent('div').hasClass('dummy_chart')){       
+            images_id.push(($( this ).parent('div')).parent('div').attr('id'));
+            images_src.push(this.src);
+	}else if($( this ).parent('div').attr('id') ){  
+            images_id.push( $( this ).parent('div').attr('id'));
+            images_src.push( this.src );
+	}
+    });
+
+    $('#exportform-images_src').val(JSON.stringify( images_src ));
+    $('#exportform-images_id').val(JSON.stringify( images_id ));
+    $('#export-form').submit();
+});
+", yii\web\View::POS_END);
 ?>
 <div class="page-content inside facebook">
   <div id="loadWh">
@@ -51,6 +74,13 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
                         <?= Html::submitButton('Calculate', ['id' => 'bttn-range-form', 'name' => 'submit-range', 'autofocus' => 'true' ]) ?>
                 </div>
                 <?php $form = ActiveForm::end() ?>
+                <?php $form = ActiveForm::begin(['action' =>['site/facebook-pdf'], 'id' => 'export-form','options' => ['data-pjax' => true ]]); ?>
+                    <?= $form->field($oExportForm, 'images_id')->hiddenInput()->label(false) ?>
+                    <?= $form->field($oExportForm, 'images_src')->hiddenInput()->label(false) ?>
+                <?php $form = ActiveForm::end() ?>
+                    <div class="range-item"> 
+                        <?= Html::button('Export', ['id'=>'bttn-export-form']) ?>
+                    </div>
             </div>
         </div>
       </div>
