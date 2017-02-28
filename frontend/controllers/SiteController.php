@@ -168,7 +168,7 @@ class SiteController extends \frontend\components\BaseController {
                     'beforeRender' => function($mpdf, $data) {},
                     ]);
 
-                //$this->layout = '//print';
+                //$this->layout = '//main';
                 return $this->render('/facebook-pdf/facebookPage', [
                     'page' => $page,
                     'fb' => $fb,
@@ -179,6 +179,20 @@ class SiteController extends \frontend\components\BaseController {
                     'authclient_created' => strtotime($oAuthclient->created),
                     'images' => $images
                 ]);
+                
+                    $mpdf->WriteHTML($html,2);
+                /*Yii::$app->html2pdf
+                    ->render('/facebook-pdf/facebookPage', [
+                    'page' => $page,
+                    'fb' => $fb,
+                    'id' => $oModel[0]->entity_id,
+                    'since' => $since,
+                    'until' => $until,
+                    'model' => $oModel[0],
+                    'authclient_created' => strtotime($oAuthclient->created),
+                    'images' => $images
+                ])
+                    ->saveAs('output.pdf');*/
     }
 	
     

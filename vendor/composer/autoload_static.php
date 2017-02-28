@@ -28,6 +28,7 @@ class ComposerStaticInitc954656b4348d318f6274aefe5c2f07b
             'yii\\bootstrap\\' => 14,
             'yii\\authclient\\' => 15,
             'yii\\' => 4,
+            'yii2tech\\html2pdf\\' => 18,
             'yii2mod\\enum\\' => 13,
             'yii2mod\\editable\\' => 17,
             'yii2mod\\comments\\' => 17,
@@ -155,6 +156,10 @@ class ComposerStaticInitc954656b4348d318f6274aefe5c2f07b
         'yii\\' => 
         array (
             0 => __DIR__ . '/..' . '/yiisoft/yii2',
+        ),
+        'yii2tech\\html2pdf\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/yii2tech/html2pdf',
         ),
         'robregonm\\pdf\\' => 
         array (

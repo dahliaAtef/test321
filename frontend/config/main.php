@@ -29,6 +29,16 @@ return [
         'request' => [
             'baseUrl' => $baseUrl,
         ],
+        'html2pdf' => [
+            'class' => 'yii2tech\html2pdf\Manager',
+            'viewPath' => '@app/views',
+            'converter' => [
+                'class' => 'yii2tech\html2pdf\converters\Wkhtmltopdf',
+                'defaultOptions' => [
+                    'pageSize' => 'A4'
+                ],
+            ]
+        ],
         'response' => [
             'formatters' => [
                 //'html' => [
