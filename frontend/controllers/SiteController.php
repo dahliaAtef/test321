@@ -104,7 +104,7 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
                 ],
 
-            ],
+            ],/*
             'pageCache' => [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['google-plus'],
@@ -114,7 +114,7 @@ class SiteController extends \frontend\components\BaseController {
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
 
-            ],
+            ],*/
 
 
         ];
@@ -182,7 +182,7 @@ class SiteController extends \frontend\components\BaseController {
      * Home page
      */
     public function actionHome() {
-        return (Yii::$app->user->isGuest) ? $this->render('home') : $this->redirect('dashboard');
+        return (Yii::$app->user->isGuest) ? $this->renderPartial('home') : $this->redirect('dashboard');
     }
     
     /**
@@ -653,7 +653,7 @@ class SiteController extends \frontend\components\BaseController {
                 $oAuthclient->source_data = serialize($client);
                 $oAuthclient->source_id = $client->getUserAttributes()["id"];
                 $oAuthclient->save();
-                $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient);
+                $fb->firstTimeToLog($oUserPagesForm->id, $oAuthclient->id);
             }
             $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
 
