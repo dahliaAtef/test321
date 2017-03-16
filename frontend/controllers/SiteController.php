@@ -101,8 +101,8 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],/*
-            [
+            ],
+            'pageCache' => [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['google-plus'],
                 'duration' => 60*60*12, // 12 h
@@ -110,7 +110,7 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],*/
+            ],
 
         ];
 
