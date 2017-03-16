@@ -194,6 +194,7 @@ footer {padding: 10px 0;width:100%;position:absolute;bottom:0;left:0;}
     .inner-page .side-bg-img {position: absolute;z-index:-1;top: 240px;right: -80px;transition: all 0.2s ease-in-out;-moz-transition: all 0.2s ease-in-out;-webkit-transition: all 0.2s ease-in-out;-o-transition: all 0.2s ease-in-out}
 
 		#page-wrap.consumer .inner-page .side-bg-img {right:0px}
+.mobile-view .inner-page{padding-bottom:50px}
 
 
 
@@ -401,7 +402,9 @@ header.inside .nav-menu li.setting {display: inline-block;}
   
 
   footer.inside ,footer.outSide {position:relative;background: #e4e4e4;}
+.mobile-view footer.inside,.mobile-view footer.outSide {position:absolute;}
   footer.inside .copyRights  {padding-left: 62px}
+.mobile-view footer.inside .copyRights  {padding-left: 0px}
 
     footer.inside .social-links , footer.outSide .social-links{display: none}
 

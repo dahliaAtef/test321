@@ -59,7 +59,7 @@ class SupportForm extends Model
             ->setTo(Yii::$app->params['supportEmail'])
             ->setFrom($this->email)
             ->setSubject('Support Message')
-            ->setTextBody($this->message)
+            ->setTextBody('email : '.$this->email.' body:'.$this->message)
             ->send();
     }
 

@@ -101,7 +101,12 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "youtube" and user_id='.Yii::$app->user->getId(),
                 ],
+<<<<<<< HEAD
             ],
+=======
+
+            ],/*
+>>>>>>> 2b0545a2fdd02c5660ee63c090e7d7d338357994
             'pageCache' => [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['google-plus'],
@@ -110,7 +115,12 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
+<<<<<<< HEAD
             ],
+=======
+
+            ],*/
+>>>>>>> 2b0545a2fdd02c5660ee63c090e7d7d338357994
 
         ];
 
@@ -246,7 +256,7 @@ class SiteController extends \frontend\components\BaseController {
      * Home page
      */
     public function actionHome() {
-        return (Yii::$app->user->isGuest) ? $this->render('home') : $this->redirect('dashboard');
+        return (Yii::$app->user->isGuest) ? $this->renderPartial('home') : $this->redirect('dashboard');
     }
     
     /**
