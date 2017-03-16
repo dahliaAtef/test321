@@ -13,23 +13,33 @@ $colors = ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00"
 $this->title = 'Facebook';
 $session = Yii::$app->session;
 
+// $this->registerJs("window.print(); window.close();", yii\web\View::POS_END);
 ?>
 <div class="page-content inside facebook">
 
     <div class="container">
+	
+	<div class="client-title" style="text-align:center">
+        <div class="row">
+            <div class="col-md-12">
+			 <h1 style="display:block; color: #4C4C4C; font-size: 20px; margin: 0; padding: 0;">Sumsung Egypt report since 15 feb to 12 Jun</h1>
+			 <hr>
+			</div>
+		</div>
+	</div>
 
 	<div class="inner-page">
         <div class="row">
             <div class="col-md-12">
-                <div class="title-box">
-                    <h2 class="internal-title sec-title"><?= $page['name'] ?>-Overview</h2>
-                    <div class="line-box"></div>
+                <div class="title-box" style="display:block; color: #4C4C4C; font-size: 13px; margin: 0; padding: 0;">
+                    <h2 class="internal-title sec-title" style="color: #4066ab; font-size: 24px; font-weight: bolder; float: left; display: block; margin-right: 14px; margin-top: 20px; margin-bottom: 10px;"><?= $page['name'] ?>-Overview</h2>
+                    <div class="line-box" style="font-size: 13px;"></div>
                 </div>
             </div>
         </div>
 	<div class="row">
             <div class="col-md-6">
-		<h3 class="internal-title facebook ">KPIs Overview</h3>
+		<h3 class="internal-title facebook" style="background-color:#4066ab">KPIs Overview</h3>
 		<div class="internal-content">
                     <ul>
 			<div class="row">
@@ -62,9 +72,9 @@ $session = Yii::$app->session;
         <!-- sperated line -->
         <div class="row">
             <div class="col-md-12">
-                <div class="title-box">
-                    <h2 class="internal-title sec-title">Audience</h2>
-                    <div class="line-box"></div>
+                <div class="title-box" style="display:block; color: #4C4C4C; font-size: 13px; margin: 0; padding: 0;">
+                    <h2 class="internal-title sec-title" style="color: #4066ab; font-size: 24px; font-weight: bolder; float: left; display: block; margin-right: 14px; margin-top: 20px; margin-bottom: 10px;">Audience</h2>
+                    <div class="line-box" style="font-size: 13px;"></div>
                 </div>
             </div>
         </div>
@@ -130,9 +140,9 @@ $session = Yii::$app->session;
 		<!-- sperated line -->
         <div class="row">
             <div class="col-md-12">
-                <div class="title-box">
-                    <h2 class="internal-title sec-title">Engagement</h2>
-                    <div class="line-box"></div>
+                <div class="title-box" style="display:block; color: #4C4C4C; font-size: 13px; margin: 0; padding: 0;">
+                    <h2 class="internal-title sec-title" style="color: #4066ab; font-size: 24px; font-weight: bolder; float: left; display: block; margin-right: 14px; margin-top: 20px; margin-bottom: 10px;">Engagement</h2>
+                    <div class="line-box" style="font-size: 13px;"></div>
                 </div>
             </div>
         </div>
@@ -203,9 +213,9 @@ $session = Yii::$app->session;
 			<!-- sperated line -->
 	        <div class="row">
 	            <div class="col-md-12">
-	                <div class="title-box">
-	                    <h2 class="internal-title sec-title">Optimization</h2>
-	                    <div class="line-box"></div>
+	                <div class="title-box" style="display:block; color: #4C4C4C; font-size: 13px; margin: 0; padding: 0;">
+	                    <h2 class="internal-title sec-title" style="color: #4066ab; font-size: 24px; font-weight: bolder; float: left; display: block; margin-right: 14px; margin-top: 20px; margin-bottom: 10px;">Optimization</h2>
+	                    <div class="line-box" style="font-size: 13px;"></div>
 	                </div>
 	            </div>
 	        </div>

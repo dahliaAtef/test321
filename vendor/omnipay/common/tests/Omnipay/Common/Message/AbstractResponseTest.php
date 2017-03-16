@@ -26,6 +26,8 @@ class AbstractResponseTest extends TestCase
     {
         $this->assertFalse($this->response->isPending());
         $this->assertFalse($this->response->isRedirect());
+        $this->assertFalse($this->response->isTransparentRedirect());
+        $this->assertFalse($this->response->isCancelled());
         $this->assertNull($this->response->getData());
         $this->assertNull($this->response->getTransactionReference());
         $this->assertNull($this->response->getMessage());
@@ -87,6 +89,12 @@ class AbstractResponseTest extends TestCase
         $this->response->shouldReceive('getRedirectMethod')->andReturn('DELETE');
 
         $this->response->getRedirectResponse();
+    }
+
+    public function testGetTransactionIdNull()
+    {
+        $this->response = m::mock('\Omnipay\Common\Message\AbstractResponseTest_MockRedirectResponse')->makePartial();
+        $this->assertNull($this->response->getTransactionId());
     }
 }
 

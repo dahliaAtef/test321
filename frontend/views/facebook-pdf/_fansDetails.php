@@ -2,7 +2,7 @@
 
 //echo '<pre>'; var_dump($age_gender_array["unisex_count"]); echo 'fans count : '; var_dump($fans_count); echo '</pre>'; die;
 
-echo '<h3 class="internal-title facebook ">Majority</h3>';
+echo '<h3 class="internal-title facebook " style="background-color:#4066ab">Majority</h3>';
 echo '<div class="internal-content"><ul>';
 if($fans_count == 0){
 	echo '<li><span class="small-title">.... : </span>....%</li>';

@@ -42,7 +42,7 @@ ul {padding: 0 ;margin: 0}
 
 html{height: 100%}
 
-body{font-family:'NeoSansStd';color: #272727;overflow-x:hidden;height:100%;background: url(../images/home-bg.jpg) no-repeat center center fixed; 
+body{font-family:'NeoSansStd';color: #272727;overflow-x:hidden;height:100%;background:#fff; 
 
   -webkit-background-size: cover;
 
@@ -415,7 +415,7 @@ outSide design ------*/
 
 
 
-header.outSide {position:fixed;z-index:2;top:0;width:100%;padding: 0;border-bottom: 1px solid #fff;background: url(../images/home-bg.jpg)50% 480px fixed; 
+header.outSide {position:fixed;z-index:2;top:0;width:100%;padding: 0;border-bottom: 1px solid #fff;background: url(../images/dashboard-bg.jpg)50% 480px fixed; 
 
   -webkit-background-size: cover;
 
@@ -872,13 +872,13 @@ insights ------*/
 .authent {font-size: 20px;display: block;padding: 16px 27px;width: 288px;margin: 120px auto;border-radius: 12px}
 .authent a {padding:0}
 .authent:hover {color: #d0d0d0}
-  .authent.dashboard , h3.internal-title.dashboard {background: #1c0f3a}
-  .authent.facebook , h3.internal-title.facebook , table.facebook th {background: #4066ab}
-  .authent.twitter , h3.internal-title.twitter, table.twitter th  {background: #25aae1}
-  .authent.instagram, h3.internal-title.instagram , table.instagram th   {background: #125688}
-  .authent.youtube , h3.internal-title.youtube , table.youtube th {background: #bd212e}
-  .authent.google-plus , h3.internal-title.google-plus , table.google-plus th  {background: #db402c}
-  .authent.linkeidn , h3.internal-title.linkeidn , table.linkeidn th {background: #0375b3}
+  .authent.dashboard , h3.internal-title.dashboard {background-color: #1c0f3a}
+  .authent.facebook , h3.internal-title.facebook , table.facebook th {background-color: #4066ab}
+  .authent.twitter , h3.internal-title.twitter, table.twitter th  {background-color: #25aae1}
+  .authent.instagram, h3.internal-title.instagram , table.instagram th   {background-color: #125688}
+  .authent.youtube , h3.internal-title.youtube , table.youtube th {background-color: #bd212e}
+  .authent.google-plus , h3.internal-title.google-plus , table.google-plus th  {background-color: #db402c}
+  .authent.linkeidn , h3.internal-title.linkeidn , table.linkeidn th {background-color: #0375b3}
 
 .growth-num {line-height: 130px;font-size: 24px}
 table.dashboard th {color: #1c0f3a;font-size: 20px;background: transparent;}
@@ -889,7 +889,8 @@ table.dashboard td:nth-child(odd) ,table.dashboard td:nth-child(even) {border-ri
   .adaptMarginSM {margin-top: 28px}
   .adaptMargin34 {margin-top: 34px}
   .small-title {font-weight: bold;text-transform: capitalize;}
-  .internal-content {padding: 0 14px;margin-bottom: 40px;}
+  .internal-content {padding: 0 14px;margin-bottom: 40px; text-align : center;}
+  .internal-content ul {text-align : left !important}
     .internal-content li{line-height: 26px}
 table {width:94%;margin:auto;text-align: center;margin-bottom: 40px}
 table.adaptMargin{margin-top: 108px}
@@ -938,7 +939,7 @@ h3.internal-title {display: inline-block;
   }
 h3.internal-title.short {min-width:initial;}
 
-h3.internal-title.noneBG {color:#6d6e71;font-size: 20px;;text-align: center;display: block;padding-bottom:0;margin:0;}
+h3.internal-title.noneBG {color:#6d6e71;font-size: 20px;text-align: center;display: block;padding-bottom:0;margin:0;}
 h3.internal-title.circleChart-title {color:#6d6e71;font-size: 20px;text-align: center;display: block;margin-bottom:14px}
 .internal-title.sec-title {font-size: 24px;font-weight: bolder}
   .page-content.inside.dashboard .internal-title.sec-title {color: #1c0f3a}
@@ -1493,10 +1494,11 @@ padding:28px}
     font-size: 14px;
     font-weight: 700;
     padding-right: 10px;}
-#bttn-range-form {font-size: 14px;
+#bttn-range-form , #bttn-export-form{font-size: 14px;
     line-height: 34px;
     width: initial;
     padding: 0 12px;
     background: #de1271;
     border-radius: 4px;
     border: none;}
+  #bttn-export-form{height: initial;margin-top: 10px;}

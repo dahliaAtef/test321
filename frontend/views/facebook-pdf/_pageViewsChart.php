@@ -4,7 +4,7 @@ use yii\helpers\Url;
 <div class="row">
 	<div class="col-md-12">
 		<?php
-		echo '<h3 class="internal-title noneBG">Views</h3>';
+		echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Views</h3>';
 		echo '<div class="internal-content">';
 		if($page_views_json_table){
 		    $this->registerJs("GoogleCharts.drawLineArea(".$page_views_json_table.", 'fb', 'page_views')", yii\web\View::POS_END);

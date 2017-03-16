@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Url;
 
-echo '<h3 class="internal-title noneBG">Growth of Total Fans</h3>';
+echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Growth of Total Fans</h3>';
 echo '<div class="internal-content">';
 if($page_fans_growth_json_table && ($sum > 0)){
     $this->registerJs("GoogleCharts.drawColumns(".$page_fans_growth_json_table.", 'fb', 'fans_growth')", yii\web\View::POS_END);

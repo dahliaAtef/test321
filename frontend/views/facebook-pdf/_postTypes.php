@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Url;
 
-echo '<h3 class="internal-title noneBG">Post Types</h3>';
+echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Post Types</h3>';
 echo '<div class="internal-content circleChart">';  
 if($total_posts){
 $post_types_json_table = $fb->getPostTypesJsonTable($post_types);

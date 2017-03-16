@@ -6,9 +6,10 @@
 
             <tr>
 
-                <th>Metric</th>
+                <th style="border-radius: 10px 0 0 0;">Metric</th>
                 <?php
                 foreach($comparison as $month){
+                    //echo '<pre>'; var_dump($comparison); echo '</pre>'; die;
                     ?>
                     <th><?= $month['month'] ?></th>
                 <?php } ?>
@@ -16,7 +17,7 @@
 
             <tr>
 
-                <td colspan="12" class="second">Likes Overview</td>
+                <td colspan="<?= (count($comparison) + 1) ?>" class="second">Likes Overview</td>
 
             </tr>
 
@@ -52,7 +53,7 @@
 
             <tr>
 
-                <td colspan="12" class="second">Interactions Overview</td>
+                <td colspan="<?= (count($comparison) + 1) ?>" class="second">Interactions Overview</td>
 
             </tr>
 
@@ -100,7 +101,7 @@
 
             <tr>
 
-                <td colspan="12" class="second">Reach Overview</td>
+                <td colspan="<?= (count($comparison) + 1) ?>" class="second">Reach Overview</td>
 
             </tr>
 
@@ -123,7 +124,7 @@
 
             <tr>
 
-                <th>Metric</th>
+                <th style="border-radius: 10px 0 0 0;">Metric</th>
 
                 <th colspan="<?= count($comparison) ?>">Paid</th>
 
@@ -131,11 +132,11 @@
 
             <tr>
 
-                <th class="second">Time range</th>
+                <th style=" border-right: .5px solid #b3b3b3; background: #adadad; color: #fff; font-size: 15px;">Time range</th>
 
                 <?php
                 foreach($comparison as $month){ ?>
-                    <th class="second"><?= $month['month'] ?></th>
+                    <th style=" border-right: .5px solid #b3b3b3; background: #adadad; color: #fff; font-size: 15px;"><?= $month['month'] ?></th>
                 <?php } ?>
             </tr>
 
@@ -164,7 +165,7 @@
 
             <tr>
 
-                <th>Metric</th>
+                <th style="border-radius: 10px 0 0 0;">Metric</th>
 
                 <th colspan="<?= count($comparison) ?>">Unpaid</th>
 
@@ -172,11 +173,11 @@
 
             <tr>
 
-                <th class="second">Time range</th>
+                <th style=" border-right: .5px solid #b3b3b3; color: #fff; font-size: 15px;">Time range</th>
 
                 <?php
                 foreach($comparison as $month){ ?>
-                    <th class="second"><?= $month['month'] ?></th>
+                    <th style=" border-right: .5px solid #b3b3b3; background: #adadad; color: #fff; font-size: 15px;"><?= $month['month'] ?></th>
                 <?php }
                 ?>
             </tr>
@@ -220,14 +221,14 @@
 
             <tr>
 
-                <th class="second">Time range</th>
+                <th style=" border-right: .5px solid #b3b3b3; background: #adadad; color: #fff; font-size: 15px;">Time range</th>
 
                 <?php
                 foreach($comparison as $month){ ?>
-                    <th class="second"><?= $month['month'] ?></th>
+                    <th style=" border-right: .5px solid #b3b3b3; background: #adadad; color: #fff; font-size: 15px;"><?= $month['month'] ?></th>
                 <?php } 
                 foreach($comparison as $month){ ?>
-                    <th class="second"><?= $month['month'] ?></th>
+                    <th style=" border-right: .5px solid #b3b3b3; background: #adadad; color: #fff; font-size: 15px;"><?= $month['month'] ?></th>
                 <?php }
                 ?>
             </tr>

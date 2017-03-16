@@ -1,7 +1,7 @@
 		<?php
 use yii\helpers\Url;
 
-echo '<h3 class="internal-title noneBG">Distribution of fans by City</h3>';
+echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Distribution of fans by City</h3>';
 			echo '<div class="internal-content circleChart">';
 		if($fans_city_json_table){
 		    $this->registerJs("GoogleCharts.drawCircle(".$fans_city_json_table.", 'fb', 'fans_city')", yii\web\View::POS_END); 

@@ -27,7 +27,7 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
                 <?php $form = ActiveForm::begin(['id' => 'range-form','options' => ['data-pjax' => true ]]); ?>
                  
                 <div class="range-item">
-                    <h4>Choose your range</h4>
+                    <h4>Choose Date</h4>
                 </div>
                 <div class="range-item">
                     <div class="right-inner-addon">
@@ -42,7 +42,7 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
                     </div>
                 </div>
                 <div class="range-item">
-                        <?= Html::submitButton('Calculate', ['id' => 'bttn-range-form', 'name' => 'submit-range', 'autofocus' => 'true' ]) ?>
+                        <?= Html::submitButton('Apply', ['id' => 'bttn-range-form', 'name' => 'submit-range', 'autofocus' => 'true' ]) ?>
                 </div>
                 <?php $form = ActiveForm::end() ?>
             </div>

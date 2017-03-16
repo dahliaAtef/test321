@@ -62,8 +62,9 @@ class PdfResponseFormatter extends Component implements ResponseFormatterInterfa
 	 */
 	public function format($response)
 	{
-		$response->getHeaders()->set('Content-Type', 'application/pdf');
-		$response->content = $this->formatPdf($response);
+            $response->getHeaders()->set('Content-Type', 'application/pdf');
+            $response->content = $this->formatPdf($response);
+            echo '<pre>'; var_dump($response->content); echo '</pre>'; die;
 	}
 
 	/**

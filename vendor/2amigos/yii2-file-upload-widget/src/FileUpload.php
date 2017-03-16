@@ -24,6 +24,11 @@ class FileUpload extends BaseUpload
      * @var bool whether to register the js files for the basic +
      */
     public $plus = false;
+    
+    /**
+     * @var bool whether to render the default button
+     */
+    public $useDefaultButton = true;
 
     /**
      * @inheritdoc
@@ -41,9 +46,13 @@ class FileUpload extends BaseUpload
      */
     public function run()
     {
-        echo $this->hasModel()
+        $input = $this->hasModel()
             ? Html::activeFileInput($this->model, $this->attribute, $this->options)
             : Html::fileInput($this->name, $this->value, $this->options);
+
+        echo $this->useDefaultButton
+            ? $this->render('uploadButton', ['input' => $input])
+            : $input;
 
         $this->registerClientScript();
     }

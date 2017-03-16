@@ -1,4 +1,4 @@
-<h3 class="internal-title facebook">Fans Overview</h3>
+<h3 class="internal-title facebook" style="background-color:#4066ab">Fans Overview</h3>
 
 <?php
 
@@ -13,8 +13,8 @@ $count = count($fans_in_range[0]['values']);
     
 
     if($count != 0){ ?>
-
-        <ul class="internal-content">
+<div class="internal-content">
+        <ul >
 
             <li><?= '<span class="small-title">New Fans : </span>'.$fans_in_range[0]['values'][$count - 1]['value']; ?></li>
 
@@ -25,6 +25,7 @@ $count = count($fans_in_range[0]['values']);
             <li><?= '<span class="small-title">Avg Fan Change per day : </span>'.$avg_fan_change_per_day; ?></li>
 
         </ul>
+</div>
 
 <?php    }
 

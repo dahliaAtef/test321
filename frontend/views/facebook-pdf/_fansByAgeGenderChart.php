@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Url;
 
-echo '<h3 class="internal-title noneBG">Distribution of fans by Gender and Age ranges</h3>';
+echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Distribution of fans by Gender and Age ranges</h3>';
     echo '<div class="internal-content">';
 if($fans_gender_age_json_table){
     //echo '<pre>'; var_dump($fans_gender_age_json_table); echo '</pre>'; die;

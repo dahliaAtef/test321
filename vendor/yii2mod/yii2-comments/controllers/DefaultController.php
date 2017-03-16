@@ -5,93 +5,127 @@ namespace yii2mod\comments\controllers;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\helpers\Json;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\widgets\ActiveForm;
+use yii2mod\comments\events\CommentEvent;
 use yii2mod\comments\models\CommentModel;
 use yii2mod\comments\Module;
-
+use yii2mod\moderation\ModerationBehavior;
 
 /**
  * Class DefaultController
+ *
  * @package yii2mod\comments\controllers
  */
 class DefaultController extends Controller
 {
     /**
-     * Behaviors
-     * @return array
+     * Event is triggered before creating a new comment.
+     * Triggered with yii2mod\comments\events\CommentEvent
+     */
+    const EVENT_BEFORE_CREATE = 'beforeCreate';
+
+    /**
+     * Event is triggered after creating a new comment.
+     * Triggered with yii2mod\comments\events\CommentEvent
+     */
+    const EVENT_AFTER_CREATE = 'afterCreate';
+
+    /**
+     * Event is triggered before deleting the comment.
+     * Triggered with yii2mod\comments\events\CommentEvent
+     */
+    const EVENT_BEFORE_DELETE = 'beforeDelete';
+
+    /**
+     * Event is triggered after deleting the comment.
+     * Triggered with yii2mod\comments\events\CommentEvent
+     */
+    const EVENT_AFTER_DELETE = 'afterDelete';
+
+    /**
+     * @inheritdoc
      */
     public function behaviors()
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'create' => ['post'],
-                    'delete' => ['post', 'delete']
+                    'delete' => ['post', 'delete'],
+                ],
+            ],
+            'contentNegotiator' => [
+                'class' => 'yii\filters\ContentNegotiator',
+                'only' => ['create'],
+                'formats' => [
+                    'application/json' => Response::FORMAT_JSON,
                 ],
             ],
         ];
     }
 
     /**
-     * Create comment.
+     * Create a comment.
+     *
      * @param $entity string encrypt entity
-     * @return array|null|Response
+     *
+     * @return array
      */
     public function actionCreate($entity)
     {
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        /* @var $module Module */
-        $module = Yii::$app->getModule(Module::$name);
-        $commentModelClass = $module->commentModelClass;
-        $decryptEntity = Yii::$app->getSecurity()->decryptByKey($entity, $module::$name);
-        if ($decryptEntity !== false) {
-            $entityData = Json::decode($decryptEntity);
-            /* @var $model CommentModel */
-            $model = new $commentModelClass([
-                'entity' => $entityData['entity'],
-                'entityId' => $entityData['entityId'],
-            ]);
-            if ($model->load(Yii::$app->request->post()) && $model->save()) {
-                return ['status' => 'success'];
-            } else {
-                return [
-                    'status' => 'error',
-                    'errors' => ActiveForm::validate($model)
-                ];
-            }
-        } else {
-            return [
-                'status' => 'error',
-                'message' => Yii::t('app', 'Oops, something went wrong. Please try again later.')
-            ];
+        /* @var $commentModel CommentModel */
+        $commentModel = Yii::createObject(Yii::$app->getModule(Module::$name)->commentModelClass);
+        $event = Yii::createObject(['class' => CommentEvent::class, 'commentModel' => $commentModel]);
+        $commentModel->setAttributes($this->getCommentAttributesFromEntity($entity));
+        $this->trigger(self::EVENT_BEFORE_CREATE, $event);
+        if ($commentModel->load(Yii::$app->request->post()) && $commentModel->saveComment()) {
+            $this->trigger(self::EVENT_AFTER_CREATE, $event);
+
+            return ['status' => 'success'];
         }
+
+        return [
+            'status' => 'error',
+            'errors' => ActiveForm::validate($commentModel),
+        ];
     }
 
     /**
-     * Delete comment page.
+     * Delete comment.
      *
-     * @param integer $id Comment ID
+     * @param int $id Comment ID
+     *
      * @return string Comment text
      */
     public function actionDelete($id)
     {
-        if ($this->findModel($id)->deleteComment()) {
-            return Yii::t('app', 'Comment was deleted.');
+        $commentModel = $this->findModel($id);
+        $event = Yii::createObject(['class' => CommentEvent::class, 'commentModel' => $commentModel]);
+        $this->trigger(self::EVENT_BEFORE_DELETE, $event);
+
+        if ($commentModel->markRejected()) {
+            $this->trigger(self::EVENT_AFTER_DELETE, $event);
+
+            return Yii::t('yii2mod.comments', 'Comment has been deleted.');
         } else {
             Yii::$app->response->setStatusCode(500);
-            return Yii::t('app', 'Comment has not been deleted. Please try again!');
+
+            return Yii::t('yii2mod.comments', 'Comment has not been deleted. Please try again!');
         }
     }
 
     /**
      * Find model by ID.
      *
-     * @param integer|array $id Comment ID
-     * @return null|CommentModel
+     * @param int|array $id Comment ID
+     *
+     * @return null|CommentModel|ModerationBehavior
+     *
      * @throws NotFoundHttpException
      */
     protected function findModel($id)
@@ -101,7 +135,26 @@ class DefaultController extends Controller
         if (($model = $commentModelClass::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException(Yii::t('app', 'The requested page does not exist.'));
+            throw new NotFoundHttpException(Yii::t('yii2mod.comments', 'The requested page does not exist.'));
         }
+    }
+
+    /**
+     * Get list of attributes from encrypted entity
+     *
+     * @param $entity string encrypted entity
+     *
+     * @return array|mixed
+     *
+     * @throws BadRequestHttpException
+     */
+    protected function getCommentAttributesFromEntity($entity)
+    {
+        $decryptEntity = Yii::$app->getSecurity()->decryptByKey(utf8_decode($entity), Module::$name);
+        if ($decryptEntity !== false) {
+            return Json::decode($decryptEntity);
+        }
+
+        throw new BadRequestHttpException(Yii::t('yii2mod.comments', 'Oops, something went wrong. Please try again later.'));
     }
 }

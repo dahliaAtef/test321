@@ -7,8 +7,10 @@ $baseDir = dirname($vendorDir);
 
 return array(
     '2cffec82183ee1cea088009cef9a6fc3' => $vendorDir . '/ezyang/htmlpurifier/library/HTMLPurifier.composer.php',
+    'a0edc8309cc5e1d60e3047b5df6b7052' => $vendorDir . '/guzzlehttp/psr7/src/functions_include.php',
     '2c102faa651ef8ea5874edb585946bce' => $vendorDir . '/swiftmailer/swiftmailer/lib/swift_required.php',
-    //'8f60802bf3ab1b5d3fe027b2a30fc63c' => $vendorDir . '/hscstudio/yii2-export/libraries/tbs/tbs_class.php',
-    //'c97615380d0d24e0adcb1db6edeb8a28' => $vendorDir . '/hscstudio/yii2-export/libraries/tbs/plugins/tbs_plugin_opentbs.php',
-    //'ef4236948f18f73b21dfa5a2df084116' => $vendorDir . '/hscstudio/yii2-export/libraries/mpdf/mpdf.php',
+    '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => $vendorDir . '/symfony/polyfill-mbstring/bootstrap.php',
+    'c964ee0ededf28c96ebd9db5099ef910' => $vendorDir . '/guzzlehttp/promises/src/functions_include.php',
+    '37a3dc5111fe8f707ab4c132ef1dbc62' => $vendorDir . '/guzzlehttp/guzzle/src/functions_include.php',
+    'decc78cc4436b1292c6c0d151b19445c' => $vendorDir . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
 );

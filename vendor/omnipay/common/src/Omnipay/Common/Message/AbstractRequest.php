@@ -209,7 +209,7 @@ abstract class AbstractRequest implements RequestInterface
     {
         foreach (func_get_args() as $key) {
             $value = $this->parameters->get($key);
-            if (empty($value)) {
+            if (! isset($value)) {
                 throw new InvalidRequestException("The $key parameter is required");
             }
         }
@@ -335,7 +335,7 @@ abstract class AbstractRequest implements RequestInterface
             }
 
             // Check for rounding that may occur if too many significant decimal digits are supplied.
-            $decimal_count = strlen(substr(strrchr((string)$amount, '.'), 1));
+            $decimal_count = strlen(substr(strrchr(sprintf('%.8g', $amount), '.'), 1));
             if ($decimal_count > $this->getCurrencyDecimalPlaces()) {
                 throw new InvalidRequestException('Amount precision is too high for currency.');
             }
@@ -383,7 +383,10 @@ abstract class AbstractRequest implements RequestInterface
      */
     public function setCurrency($value)
     {
-        return $this->setParameter('currency', strtoupper($value));
+        if ($value !== null) {
+            $value = strtoupper($value);
+        }
+        return $this->setParameter('currency', $value);
     }
 
     /**

@@ -3,7 +3,7 @@ use yii\helpers\Url;
 ?>
 <div class="row">
     <div class="col-md-12">        
-        <h3 class="internal-title facebook">Interactions Overview</h3>
+        <h3 class="internal-title facebook" style="background-color:#4066ab">Interactions Overview</h3>
         <div class="internal-content">
             <ul>
                 <li><span class="small-title">Total Interactions : </span><?= $total_interactions ?></li>
@@ -17,7 +17,7 @@ use yii\helpers\Url;
 <div class="row">
     <div class="col-md-12">
         <?php
-  			echo '<h3 class="internal-title noneBG">Daily Interactions</h3>';
+  			echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Daily Interactions</h3>';
             echo '<div class="internal-content">';
         if($page_interaction_by_day_json_table && $total_interactions){
             $this->registerJs("GoogleCharts.drawColumns(".$page_interaction_by_day_json_table.", 'fb', 'daily_interaction')", yii\web\View::POS_END);

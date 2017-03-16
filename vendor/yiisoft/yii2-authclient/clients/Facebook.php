@@ -7,9 +7,7 @@
 
 namespace yii\authclient\clients;
 
-use yii\authclient\InvalidResponseException;
 use yii\authclient\OAuth2;
-use yii\base\Exception;
 
 /**
  * Facebook allows authentication via Facebook OAuth.
@@ -18,7 +16,7 @@ use yii\base\Exception;
  *
  * Example application configuration:
  *
- * ~~~
+ * ```php
  * 'components' => [
  *     'authClientCollection' => [
  *         'class' => 'yii\authclient\Collection',
@@ -32,7 +30,7 @@ use yii\base\Exception;
  *     ]
  *     ...
  * ]
- * ~~~
+ * ```
  *
  * @see https://developers.facebook.com/apps
  * @see http://developers.facebook.com/docs/reference/api
@@ -45,7 +43,7 @@ class Facebook extends OAuth2
     /**
      * @inheritdoc
      */
-    public $authUrl = 'https://www.facebook.com/dialog/oauth?display=popup';
+    public $authUrl = 'https://www.facebook.com/dialog/oauth';
     /**
      * @inheritdoc
      */
@@ -58,15 +56,15 @@ class Facebook extends OAuth2
      * @inheritdoc
      */
     public $scope = 'email';
-
     /**
-    * @var array list of attribute names, which should be requested from API to initialize user attributes.
-    * @since 2.0.5
-    */
-   public $attributeNames = [
-       'name',
-       'email',
-   ];
+     * @var array list of attribute names, which should be requested from API to initialize user attributes.
+     * @since 2.0.5
+     */
+    public $attributeNames = [
+        'name',
+        'email',
+    ];
+
 
     /**
      * @inheritdoc
@@ -76,6 +74,18 @@ class Facebook extends OAuth2
         return $this->api('me', 'GET', [
             'fields' => implode(',', $this->attributeNames),
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function applyAccessTokenToRequest($request, $accessToken)
+    {
+        parent::applyAccessTokenToRequest($request, $accessToken);
+
+        $data = $request->getData();
+        $data['appsecret_proof'] = hash_hmac('sha256', $accessToken->getToken(), $this->clientSecret);
+        $request->setData($data);
     }
 
     /**
@@ -104,47 +114,4 @@ class Facebook extends OAuth2
             'popupHeight' => 480,
         ];
     }
-
-    public function sendRequest($method, $url, array $params = [], array $headers = [])
-    {
-        $curlOptions = $this->mergeCurlOptions(
-            $this->defaultCurlOptions(),
-            $this->getCurlOptions(),
-            [
-                CURLOPT_HTTPHEADER => $headers,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_URL => $url,
-            ],
-            $this->composeRequestCurlOptions(strtoupper($method), $url, $params)
-        );
-        $curlResource = curl_init();
-        foreach ($curlOptions as $option => $value) {
-            curl_setopt($curlResource, $option, $value);
-        }
-        $response = curl_exec($curlResource);
-        $responseHeaders = curl_getinfo($curlResource);
-
-        // check cURL error
-        $errorNumber = curl_errno($curlResource);
-        $errorMessage = curl_error($curlResource);
-
-        curl_close($curlResource);
-
-        if ($errorNumber > 0) {
-            throw new Exception('Curl error requesting "' .  $url . '": #' . $errorNumber . ' - ' . $errorMessage);
-        }
-        if (strncmp($responseHeaders['http_code'], '20', 2) !== 0) {
-            $error= json_decode($response, TRUE);
-            //print_r($error['error']['type']);die;
-            if($error['error']['type'] == "OAuthException"  or $error['error']['code']==190 ) {
-                return null;
-            }else{
-                throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
-            }
-        }
-
-        return $this->processResponse($response, $this->determineContentTypeByHeaders($responseHeaders));
-    }
-
-
 }

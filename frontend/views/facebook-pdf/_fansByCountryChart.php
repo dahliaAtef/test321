@@ -1,7 +1,7 @@
 <?php
 use yii\helpers\Url;
 ?>
-<h3 class="internal-title noneBG">Distribution of fans by Country</h3>
+<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">Distribution of fans by Country</h3>
 	<div class="internal-content circleChart">
 <?php
 if($country_json_table){

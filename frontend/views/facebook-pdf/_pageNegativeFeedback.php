@@ -4,7 +4,7 @@
 
 if($negative_feedback){
 
-    echo '<h3 class="internal-title facebook ">Negative Feedback</h3>';
+    echo '<h3 class="internal-title facebook " style="background-color:#4066ab">Negative Feedback</h3>';
 
     echo '<div class="internal-content"><ul>';
 

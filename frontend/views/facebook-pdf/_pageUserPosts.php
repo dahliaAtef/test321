@@ -3,7 +3,7 @@ use yii\helpers\Url;
 ?>
 <div class="row">
     <div class="col-md-12">
-        <h3 class="internal-title facebook">User Activity</h3>
+        <h3 class="internal-title facebook" style="background-color:#4066ab">User Activity</h3>
     </div>
 </div>
 <div class="row">
@@ -28,7 +28,7 @@ use yii\helpers\Url;
 <div class="row">
     <div class="col-md-12">
         <?php
-          echo '<h3 class="internal-title noneBG">User Posts</h3>';
+          echo '<h3 class="internal-title noneBG" style="text-align:center; color: #6d6e71;">User Posts</h3>';
             echo '<div class="internal-content">';
         if($page_user_posts_by_day_json_table && (array_sum($user_posts) > 0)){
             $this->registerJs("GoogleCharts.drawColumns(".$page_user_posts_by_day_json_table.", 'fb', 'user_posts')", yii\web\View::POS_END);
