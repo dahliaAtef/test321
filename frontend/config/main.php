@@ -77,7 +77,7 @@ return [
             'savePath' => '@common/runtime/session',
             'cookieParams' => [
                 'path' => '/',
-                'domain' => '.hypeinsights.com',
+                'domain' => '.local.hype.com',
             ]
         ],
        /* 'user' => [
@@ -97,7 +97,7 @@ return [
             'loginUrl' => '/#login',
           	'identityCookie' => [
                 'name' => '_hypeinsights',
-                'domain' => '.hypeinsights.com',
+                'domain' => '.local.hype.com',
                 'path' => '/',
             ]
         ],
@@ -126,7 +126,7 @@ return [
                 //'<_m:[\w \-]+>/<_c:[\w \-]+>/<_a:[\w \-]+>' => '<_m>/<_c>/<_a>',
                 //'<_m:[\w \-]+>/<_c:[\w \-]+>/<_a:[\w \-]+>/<id:\d+>' => '<_m>/<_c>/<_a>',
                 // custom rules
-              'update-competitor/<id:\d+>' => 'site/update-competitor',
+                'update-competitor/<id:\d+>' => 'site/update-competitor',
               	'competitors/update/<id:\d+>' => 'competitors/update',
               	'delete-competitor/<id:\d+>' => 'site/delete-competitor',
                 'mobile-login' => 'site/mobile-login',

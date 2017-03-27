@@ -1,7 +1,7 @@
 $(document).ready(function() {
 			$('#fullpage').fullpage({
 				sectionsColor: ['#fff', '#fff', '#fff', '#fff', '#fff'],
-				anchors: ['firstPage', 'secondPage', '3rdPage', '4thpage', 'lastPage'],
+				anchors: ['welcome_to_hype_insights', 'dashboard', 'insights_that_matters', 'tailored_reports', 'solutions'],
 				menu: '#menu',
 				scrollingSpeed: 1000
 			});
@@ -217,13 +217,16 @@ $(document).ready(function(){
                     $("header").addClass('active');
                     $("footer").addClass('active');
                 }, 1800);
-            }, 1700); // for first slide 
+            }, 1700); // for first slide
           
+                setTimeout(function() { 
+                     $('.flashMessage').slideUp('slow');
+                }, 5000);
           
-  			if($(window).width() < 700){
-              $('body').addClass('mobile-view');
-              $('#section1 .section-icon , #section1 .section-info').addClass("active");
-            };
+  		if($(window).width() < 700){
+                    $('body').addClass('mobile-view');
+                    $('#section1 .section-icon , #section1 .section-info').addClass("active");
+                 };
           
          });
 function toggleMenu() {

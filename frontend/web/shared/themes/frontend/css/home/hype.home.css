@@ -360,6 +360,11 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
   -moz-animation-delay: 0ms;
   -o-animation-delay: 0ms;
 }
+.flashMessage {text-align: center;
+    height: auto;
+    line-height: 36px;
+    color: #fffcfc;
+    background: #4b247c;}
 
 /* ----------- iPhone 4 and 4S ----------- */
 
@@ -584,7 +589,7 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
   and (max-device-width: 1024px) 
   and (orientation: portrait) 
   and (-webkit-min-device-pixel-ratio: 1) {
-    footer .copyRights {
+     /*footer .copyRights {
         order: 2;
         flex: 100%;
         -webkit-flex: 100%;
@@ -605,9 +610,8 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
     footer .social-links div {float: none;display: inline-block;}
     #load #loadx{width:100px;height:100px}
     #menu ,#svg-img {display:none}
-    /*.section-icon, .section-info {position:initial}*/
     .section-icon {top: initial!important;left: initial!important;}
-    .section-info {text-align:justify;position:relative;top: initial!important;left: 50px!important;}
+    .section-info {text-align:justify;position:relative;top: initial!important;left: 50px!important;}*/
 }
 
 /* Landscape */
@@ -634,7 +638,9 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
   and (max-device-width: 1024px) 
   and (orientation: portrait) 
   and (-webkit-min-device-pixel-ratio: 1) {
-    footer .copyRights {
+    #menu {width:300px;left:10px;right:initial}
+    #svg-img {right: initial!important;left: 90px!important;}
+     /*footer .copyRights {
         order: 2;
         flex: 100%;
         -webkit-flex: 100%;
@@ -655,9 +661,8 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
     footer .social-links div {float: none;display: inline-block;}
     #load #loadx{width:100px;height:100px}
     #menu ,#svg-img {display:none}
-    /*.section-icon, .section-info {position:initial}*/
     .section-icon {top: initial!important;left: initial!important;}
-    .section-info {text-align:justify;position:relative;top: initial!important;left: 50px!important;}
+    .section-info {text-align:justify;position:relative;top: initial!important;left: 50px!important;}*/
 
 }
 
@@ -685,7 +690,7 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
   and (max-device-width: 1024px) 
   and (orientation: portrait) 
   and (-webkit-min-device-pixel-ratio: 2) {
-    footer .copyRights {
+     /*footer .copyRights {
         order: 2;
         flex: 100%;
         -webkit-flex: 100%;
@@ -706,9 +711,8 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
     footer .social-links div {float: none;display: inline-block;}
     #load #loadx{width:100px;height:100px}
     #menu ,#svg-img {display:none}
-    /*.section-icon, .section-info {position:initial}*/
     .section-icon {top: initial!important;left: initial!important;}
-    .section-info {text-align:justify;position:relative;top: initial!important;left: 50px!important;}
+    .section-info {text-align:justify;position:relative;top: initial!important;left: 50px!important;}*/
 
 }
 
@@ -720,4 +724,10 @@ footer {display:none;padding: 10px 0;width:100%;position:absolute;bottom:0;left:
   and (-webkit-min-device-pixel-ratio: 2) {
 
 }
+
+.flashMessage {text-align: center;
+    height: auto;
+    line-height: 36px;
+    color: #fffcfc;
+  background: #4b247c;}
     

@@ -246,7 +246,7 @@ class SiteController extends \frontend\components\BaseController {
      * Home page
      */
     public function actionHome() {
-        return (Yii::$app->user->isGuest) ? $this->renderPartial('home') : $this->redirect('dashboard');
+        return (Yii::$app->user->isGuest) ? $this->renderPartial('home') : ((Yii::$app->session->get('ActiveUser')) ? $this->redirect(Url::to(['/dashboard/'.Yii::$app->session->get('ActiveUser')])) : $this->redirect('dashboard'));
     }
     
     /**

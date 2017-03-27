@@ -22,10 +22,10 @@ $action_id = Yii::$app->controller->action->id;
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">   
   <link rel="icon" href="<?= Url::to('@frontThemeUrl') ?>/images/favicon.ico" />
 
-	<link rel="stylesheet" type="text/css" href="/shared/themes/frontend/css/jquery.fullPage.css" />
+	<link rel="stylesheet" type="text/css" href="/shared/themes/frontend/css/home/jquery.fullPage.css" />
 	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
-	<link rel="stylesheet" type="text/css" href="/shared/themes/frontend/css/hype.home.css" />
+	<link rel="stylesheet" type="text/css" href="/shared/themes/frontend/css/home/hype.home.css" />
 
 	<!--[if IE]>
 		<script type="text/javascript">
@@ -212,6 +212,13 @@ $action_id = Yii::$app->controller->action->id;
       </div>
     </div>
   <div id="page-wrap">
+    <!-- BEGIN FLASH MSG -->            
+    			<?php
+				echo $this->render('../layouts/flashMsgHome');
+				?>
+			<!-- END FLASH MSG -->        
+			<!-- BEGIN HEADER -->
+    
 	<!--div class="svg-container"-->
 		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-2 -2 504 504" id="menu" class="">
 			<g id="symbolsContainer">    
@@ -237,27 +244,27 @@ $action_id = Yii::$app->controller->action->id;
 
 			</g>
 			<g id="itemsContainer">        
-				<a class="item" gocircle="icon-1" id="item-1" role="link" tabindex="1" xlink:href="#firstPage " xlink:title=" " transform="matrix(1,0,0,1,0,0)" data-svg-origin="250 250" style="">
+				<a class="item" gocircle="icon-1" id="item-1" role="link" tabindex="1" xlink:href="#welcome_to_hype_insights " xlink:title=" " transform="matrix(1,0,0,1,0,0)" data-svg-origin="250 250" style="">
 			        <path fill="none" stroke-width="3" stroke="#fff" d="M500,250 A250,250 0 0,0 327.25424859373686,12.235870926211618" class="sector UjIUNKNJ_5"></path>
 			        <use id="nav-1" xlink:href="#icon-1" width="10" height="10" x="430" y="102" transform="rotate(59.14285714285714 431.99114990234375 141.26535034179688)"></use>
 			    </a>
 
-			    <a class="item" gocircle="icon-2" id="item-2" role="link" tabindex="2" xlink:href="#secondPage " xlink:title=" " transform="matrix(0.30901,-0.95105,0.95105,0.30901,-65.01837766752521,410.5098804800515)" data-svg-origin="250 250" style="">
+			    <a class="item" gocircle="icon-2" id="item-2" role="link" tabindex="2" xlink:href="#dashboard " xlink:title=" " transform="matrix(0.30901,-0.95105,0.95105,0.30901,-65.01837766752521,410.5098804800515)" data-svg-origin="250 250" style="">
 			        <path fill="none" stroke-width="3" stroke="#fff" d="M500,250 A250,250 0 0,0 327.25424859373686,12.235870926211618" class="sector UjIUNKNJ_6"></path>
 			        <use id="nav-2" xlink:href="#icon-2" width="10" height="10" x="430" y="102" transform="rotate(59.14285714285714 431.99114990234375 141.26535034179688)"></use>
 			    </a>
 
-			    <a class="item" gocircle="icon-3" id="item-3" role="link" tabindex="3" xlink:href="#3rdPage " xlink:title=" " transform="matrix(-0.80901,-0.58778,0.58778,-0.80901,305.3079355206185,599.2005616668552)" data-svg-origin="250 250" style="">
+			    <a class="item" gocircle="icon-3" id="item-3" role="link" tabindex="3" xlink:href="#insights_that_matters " xlink:title=" " transform="matrix(-0.80901,-0.58778,0.58778,-0.80901,305.3079355206185,599.2005616668552)" data-svg-origin="250 250" style="">
 			       <path fill="none" stroke-width="3" stroke="#fff" d="M500,250 A250,250 0 0,0 327.25424859373686,12.235870926211618" class="sector UjIUNKNJ_7"></path>
 			       <use id="nav-3" xlink:href="#icon-3" width="10" height="10" x="430" y="102" transform="rotate(59.14285714285714 431.99114990234375 141.26535034179688)"></use>
 			    </a>
 
-			    <a class="item" gocircle="icon-4" id="item-4" role="link" tabindex="4" xlink:href="#4thpage " xlink:title=" " transform="matrix(-0.80901,0.58778,-0.58778,-0.80901,599.2005616668552,305.30793552061857)" data-svg-origin="250 250" style="">
+			    <a class="item" gocircle="icon-4" id="item-4" role="link" tabindex="4" xlink:href="#tailored_reports " xlink:title=" " transform="matrix(-0.80901,0.58778,-0.58778,-0.80901,599.2005616668552,305.30793552061857)" data-svg-origin="250 250" style="">
 			        <path fill="none" stroke-width="3" stroke="#fff" d="M500,250 A250,250 0 0,0 327.25424859373686,12.235870926211618" class="sector UjIUNKNJ_8"></path>
 			        <use id="nav-4" xlink:href="#icon-4" width="10" height="10" x="430" y="102" transform="rotate(59.14285714285714 431.99114990234375 141.26535034179688)"></use>
 			    </a>
 
-			    <a class="item" gocircle="icon-5" id="item-5" role="link" tabindex="5" xlink:href="#lastPage " xlink:title=" " transform="matrix(0.30901,0.95105,-0.95105,0.30901,410.5098804800516,-65.01837766752521)" data-svg-origin="250 250" style="">
+			    <a class="item" gocircle="icon-5" id="item-5" role="link" tabindex="5" xlink:href="#solutions " xlink:title=" " transform="matrix(0.30901,0.95105,-0.95105,0.30901,410.5098804800516,-65.01837766752521)" data-svg-origin="250 250" style="">
 			    	<path fill="none" stroke-width="3" stroke="#fff" d="M500,250 A250,250 0 0,0 327.25424859373686,12.235870926211618" class="sector UjIUNKNJ_9"></path>
 			    	<use id="nav-5" xlink:href="#icon-5" width="10" height="10" x="430" y="102" transform="rotate(59.14285714285714 431.99114990234375 141.26535034179688)"></use>
 				</a>
@@ -432,9 +439,9 @@ $action_id = Yii::$app->controller->action->id;
 	</footer>
   </div>
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-	<script type="text/javascript" src="/shared/themes/frontend/js/scrolloverflow.min.js"></script>
-	<script type="text/javascript" src="/shared/themes/frontend/js/jquery.fullPage.js"></script>
-	<script type="text/javascript" src="/shared/themes/frontend/js/hype.home.js"></script>
+	<script type="text/javascript" src="/shared/themes/frontend/js/home/scrolloverflow.min.js"></script>
+	<script type="text/javascript" src="/shared/themes/frontend/js/home/jquery.fullPage.js"></script>
+	<script type="text/javascript" src="/shared/themes/frontend/js/home/hype.home.js"></script>
 	<script type="text/javascript">
 		
 	</script>
