@@ -1,6 +1,29 @@
 Change Log: `yii2-widget-activeform`
 ====================================
 
+## Version 1.4.8
+
+**Date:** 28-Apr-2016
+
+- (bug #73): Correct dependency for `ActiveFormAsset`.
+- (enh #74): Add branch alias for dev-master latest release.
+
+## Version 1.4.7
+
+**Date:** 05-Dec-2015
+
+- (bug #67, #69): Fix typo for `HINT_DEFAULT`.
+- (bug #70): Correct `staticOnly` form render.
+
+## Version 1.4.6
+
+**Date:** 05-Dec-2015
+
+- (enh #61): Use model `getAttributeLabel()` as default in `initPlaceholder`.
+- (enh #64): Enhancement to display and style hints via icon popups or label hover
+- (bug #65): Fixes to staticOnly form rendering.
+- (enh #66): Better hint data fetch and code reformatting. Refer [updated docs and demo](http://demos.krajee.com/widget-details/active-field#input-hints).
+
 ## Version 1.4.5
 
 **Date:** 22-Oct-2015

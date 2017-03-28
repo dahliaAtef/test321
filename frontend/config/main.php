@@ -29,6 +29,43 @@ return [
         'request' => [
             'baseUrl' => $baseUrl,
         ],
+        'html2pdf' => [
+            'class' => 'yii2tech\html2pdf\Manager',
+            'viewPath' => '@app/views',
+            'converter' => [
+                'class' => 'yii2tech\html2pdf\converters\Wkhtmltopdf',
+                'defaultOptions' => [
+                    'pageSize' => 'A4'
+                ],
+            ]
+        ],
+        'response' => [
+            'formatters' => [
+                //'html' => [
+                //    'class' => 'yii\web\HtmlResponseFormatter',
+                //],
+                'pdf' => [
+                    'class' => 'robregonm\pdf\PdfResponseFormatter',
+                    'mode' => '', // Optional
+                    'format' => 'A4',  // Optional but recommended. http://mpdf1.com/manual/index.php?tid=184
+                    'defaultFontSize' => 0, // Optional
+                    'defaultFont' => '', // Optional
+                    'marginLeft' => 15, // Optional
+                    'marginRight' => 15, // Optional
+                    'marginTop' => 16, // Optional
+                    'marginBottom' => 16, // Optional
+                    'marginHeader' => 9, // Optional
+                    'marginFooter' => 9, // Optional
+                    'orientation' => 'Landscape', // optional. This value will be ignored if format is a string value.
+                    'options' => [
+                        // mPDF Variables
+                        // 'fontdata' => [
+                            // ... some fonts. http://mpdf1.com/manual/index.php?tid=454
+                        // ]
+                    ]
+                ],
+            ]
+        ],
       /**
          * Yii authManager
          */
@@ -89,7 +126,7 @@ return [
                 //'<_m:[\w \-]+>/<_c:[\w \-]+>/<_a:[\w \-]+>' => '<_m>/<_c>/<_a>',
                 //'<_m:[\w \-]+>/<_c:[\w \-]+>/<_a:[\w \-]+>/<id:\d+>' => '<_m>/<_c>/<_a>',
                 // custom rules
-              'update-competitor/<id:\d+>' => 'site/update-competitor',
+                'update-competitor/<id:\d+>' => 'site/update-competitor',
               	'competitors/update/<id:\d+>' => 'competitors/update',
               	'delete-competitor/<id:\d+>' => 'site/delete-competitor',
                 'mobile-login' => 'site/mobile-login',

@@ -75,9 +75,9 @@ GoogleCharts.drawCircle = function (jsonTable, color, divId) {
             };
         var chart = new google.visualization.PieChart(document.getElementById(divId));
         google.visualization.events.addListener(chart, 'ready', selectHandler);
-        /*google.visualization.events.addListener(chart, 'ready', function () {
+        google.visualization.events.addListener(chart, 'ready', function () {
             document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
-          });*/
+          });
         chart.draw(data, options);
         function selectHandler() {
             $('.internal-content > div > div > div').css("margin","auto");
@@ -121,6 +121,9 @@ GoogleCharts.drawColumns = function (jsonTable, color, divId) {
         };
         
         var chart = new google.visualization.ColumnChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };
@@ -145,6 +148,9 @@ GoogleCharts.drawStackedColumns = function (jsonTable, title, divId) {
         };
         
         var chart = new google.visualization.ColumnChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
 		//google.visualization.events.addListener(chart, 'ready', myReadyHandler);
     });
@@ -186,6 +192,9 @@ GoogleCharts.drawBars = function (jsonTable, color, divId) {
         };
         
         var chart = new google.visualization.BarChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };
@@ -215,6 +224,9 @@ GoogleCharts.drawLine = function (jsonTable, color, divId) {
         };
         
         var chart = new google.visualization.LineChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };
@@ -247,6 +259,9 @@ GoogleCharts.drawLineArea = function (jsonTable, color, divId) {
         };
         
         var chart = new google.visualization.AreaChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };
@@ -277,6 +292,9 @@ GoogleCharts.drawAnnotations = function (jsonTable, color, divId){
         };
         
         var chart = new google.visualization.AnnotationChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };
@@ -306,6 +324,9 @@ GoogleCharts.drawBubble = function (jsonTable, color, divId) {
         };
         
         var chart = new google.visualization.BubbleChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };
@@ -334,6 +355,9 @@ GoogleCharts.drawMap = function (jsonTable, color, divId){
         };
         
         var chart = new google.visualization.GeoChart(document.getElementById(divId));
+        google.visualization.events.addListener(chart, 'ready', function () {
+            document.getElementById(divId).innerHTML = '<img src="' + chart.getImageURI() + '">';
+          });
         chart.draw(data, options);
     });
 };

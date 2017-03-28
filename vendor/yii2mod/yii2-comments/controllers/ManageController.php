@@ -2,19 +2,17 @@
 
 namespace yii2mod\comments\controllers;
 
+use paulzi\adjacencyList\AdjacencyListBehavior;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii2mod\comments\models\CommentModel;
-use yii2mod\comments\models\CommentSearchModel;
 use yii2mod\comments\Module;
-use yii2mod\editable\EditableAction;
 
 /**
- * Manage comments in admin panel
- *
  * Class ManageController
+ *
  * @package yii2mod\comments\controllers
  */
 class ManageController extends Controller
@@ -30,16 +28,21 @@ class ManageController extends Controller
     public $updateView = '@vendor/yii2mod/yii2-comments/views/manage/update';
 
     /**
-     * Behaviors
-     * @return array
+     * @var string search class name for searching
+     */
+    public $searchClass = 'yii2mod\comments\models\search\CommentSearch';
+
+    /**
+     * @inheritdoc
      */
     public function behaviors()
     {
         return [
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'index' => ['get'],
+                    'update' => ['get', 'post'],
                     'delete' => ['post'],
                 ],
             ],
@@ -47,42 +50,30 @@ class ManageController extends Controller
     }
 
     /**
-     * Declares external actions for the controller.
-     * This method is meant to be overwritten to declare external actions for the controller.
-     * @return array
-     */
-    public function actions()
-    {
-        return [
-            'edit-comment' => [
-                'class' => EditableAction::className(),
-                'modelClass' => CommentModel::className(),
-                'forceCreate' => false
-            ]
-        ];
-    }
-
-    /**
-     * Lists all users.
+     * Lists all comments.
+     *
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new CommentSearchModel();
+        $searchModel = Yii::createObject($this->searchClass);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $commentModel = Yii::$app->getModule(Module::$name)->commentModelClass;
 
         return $this->render($this->indexView, [
             'dataProvider' => $dataProvider,
             'searchModel' => $searchModel,
-            'commentModel' => $commentModel
+            'commentModel' => $commentModel,
         ]);
     }
 
     /**
      * Updates an existing CommentModel model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
+     *
+     * If update is successful, the browser will be redirected to the 'index' page.
+     *
+     * @param int $id
+     *
      * @return mixed
      */
     public function actionUpdate($id)
@@ -90,42 +81,52 @@ class ManageController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            Yii::$app->session->setFlash('success', 'Comment has been saved.');
+            Yii::$app->session->setFlash('success', Yii::t('yii2mod.comments', 'Comment has been saved.'));
+
             return $this->redirect(['index']);
         }
 
         return $this->render($this->updateView, [
             'model' => $model,
         ]);
-
     }
 
     /**
-     * Deletes an existing CommentModel model.
+     * Deletes an existing comment with children.
+     *
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
+     *
+     * @param int $id
+     *
      * @return mixed
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
-        Yii::$app->session->setFlash('success', 'Comment has been deleted.');
+        $this->findModel($id)->deleteWithChildren();
+        Yii::$app->session->setFlash('success', Yii::t('yii2mod.comments', 'Comment has been deleted.'));
+
         return $this->redirect(['index']);
     }
 
     /**
-     * Finds the UserModel model based on its primary key value.
+     * Finds the CommentModel model based on its primary key value.
+     *
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return CommentModel the loaded model
+     *
+     * @param int $id
+     *
      * @throws NotFoundHttpException if the model cannot be found
+     *
+     * @return CommentModel|AdjacencyListBehavior the loaded model
      */
     protected function findModel($id)
     {
-        if (($model = CommentModel::findOne($id)) !== null) {
+        $commentModel = Yii::$app->getModule(Module::$name)->commentModelClass;
+
+        if (($model = $commentModel::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('yii2mod.comments', 'The requested page does not exist.'));
         }
     }
 }

@@ -11,10 +11,11 @@
 
 namespace Symfony\Component\HttpFoundation\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class StreamedResponseTest extends \PHPUnit_Framework_TestCase
+class StreamedResponseTest extends TestCase
 {
     public function testConstructor()
     {
@@ -85,15 +86,6 @@ class StreamedResponseTest extends \PHPUnit_Framework_TestCase
     {
         $response = new StreamedResponse(null);
         $response->sendContent();
-    }
-
-    /**
-     * @expectedException \LogicException
-     */
-    public function testSetCallbackNonCallable()
-    {
-        $response = new StreamedResponse(null);
-        $response->setCallback(null);
     }
 
     /**

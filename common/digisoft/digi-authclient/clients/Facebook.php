@@ -568,9 +568,8 @@ class Facebook extends \yii\authclient\clients\Facebook
         $total_page_fans_online = array(); $total_page_fans_online = array_fill(1, 24, 0);
         foreach($online_per_hour[0]["values"] as $page_fans_online_per_day){
             if(array_key_exists('value', $page_fans_online_per_day)){
-				//echo '<pre>'; var_dump($page_fans_online_per_day["value"]); echo '</pre>'; die;
-                for($i = 0; $i < 24; $i++){
-					$total_page_fans_online[$i+1] += $page_fans_online_per_day["value"][$i];
+                foreach($page_fans_online_per_day["value"] as $key => $value){
+                    $total_page_fans_online[$key+1] += $value;
                 }
             }
         }
@@ -1031,7 +1030,8 @@ class Facebook extends \yii\authclient\clients\Facebook
             ];
         $statistics['total_posts_count'] = count($posts_in_range);
         $statistics['total_interactions_count'] = $statistics['max_interaction'] = $statistics['max_interaction_day'] = 0;
-        $statistics['min_interaction'] = $posts_in_range[0]->interactions; $statistics['min_interaction_day'] = date('M d, y', $posts_in_range[0]->creation_time);
+        $statistics['min_interaction'] = array_key_exists(0, $posts_in_range) ? $posts_in_range[0]->interactions : 0; 
+        $statistics['min_interaction_day'] = array_key_exists(0, $posts_in_range) ? date('M d, y', $posts_in_range[0]->creation_time) : 'undefined';
         $statistics['total_likes_count'] = $statistics['total_reactions_count'] = $statistics['total_comments_count'] = $statistics['total_shares_count'] = 0;
         foreach($days_in_range as $day){
             $date_day = date('M d', $day);

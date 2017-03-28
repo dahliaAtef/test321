@@ -11,6 +11,8 @@ nbproject/*
 uploads/*
 backend/uploads/*
 backend/assets/*
+frontend/web/assets/*
+
 common/config/main-local.php
 common/config/params-local.php
 common/config/main.php

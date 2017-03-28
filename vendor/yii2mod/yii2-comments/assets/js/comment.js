@@ -2,7 +2,8 @@
  * Comment plugin
  */
 (function ($) {
-    $.comment = function (method) {
+
+    $.fn.comment = function (method) {
         if (methods[method]) {
             return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
         } else if (typeof method === 'object' || !method) {
@@ -15,80 +16,130 @@
 
     // Default settings
     var defaults = {
-        // Comment actions buttons selector
         toolsSelector: '.comment-action-buttons',
-        // Form selector
         formSelector: '#comment-form',
-        // Form container selector
         formContainerSelector: '.comment-form-container',
-        // Comment content selector
         contentSelector: '.comment-body',
-        // Cancel reply button selector
         cancelReplyBtnSelector: '#cancel-reply',
-        //Pjax container id
         pjaxContainerId: '#comment-pjax-container',
-        //Pjax default settings
         pjaxSettings: {
             timeout: 10000,
             scrollTo: false,
             url: window.location.href
-        }
+        },
+        submitBtnText: 'Comment',
+        submitBtnLoadingText: 'Loading...'
     };
+
+    var commentData = {};
 
     // Methods
     var methods = {
         init: function (options) {
-            if ($.data(document, 'comment') !== undefined) {
-                return;
-            }
-            // Set plugin data
-            $.data(document, 'comment', $.extend({}, defaults, options || {}));
-            return this;
+            return this.each(function () {
+                var $comment = $(this);
+                var settings = $.extend({}, defaults, options || {});
+                var id = $comment.attr('id');
+                if (commentData[id] === undefined) {
+                    commentData[id] = {};
+                } else {
+                    return;
+                }
+                commentData[id] = $.extend(commentData[id], {settings: settings});
+
+                var formSelector = commentData[id].settings.formSelector;
+                var eventParams = {formSelector: formSelector, wrapperSelector: id};
+
+                $comment.on('beforeSubmit.comment', formSelector, eventParams, createComment);
+                $comment.on('click.comment', '[data-action="reply"]', eventParams, reply);
+                $comment.on('click.comment', '[data-action="cancel-reply"]', eventParams, cancelReply);
+                $comment.on('click.comment', '[data-action="delete"]', eventParams, deleteComment);
+            });
         },
         data: function () {
-            return $.data(document, 'comment');
+            var id = $(this).attr('id');
+            return commentData[id];
         }
     };
 
 
     /**
-     * Reply to comment
+     * Create a comment
+     * @returns {boolean}
      */
-    $(document).on('click', '[data-action="reply"]', function (event) {
-        event.preventDefault();
-        var data = $.data(document, 'comment');
+    function createComment(event) {
+        var $commentForm = $(this);
+        var settings = commentData[event.data.wrapperSelector].settings;
+        var pjaxSettings = $.extend({container: settings.pjaxContainerId}, settings.pjaxSettings);
+        var formData = $commentForm.serializeArray();
+        formData.push({'name': 'CommentModel[url]', 'value': getCurrentUrl()});
+        // disable submit button
+        $commentForm.find(':submit').prop('disabled', true).text(settings.submitBtnLoadingText);
+        // creating a comment and errors handling
+        $.post($commentForm.attr('action'), formData, function (data) {
+            if (data.status == 'success') {
+                $.pjax(pjaxSettings);
+            }
+            // errors handling
+            else {
+                if (data.hasOwnProperty('errors')) {
+                    $commentForm.yiiActiveForm('updateMessages', data.errors, true);
+                }
+                else {
+                    $commentForm.yiiActiveForm('updateAttribute', 'commentmodel-content', [data.message]);
+                }
+                // enable submit button
+                $commentForm.find(':submit').prop('disabled', false).text(settings.submitBtnText);
+            }
+        }).fail(function (xhr, status, error) {
+            alert(error);
+            $.pjax(pjaxSettings);
+        });
+
+        return false;
+    }
+
+    /**
+     * Reply to comment
+     * @param event
+     */
+    function reply(event) {
         var $this = $(this);
+        var $commentForm = $(event.data.formSelector);
+        var settings = commentData[event.data.wrapperSelector].settings;
         var parentCommentSelector = $this.parents('[data-comment-content-id="' + $this.data('comment-id') + '"]');
-        var $form = $(data.formSelector);
-        //Move form to comment container
-        $form.appendTo(parentCommentSelector);
-        //Update parentId field
-        $form.find('[data-comment="parent-id"]').val($this.data('comment-id'));
-        //Show cancel reply link
-        $(data.cancelReplyBtnSelector).show();
-    });
+        // append the comment form inside particular comment container
+        $commentForm.appendTo(parentCommentSelector);
+        $commentForm.find('[data-comment="parent-id"]').val($this.data('comment-id'));
+        $commentForm.find(settings.cancelReplyBtnSelector).show();
+
+        return false;
+    }
 
     /**
      * Cancel reply
+     * @param event
      */
-    $(document).on('click', '[data-action="cancel-reply"]', function (event) {
-        event.preventDefault();
-        var data = $.data(document, 'comment');
-        $(data.cancelReplyBtnSelector).hide();
-        var $form = $(data.formSelector);
-        //Move form to form container
-        $form.prependTo(data.formContainerSelector);
-        //Update parentId field
-        $form.find('[data-comment="parent-id"]').val(null);
-    });
+    function cancelReply(event) {
+        var $commentForm = $(event.data.formSelector);
+        var settings = commentData[event.data.wrapperSelector].settings;
+        var formContainer = $(settings.pjaxContainerId).find(settings.formContainerSelector);
+        // prepend the comment form to `formContainer`
+        $commentForm.find(settings.cancelReplyBtnSelector).hide();
+        $commentForm.prependTo(formContainer);
+        $commentForm.find('[data-comment="parent-id"]').val(null);
+
+        return false;
+    }
 
     /**
-     * Delete comment event
+     * Delete a comment
+     * @param event
      */
-    $(document).on('click', '[data-action="delete"]', function (event) {
-        event.preventDefault();
-        var data = $.data(document, 'comment');
+    function deleteComment(event) {
         var $this = $(this);
+        var settings = commentData[event.data.wrapperSelector].settings;
+
         $.ajax({
             url: $this.data('url'),
             type: 'DELETE',
@@ -96,43 +147,20 @@
                 alert(error);
             },
             success: function (result, status, xhr) {
-                $this.parents('[data-comment-content-id="' + $this.data('comment-id') + '"]').find(data.contentSelector).text(result);
-                $this.parents(data.toolsSelector).remove();
+                $this.parents('[data-comment-content-id="' + $this.data('comment-id') + '"]').find(settings.contentSelector).text(result);
+                $this.parents(settings.toolsSelector).remove();
             }
         });
-    });
+
+        return false;
+    }
 
     /**
-     * Form beforeSubmit event
+     * Get current url without `hostname`
+     * @returns {string}
      */
-    $(document).on('beforeSubmit', defaults.formSelector, function (e) {
-        var data = $.data(document, 'comment');
-        var commentForm = $(this);
-        //Add loading to comment button
-        commentForm.find(':submit').prop('disabled', true).text('Loading...');
-        var pjaxSettings = $.extend({container: data.pjaxContainerId}, data.pjaxSettings);
-        //Send post request
-        $.post(commentForm.attr("action"), commentForm.serialize(), function (data) {
-            //If success is status, then pjax container has been reloaded and comment form has been reset
-            if (data.status == 'success') {
-                $(pjaxSettings.container).on("pjax:end", function () {
-                    commentForm.find(':submit').prop('disabled', false).text('Comment');
-                    $(commentForm).trigger("reset");
-                });
-                $.pjax(pjaxSettings);
-            }
-            //If status is error, then only show form errors.
-            else {
-                if (data.hasOwnProperty('errors')) {
-                    commentForm.yiiActiveForm('updateMessages', data.errors, true);
-                }
-                else {
-                    commentForm.yiiActiveForm('updateAttribute', 'commentmodel-content', [data.message]);
-                }
-                commentForm.find(':submit').prop('disabled', false).text('Comment');
-            }
-        });
-        return false;
-    });
+    function getCurrentUrl() {
+        return window.location.pathname + window.location.search;
+    }
 
 })(window.jQuery);

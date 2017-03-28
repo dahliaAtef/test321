@@ -6,12 +6,15 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PHPExcel' => array($vendorDir . '/phpoffice/phpexcel/Classes'),
+    'yii\\imperavi\\' => array($vendorDir . '/asofter/yii2-imperavi-redactor'),
     'Omnipay\\Common\\' => array($vendorDir . '/omnipay/common/src'),
     'Mailchimp' => array($vendorDir . '/mailchimp/mailchimp/src'),
     'Imagine' => array($vendorDir . '/imagine/imagine/lib'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
     'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
     'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
+    'Google_Service_' => array($vendorDir . '/google/apiclient-services/src'),
+    'Google_' => array($vendorDir . '/google/apiclient/src'),
     'Diff' => array($vendorDir . '/phpspec/php-diff/lib'),
+    'mPDF' => array($vendorDir . '/mpdf/mpdf'),
 );

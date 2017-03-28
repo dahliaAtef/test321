@@ -26,6 +26,10 @@ class FileUploadUI extends BaseUpload
      */
     public $gallery = true;
     /**
+     * @var bool load previously uploaded images or not
+     */
+    public $load = false;
+    /**
      * @var array the HTML attributes for the file input tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
@@ -66,10 +70,9 @@ class FileUploadUI extends BaseUpload
         $this->fieldOptions['multiple'] = true;
         $this->fieldOptions['id'] = ArrayHelper::getValue($this->options, 'id');
 
-        $this->options['id'] .= '-form';
-        $this->options['enctype'] = 'multipart/form-data';
-        $this->options['uploadTemplateId'] = $this->uploadTemplateId ? : '#template-upload';
-        $this->options['downloadTemplateId'] = $this->downloadTemplateId ? : '#template-download';
+        $this->options['id'] .= '-fileupload';
+        $this->options['data-upload-template-id'] = $this->uploadTemplateId ? : 'template-upload';
+        $this->options['data-download-template-id'] = $this->downloadTemplateId ? : 'template-download';
     }
 
     /**
@@ -111,5 +114,20 @@ class FileUploadUI extends BaseUpload
             }
         }
         $view->registerJs(implode("\n", $js));
+
+        if ($this->load) {
+            $view->registerJs("
+                $('#$id').addClass('fileupload-processing');
+                $.ajax({
+                    url: $('#$id').fileupload('option', 'url'),
+                    dataType: 'json',
+                    context: $('#$id')[0]
+                }).always(function () {
+                    $(this).removeClass('fileupload-processing');
+                }).done(function (result) {
+                    $(this).fileupload('option', 'done').call(this, $.Event('done'), {result: result});
+                });
+            ");
+        }
     }
 }

@@ -14,7 +14,7 @@ if(($action_id == 'subscribe') || ($action_id == 'contact-us')){
     $logo = Url::to('@frontThemeUrl').'/images/logo.png';
 }
 ?>
-<header class="<?= $headerC ?>">
+<header class="<?= $headerC ?>" style="display: <?= ($action_id == 'facebook-pdf') ? 'none' : ''?>;">
     <div class="container">
         <div class="inner-header">
             <div class="logo"><a href="<?= Url::to(['/']) ?>"><img src="<?= $logo ?>"></a></div>

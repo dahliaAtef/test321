@@ -67,7 +67,7 @@ class UserController extends \frontend\components\BaseController {
            // var_dump($oLoginForm->username);die;
            $id=  Yii::$app->user->getId() ;
            $userObj= \common\models\base\User::findByUserId($id);
-           $ActiveUser = str_replace(' ', '_', $userObj->username);
+           $ActiveUser=str_replace(' ', '_', $userObj->username);
             Yii::$app->session->set('ActiveUser', $ActiveUser);
 
             return $this->redirect(Url::to(['/dashboard/'.$ActiveUser]));

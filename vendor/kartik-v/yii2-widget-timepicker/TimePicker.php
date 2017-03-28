@@ -1,29 +1,30 @@
 <?php
 
 /**
- * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014
+ * @copyright Copyright &copy; Kartik Visweswaran, Krajee.com, 2014 - 2017
  * @package yii2-widgets
  * @subpackage yii2-widget-timepicker
- * @version 1.0.0
+ * @version 1.0.3
  */
 
 namespace kartik\time;
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use kartik\base\InputWidget;
 
 /**
- * The TimePicker widget  allows you to easily select a time for a text input using
- * your mouse or keyboards arrow keys. Thus widget is a wrapper enhancement over the
- * TimePicker JQuery plugin by rendom forked from the plugin by jdewit. Additional
- * enhancements have been done to this input widget for compatibility with Bootstrap 3.
+ * The TimePicker widget  allows you to easily select a time for a text input using your mouse or keyboards arrow keys.
+ * Thus widget is a wrapper enhancement over the TimePicker JQuery plugin by rendom forked from the plugin by jdewit.
+ * Additional enhancements have been done to this input widget and plugin by Krajee to fix various bugs, and also
+ * provide compatibility with Bootstrap 3.
  *
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @since 1.0
  * @see https://github.com/rendom/bootstrap-3-timepicker
  * @see https://github.com/jdewit/bootstrap-timepicker
  */
-class TimePicker extends \kartik\base\InputWidget
+class TimePicker extends InputWidget
 {
     /**
      * @var string the size of the input - 'lg', 'md', 'sm', 'xs'
@@ -31,17 +32,15 @@ class TimePicker extends \kartik\base\InputWidget
     public $size;
 
     /**
-     * @var string/boolean the addon content
+     * @var string|boolean the addon content
      */
     public $addon = '<i class="glyphicon glyphicon-time"></i>';
 
     /**
-     * @var array HTML attributes for the addon container
-     * the following special options are identified
-     * - asButton: boolean if the addon is to be displayed as a button.
-     * - buttonOptions: array HTML attributes if the addon is to be
-     *   displayed like a button. If [[asButton]] is true, this will
-     *   default to ['class' => 'btn btn-default']
+     * @var array HTML attributes for the addon container. The following special options are recognized:
+     * - `asButton`: _boolean_, if the addon is to be displayed as a button.
+     * - `buttonOptions`: _array_, HTML attributes if the addon is to be displayed like a button. If [[asButton]] is
+     *   `true`, this will default to `['class' => 'btn btn-default']`.
      */
     public $addonOptions = [];
 
@@ -51,13 +50,15 @@ class TimePicker extends \kartik\base\InputWidget
     public $containerOptions = [];
 
     /**
-     * Initializes the widget
-     *
-     * @throw InvalidConfigException
+     * @inheritdoc
      */
-    public function init()
+    public $pluginName = 'timepicker';
+
+    /**
+     * @inheritdoc
+     */
+    public function run()
     {
-        parent::init();
         $this->registerAssets();
         echo Html::tag('div', $this->renderInput(), $this->containerOptions);
     }
@@ -105,12 +106,12 @@ class TimePicker extends \kartik\base\InputWidget
     }
 
     /**
-     * Registers the needed assets
+     * Registers the client assets for [[Timepicker]] widget
      */
     public function registerAssets()
     {
         $view = $this->getView();
         TimePickerAsset::register($view);
-        $this->registerPlugin('timepicker');
+        $this->registerPlugin($this->pluginName);
     }
 }

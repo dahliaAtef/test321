@@ -176,7 +176,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                         </div>
                     </div>
                     <?php
-                    echo $this->render('_fb_paid_organic_reach', ['reach' => json_decode($insights['facebook']['last_insights']->insights_json, true)['organic_paid_reach_json_table']]);
+                    echo $this->render('_fb_paid_organic_reach', ['reach' => (($fb) ? json_decode($insights['facebook']['last_insights']->insights_json, true)['organic_paid_reach_json_table'] : null)]);
                 ?>
          	<div class="row">
                 <div class="col-md-12">

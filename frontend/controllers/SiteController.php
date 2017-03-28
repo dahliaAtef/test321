@@ -25,6 +25,9 @@ use frontend\models\SubscribeForm;
 use frontend\models\UserPagesForm;
 use frontend\models\SupportForm;
 use frontend\models\RangeForm;
+use frontend\models\ExportForm;
+use mPDF;
+
 
 /**
  * Site controller
@@ -47,14 +50,14 @@ class SiteController extends \frontend\components\BaseController {
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['/logout', '/change-password', 'dashboard', 'facebook', 'twitter', 'instagram', 'youtube', 'google-plus', 'linkedin', 'support', 'home', 'testmail', 'delete-competitor', 'admin', 'competitors/index', 'competitors/delete', 'competitors/update', 'export-pdf'],
+                        'actions' => ['/logout', '/change-password', 'dashboard', 'facebook', 'twitter', 'instagram', 'youtube', 'google-plus', 'linkedin', 'support', 'home', 'testmail', 'delete-competitor', 'admin', 'competitors/index', 'competitors/delete', 'competitors/update', 'export-pdf', 'facebook-pdf'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
-
-            /*[
+/*
+            [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['facebook'],
                 'duration' => 60*60*12, // 12 h
@@ -107,8 +110,9 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],*/
 
+            ],
+	*/
         ];
 
     }
@@ -134,43 +138,111 @@ class SiteController extends \frontend\components\BaseController {
         ];
     }
 
-	
-	/*
-	EXPORT WITH MPDF
-	*/
-    /*
-    public function actionExportPdf()
-    {
-		
-		$session= Yii::$app->session;
-        $dashboard = new Dashboard();
-      	$admin_accounts = Authclient::find()->where(['user_id' =>2])->all();
-		$oCompetitorsForm = new CompetitorsForm();
-      	$oCompetitorTest = new CompetitorTest();
-		$oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-            //if(!$session->has('dashboard_accounts')){
-            $dashboard_accounts = [];
-            $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
-            foreach($accounts as $account){
-                if($account->model){
-                    $dashboard_accounts[$account['source']]['entity_id'] = $account->model[0]['entity_id'];
-                    $dashboard_accounts[$account['source']]['model_id'] = $account->model[0]['id'];
-                    $dashboard_accounts[$account['source']]['authclient'] = $account;
+    
+    public function actionFacebookPdf(){
+        
+        ini_set('max_execution_time', 900000);
+        /*$session = Yii::$app->session;
+        $fb = new Facebook();
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
+        if($session->has('facebook')){
+            $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
+
+            if($oModel){
+                if(date('d M', time()) == date('d M', strtotime('first day of this month'))){
+                    $since = strtotime('first day of last month');
+                    $since = strtotime('-1 days', $since);
+                    $until = strtotime('last day of last month');
+                }else{
+                    //$since = strtotime('first day of this month');
+                    $since = strtotime('-2 months');
+                    $since = strtotime('-1 days', $since);
+                    $until = time();
                 }
-            } 
-            $session->set('dashboard_accounts', $dashboard_accounts);
-            //}
-          $insights = $dashboard->getDashboardAccountsInsights();
-        $html = $this->render('/pdf/_pdf',['insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oDashboard' => $dashboard, 'oCompetitors' => $oCompetitors]);
-        $mpdf=new \mPDF('c','A4','','' , 0 , 0 , 0 , 0 , 0 , 0);  
-        $mpdf->SetDisplayMode('fullpage');
-        $mpdf->list_indent_first_level = 0;  // 1 or 0 - whether to indent the first level of a list
+                $page = $fb->getPageData($oModel[0]->entity_id);
+                $mpdf=new mPDF();
+
+                $mpdf->WriteHTML($this->renderPartial('/facebook-pf/facebookPage', [
+                    'page' => $page,
+                    'fb' => $fb,
+                    'id' => $oModel[0]->entity_id,
+                    'since' => $since,
+                    'until' => $until,
+                    'model' => $oModel[0],
+                    'authclient_created' => strtotime($oAuthclient->created),
+                ]));
+
+                $mpdf->Output();
+
+                exit;
+                /*return $this->render('/facebook-pf/facebookPage', [
+                    'page' => $page,
+                    'fb' => $fb,
+                    'id' => $oModel[0]->entity_id,
+                    'since' => $since,
+                    'until' => $until,
+                    'model' => $oModel[0],
+                    'authclient_created' => strtotime($oAuthclient->created),
+                ]);*
+            }
+        }*/
+
+       $session = Yii::$app->session;
+        $fb = new Facebook();
+        $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook']);
+        $oModel = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'facebook'])->model;
+        $oExportForm = new ExportForm();
+        if($oExportForm->load(Yii::$app->request->post()) && $oExportForm->validate()){
+            $count = 0; $images = []; 
+            $images_id = json_decode($oExportForm->images_id, true);
+            $images_src = json_decode($oExportForm->images_src, true);
+            foreach($images_id as $id){
+                $images[$id] = $images_src[$count];
+                $count++;
+            }
+        }
+        //$since = strtotime('first day of this month');
+        $since = strtotime('-2 months');
+        $since = strtotime('-1 days', $since);
+        $until = time();
+        $page = $fb->getPageData($oModel[0]->entity_id);
+        $mpdf = new mPDF();
+        $html = mb_convert_encoding($this->render('/facebook-pdf/facebookPage', [
+            'page' => $page,
+            'fb' => $fb,
+            'id' => $oModel[0]->entity_id,
+            'since' => $since,
+            'until' => $until,
+            'model' => $oModel[0],
+            'authclient_created' => strtotime($oAuthclient->created),
+            'images' => $images
+        ]), 'UTF-8', 'UTF-8');
         $mpdf->WriteHTML($html);
-        $mpdf->Output();
+
+        $mpdf->Output('facebook.pdf', 'D');
         exit;
+        /*Yii::$app->response->format = 'pdf';
+
+        // Rotate the page
+        Yii::$container->set(Yii::$app->response->formatters['pdf']['class'], [
+            'format' => [216, 356], // Legal page size in mm
+            'orientation' => 'Landscape', // This value will be used when 'format' is an array only. Skipped when 'format' is empty or is a string
+            'beforeRender' => function($mpdf, $data) {},
+        ]);
+                    
+        //$this->layout = '//main';
+        return $this->render('/facebook-pdf/facebookPage', [
+            'page' => $page,
+            'fb' => $fb,
+            'id' => $oModel[0]->entity_id,
+            'since' => $since,
+            'until' => $until,
+            'model' => $oModel[0],
+            'authclient_created' => strtotime($oAuthclient->created),
+            'images' => $images
+        ]);*/
     }
-    */
-	
+     
     /**
      * Home page
      */
@@ -614,6 +686,7 @@ public function actionInstagram(){
     }
     
     public function actionFacebook(){
+        ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $fb = new Facebook();
         $oUserPagesForm = new UserPagesForm();
@@ -651,6 +724,7 @@ public function actionInstagram(){
 
             if($oModel){
                 $oRangeForm = new RangeForm();
+                $oExportForm = new ExportForm();
                 if($oRangeForm->load(Yii::$app->request->post()) && $oRangeForm->validate()){
                     $since = strtotime($oRangeForm->start_date);
                     $since = strtotime('-1 days', $since);
@@ -662,11 +736,11 @@ public function actionInstagram(){
                 }else{
                     $since = strtotime('first day of this month');
                     //$since = strtotime('-2 months');
-                  	$since = strtotime('-1 days', $since);
+                    $since = strtotime('-1 days', $since);
                     $until = time();
                 }
                 $page = $fb->getPageData($oModel[0]->entity_id);
-                return $this->render('/facebook/facebookPage',[
+                return $this->render('/facebook/facebookPage', [
                     'page' => $page,
                     'fb' => $fb,
                     'id' => $oModel[0]->entity_id,
@@ -674,6 +748,7 @@ public function actionInstagram(){
                     'until' => $until,
                     'model' => $oModel[0],
                     'oRangeForm' => $oRangeForm,
+                    'oExportForm' => $oExportForm,
                     'authclient_created' => strtotime($oAuthclient->created),
                 ]);
             }else{
