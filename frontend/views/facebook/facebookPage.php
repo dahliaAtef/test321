@@ -13,9 +13,6 @@ $colors = ["#6600CC","#CC00CC","#CC0066","#CC0000","#CC6600","#CCCC00","#66CC00"
 $this->title = 'Facebook';
 $session = Yii::$app->session;
 
-$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."'); 
-    tripDatePicker.range_limit = 92;
-    $('.startDate').prop('autofocus', false);", yii\web\View::POS_END);
 ?>
 <div class="page-content inside facebook">
   <div id="loadWh">
@@ -24,38 +21,6 @@ $this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_
     </div>
   </div><!-- loader -->
 
-    
-  <div class="page-options">   
-    <div class="row">
-        <div class="col-md-12">          
-            <div class="row">
-               
-                <?php $form = ActiveForm::begin(['id' => 'range-form','options' => ['data-pjax' => true ]]); ?>
-                 
-                <div class="range-item">
-                    <h4>Choose your range</h4>
-                </div>
-                <div class="range-item">
-                    <div class="right-inner-addon">
-                        <?= $form->field($oRangeForm, 'start_date')->textInput(['class' => 'form-control startDate', 'placeholder' => 'Start Date', 'readonly' => true])->label(false) ?>
-                        <i class="glyphicon glyphicon-calendar"></i>
-                    </div>
-                </div>
-                <div class="range-item">
-                    <div class="right-inner-addon">
-                        <?= $form->field($oRangeForm, 'end_date')->textInput(['class' => 'form-control endDate', 'placeholder' => 'End Date', 'disabled' => true, 'readonly' => true])->label(false) ?>
-                        <i class="glyphicon glyphicon-calendar"></i>
-                    </div>
-                </div>
-                <div class="range-item">
-                        <?= Html::submitButton('Calculate', ['id' => 'bttn-range-form', 'name' => 'submit-range', 'autofocus' => 'true' ]) ?>
-                </div>
-                <?php $form = ActiveForm::end() ?>
-            </div>
-        </div>
-      </div>
-  </div>
-   <!-- page-option -->
 
     <div class="container">
 

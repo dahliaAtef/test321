@@ -140,7 +140,7 @@ class GooglePlus extends OAuth2
         return $public_activities;
     }
     
-    public function getAllPublicActivities($since){
+    public function getAllPublicActivities($since=null){
         $public_activities = array();
         $public_activities_array = $this->getPublicActivities();
         $public_activities = $public_activities_array ['items'];
@@ -402,7 +402,7 @@ class GooglePlus extends OAuth2
     public function getFollowersGrowth(){
         $followers_growth_array = array();
         foreach($this->account_insights_in_range as $insights){
-            $followers_growth_array[date('d M, y', strtotime($insights->created))] = $insights->followers;
+            $followers_growth_array[strtotime($insights->created)] = $insights->followers;
         }
         return $followers_growth_array;
     }

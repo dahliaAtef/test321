@@ -139,12 +139,38 @@ class Facebook extends OAuth2
             if($error['error']['type'] == "OAuthException"  or $error['error']['code']==190 ) {
                 return null;
             }else{
-                throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
+                             return null;
+
+             //   throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
             }
         }
 
         return $this->processResponse($response, $this->determineContentTypeByHeaders($responseHeaders));
     }
+  
+   public function api($apiSubUrl, $method = 'GET', array $params = [], array $headers = [])
+    {
+        if (preg_match('/^https?:\\/\\//is', $apiSubUrl)) {
+            $url = $apiSubUrl;
+        } else {
+            $url = $this->apiBaseUrl . '/' . $apiSubUrl;
+        }
+        $accessToken = $this->getAccessToken();
+
+        if (!is_object($accessToken) || !$accessToken->getIsValid()) {
+
+            if( !$accessToken->getIsValid() ){
+                //$accessToken = $this->refreshAccessToken($accessToken);
+                if($accessToken == null){return null;}else{$this->setAccessToken($accessToken);}
+            }else{
+                return null ;
+
+            }
+           // throw new Exception('Invalid access token.');
+        }
+        return $this->apiInternal($accessToken, $url, $method, $params, $headers);
+    }
+  
 
 
 }

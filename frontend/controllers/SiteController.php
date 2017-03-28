@@ -62,7 +62,7 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                    'sql' => 'SELECT COUNT( id ) FROM authclient where source= "linkedin" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],*/
+            ],
             [
                 'class' => 'yii\filters\PageCache',
                 'only' => ['twitter'],
@@ -107,7 +107,7 @@ class SiteController extends \frontend\components\BaseController {
                     'class' => 'yii\caching\DbDependency',
                     'sql' => 'SELECT COUNT( id ) FROM authclient where source= "google-plus" and user_id='.Yii::$app->user->getId(),
                 ],
-            ],
+            ],*/
 
         ];
 
@@ -175,7 +175,7 @@ class SiteController extends \frontend\components\BaseController {
      * Home page
      */
     public function actionHome() {
-        return (Yii::$app->user->isGuest) ? $this->render('home') : $this->redirect('dashboard');
+        return (Yii::$app->user->isGuest) ? $this->renderPartial('home') : ((Yii::$app->session->get('ActiveUser')) ? $this->redirect(Url::to(['/dashboard/'.Yii::$app->session->get('ActiveUser')])) : $this->redirect('dashboard'));
     }
     
     /**

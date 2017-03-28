@@ -796,7 +796,7 @@ class Facebook extends \yii\authclient\clients\Facebook
         $oPostModel->likes = (array_key_exists('like' , $stories) ? $stories['like'] : 0);
         $oPostModel->comments = (array_key_exists('comment' , $stories) ? $stories['comment'] : 0);
         $oPostModel->shares = (array_key_exists('share' , $stories) ? $stories['share'] : 0);
-        $oPostModel->reactions = $reactions;
+        $oPostModel->reactions = ($reactions) ? $reactions : 'check error';
         $oPostModel->interactions = $this->getPostInteractionsCount($post['id']);
         $oPostModel->creation_time = strtotime($post["created_time"]);
         $oPostModel->followers = $followers;
@@ -1571,4 +1571,5 @@ class Facebook extends \yii\authclient\clients\Facebook
         return $page_posts_reach_json_table;
     }
   
+ 
 }
