@@ -8,6 +8,9 @@ use digi\authclient\clients\Youtube;
 
 $this->title = 'Youtube';
 
+$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."'); 
+    tripDatePicker.range_limit = 365;
+    $('.startDate').prop('autofocus', false);", yii\web\View::POS_END);
 
 $device_types = $youtube->getAnalyticsPerDevice($start_date, $end_date);
 

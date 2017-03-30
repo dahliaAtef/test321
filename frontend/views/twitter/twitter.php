@@ -7,6 +7,10 @@ use digi\authclient\clients\Twitter;
 
 $this->title = "Twitter";
 
+$this->registerJs("tripDatePicker.today = new Date('".date('M d Y', $authclient_created)."'); 
+    tripDatePicker.range_limit = 365;
+    $('.startDate').prop('autofocus', false);", yii\web\View::POS_END);
+?>
 ?>
 <div class="page-content inside twitter">
    <div id="loadWh">

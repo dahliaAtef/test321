@@ -183,6 +183,8 @@ class SaveController extends \frontend\components\BaseController {
     }
 
     public function actionInstagram(){
+        
+        ini_set('max_execution_time', 900000);
         $session = Yii::$app->session;
         $insta = new Instagram ();
         $oAuthclient = Authclient::findOne(['user_id' => Yii::$app->user->getId(), 'source' => 'instagram']);

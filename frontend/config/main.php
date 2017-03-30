@@ -77,7 +77,7 @@ return [
             'savePath' => '@common/runtime/session',
             'cookieParams' => [
                 'path' => '/',
-                'domain' => '.hypeinsights.com',
+                'domain' => '._hypeinsights.com',
             ]
         ],
        /* 'user' => [
@@ -97,7 +97,7 @@ return [
             'loginUrl' => '/#login',
           	'identityCookie' => [
                 'name' => '_hypeinsights',
-                'domain' => '.hypeinsights.com',
+                'domain' => '._hypeinsights.com',
                 'path' => '/',
             ]
         ],

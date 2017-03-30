@@ -4,19 +4,16 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\authclient;
-
 use yii\base\Object;
-
 /**
  * Token represents OAuth token.
  *
- * @property int $expireDuration Token expiration duration. Note that the type of this property differs in
+ * @property integer $expireDuration Token expiration duration. Note that the type of this property differs in
  * getter and setter. See [[getExpireDuration()]] and [[setExpireDuration()]] for details.
  * @property string $expireDurationParamKey Expire duration param key.
- * @property bool $isExpired Is token expired. This property is read-only.
- * @property bool $isValid Is token valid. This property is read-only.
+ * @property boolean $isExpired Is token expired. This property is read-only.
+ * @property boolean $isValid Is token valid. This property is read-only.
  * @property array $params This property is read-only.
  * @property string $token Token value.
  * @property string $tokenSecret Token secret value.
@@ -35,10 +32,9 @@ class OAuthToken extends Object
      */
     public $tokenSecretParamKey = 'oauth_token_secret';
     /**
-     * @var int object creation timestamp.
+     * @var integer object creation timestamp.
      */
     public $createTimestamp;
-
     /**
      * @var string key in [[params]] array, which stores token expiration duration.
      * If not set will attempt to fetch its value automatically.
@@ -48,8 +44,6 @@ class OAuthToken extends Object
      * @var array token parameters.
      */
     private $_params = [];
-
-
     /**
      * @inheritdoc
      */
@@ -59,7 +53,6 @@ class OAuthToken extends Object
             $this->createTimestamp = time();
         }
     }
-
     /**
      * @param string $expireDurationParamKey expire duration param key.
      */
@@ -67,7 +60,6 @@ class OAuthToken extends Object
     {
         $this->_expireDurationParamKey = $expireDurationParamKey;
     }
-
     /**
      * @return string expire duration param key.
      */
@@ -76,10 +68,8 @@ class OAuthToken extends Object
         if ($this->_expireDurationParamKey === null) {
             $this->_expireDurationParamKey = $this->defaultExpireDurationParamKey();
         }
-
         return $this->_expireDurationParamKey;
     }
-
     /**
      * @return array
      */
@@ -87,7 +77,6 @@ class OAuthToken extends Object
     {
         return $this->_params;
     }
-
     /**
      * @param array $params
      */
@@ -95,7 +84,6 @@ class OAuthToken extends Object
     {
         $this->_params = $params;
     }
-
     /**
      * Sets param by name.
      * @param string $name param name.
@@ -105,7 +93,6 @@ class OAuthToken extends Object
     {
         $this->_params[$name] = $value;
     }
-
     /**
      * Returns param by name.
      * @param string $name param name.
@@ -115,7 +102,6 @@ class OAuthToken extends Object
     {
         return isset($this->_params[$name]) ? $this->_params[$name] : null;
     }
-
     /**
      * Sets token value.
      * @param string $token token value.
@@ -125,7 +111,6 @@ class OAuthToken extends Object
     {
         $this->setParam($this->tokenParamKey, $token);
     }
-
     /**
      * Returns token value.
      * @return string token value.
@@ -134,7 +119,6 @@ class OAuthToken extends Object
     {
         return $this->getParam($this->tokenParamKey);
     }
-
     /**
      * Sets the token secret value.
      * @param string $tokenSecret token secret.
@@ -143,7 +127,6 @@ class OAuthToken extends Object
     {
         $this->setParam($this->tokenSecretParamKey, $tokenSecret);
     }
-
     /**
      * Returns the token secret value.
      * @return string token secret value.
@@ -152,7 +135,6 @@ class OAuthToken extends Object
     {
         return $this->getParam($this->tokenSecretParamKey);
     }
-
     /**
      * Sets token expire duration.
      * @param string $expireDuration token expiration duration.
@@ -161,16 +143,14 @@ class OAuthToken extends Object
     {
         $this->setParam($this->getExpireDurationParamKey(), $expireDuration);
     }
-
     /**
      * Returns the token expiration duration.
-     * @return int token expiration duration.
+     * @return integer token expiration duration.
      */
     public function getExpireDuration()
     {
         return $this->getParam($this->getExpireDurationParamKey());
     }
-
     /**
      * Fetches default expire duration param key.
      * @return string expire duration param key.
@@ -184,13 +164,11 @@ class OAuthToken extends Object
                 break;
             }
         }
-
         return $expireDurationParamKey;
     }
-
     /**
      * Checks if token has expired.
-     * @return bool is token expired.
+     * @return boolean is token expired.
      */
     public function getIsExpired()
     {
@@ -198,18 +176,15 @@ class OAuthToken extends Object
         if (empty($expirationDuration)) {
             return false;
         }
-
         return (time() >= ($this->createTimestamp + $expirationDuration));
     }
-
     /**
      * Checks if token is valid.
-     * @return bool is token valid.
+     * @return boolean is token valid.
      */
     public function getIsValid()
     {
         $token = $this->getToken();
-
         return (!empty($token) && !$this->getIsExpired());
     }
 }

@@ -4,28 +4,23 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\authclient;
-
 use yii\base\Component;
 use yii\base\InvalidParamException;
 use Yii;
-
 /**
  * Collection is a storage for all auth clients in the application.
  *
  * Example application configuration:
  *
- * ```php
+ * ~~~
  * 'components' => [
  *     'authClientCollection' => [
  *         'class' => 'yii\authclient\Collection',
  *         'clients' => [
  *             'google' => [
- *                 'class' => 'yii\authclient\clients\Google',
- *                 'clientId' => 'google_client_id',
- *                 'clientSecret' => 'google_client_secret',
- *              ],
+ *                 'class' => 'yii\authclient\clients\GoogleOpenId'
+ *             ],
  *             'facebook' => [
  *                 'class' => 'yii\authclient\clients\Facebook',
  *                 'clientId' => 'facebook_client_id',
@@ -35,7 +30,7 @@ use Yii;
  *     ]
  *     ...
  * ]
- * ```
+ * ~~~
  *
  * @property ClientInterface[] $clients List of auth clients. This property is read-only.
  *
@@ -45,18 +40,9 @@ use Yii;
 class Collection extends Component
 {
     /**
-     * @var \yii\httpclient\Client|array|string HTTP client instance or configuration for the [[clients]].
-     * If set, this value will be passed as 'httpClient' config option while instantiating particular client object.
-     * This option is useful for adjusting HTTP client configuration for the entire list of auth clients.
-     */
-    public $httpClient;
-
-    /**
      * @var array list of Auth clients with their configuration in format: 'clientId' => [...]
      */
     private $_clients = [];
-
-
     /**
      * @param array $clients list of auth clients
      */
@@ -64,7 +50,6 @@ class Collection extends Component
     {
         $this->_clients = $clients;
     }
-
     /**
      * @return ClientInterface[] list of auth clients.
      */
@@ -74,10 +59,8 @@ class Collection extends Component
         foreach ($this->_clients as $id => $client) {
             $clients[$id] = $this->getClient($id);
         }
-
         return $clients;
     }
-
     /**
      * @param string $id service id.
      * @return ClientInterface auth client instance.
@@ -91,20 +74,17 @@ class Collection extends Component
         if (!is_object($this->_clients[$id])) {
             $this->_clients[$id] = $this->createClient($id, $this->_clients[$id]);
         }
-
         return $this->_clients[$id];
     }
-
     /**
      * Checks if client exists in the hub.
      * @param string $id client id.
-     * @return bool whether client exist.
+     * @return boolean whether client exist.
      */
     public function hasClient($id)
     {
         return array_key_exists($id, $this->_clients);
     }
-
     /**
      * Creates auth client instance from its array configuration.
      * @param string $id auth client id.
@@ -114,11 +94,6 @@ class Collection extends Component
     protected function createClient($id, $config)
     {
         $config['id'] = $id;
-
-        if (!isset($config['httpClient']) && $this->httpClient !== null) {
-            $config['httpClient'] = $this->httpClient;
-        }
-
         return Yii::createObject($config);
     }
 }

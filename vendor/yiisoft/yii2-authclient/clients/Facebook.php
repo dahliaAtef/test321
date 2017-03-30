@@ -4,13 +4,10 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\authclient\clients;
-
 use yii\authclient\InvalidResponseException;
 use yii\authclient\OAuth2;
 use yii\base\Exception;
-
 /**
  * Facebook allows authentication via Facebook OAuth.
  *
@@ -58,7 +55,6 @@ class Facebook extends OAuth2
      * @inheritdoc
      */
     public $scope = 'email';
-
     /**
     * @var array list of attribute names, which should be requested from API to initialize user attributes.
     * @since 2.0.5
@@ -67,7 +63,6 @@ class Facebook extends OAuth2
        'name',
        'email',
    ];
-
     /**
      * @inheritdoc
      */
@@ -77,7 +72,6 @@ class Facebook extends OAuth2
             'fields' => implode(',', $this->attributeNames),
         ]);
     }
-
     /**
      * @inheritdoc
      */
@@ -85,7 +79,6 @@ class Facebook extends OAuth2
     {
         return 'facebook';
     }
-
     /**
      * @inheritdoc
      */
@@ -93,7 +86,6 @@ class Facebook extends OAuth2
     {
         return 'Facebook';
     }
-
     /**
      * @inheritdoc
      */
@@ -104,7 +96,6 @@ class Facebook extends OAuth2
             'popupHeight' => 480,
         ];
     }
-
     public function sendRequest($method, $url, array $params = [], array $headers = [])
     {
         $curlOptions = $this->mergeCurlOptions(
@@ -123,13 +114,10 @@ class Facebook extends OAuth2
         }
         $response = curl_exec($curlResource);
         $responseHeaders = curl_getinfo($curlResource);
-
         // check cURL error
         $errorNumber = curl_errno($curlResource);
         $errorMessage = curl_error($curlResource);
-
         curl_close($curlResource);
-
         if ($errorNumber > 0) {
             throw new Exception('Curl error requesting "' .  $url . '": #' . $errorNumber . ' - ' . $errorMessage);
         }
@@ -139,38 +127,9 @@ class Facebook extends OAuth2
             if($error['error']['type'] == "OAuthException"  or $error['error']['code']==190 ) {
                 return null;
             }else{
-                             return null;
-
-             //   throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
+                throw new InvalidResponseException($responseHeaders, $response, 'Request failed with code: ' . $responseHeaders['http_code'] . ', message: ' . $response);
             }
         }
-
         return $this->processResponse($response, $this->determineContentTypeByHeaders($responseHeaders));
     }
-  
-   public function api($apiSubUrl, $method = 'GET', array $params = [], array $headers = [])
-    {
-        if (preg_match('/^https?:\\/\\//is', $apiSubUrl)) {
-            $url = $apiSubUrl;
-        } else {
-            $url = $this->apiBaseUrl . '/' . $apiSubUrl;
-        }
-        $accessToken = $this->getAccessToken();
-
-        if (!is_object($accessToken) || !$accessToken->getIsValid()) {
-
-            if( !$accessToken->getIsValid() ){
-                //$accessToken = $this->refreshAccessToken($accessToken);
-                if($accessToken == null){return null;}else{$this->setAccessToken($accessToken);}
-            }else{
-                return null ;
-
-            }
-           // throw new Exception('Invalid access token.');
-        }
-        return $this->apiInternal($accessToken, $url, $method, $params, $headers);
-    }
-  
-
-
 }

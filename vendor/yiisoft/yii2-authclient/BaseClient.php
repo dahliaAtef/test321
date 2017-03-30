@@ -4,30 +4,21 @@
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
-
 namespace yii\authclient;
-
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
-use yii\di\Instance;
+use yii\base\NotSupportedException;
 use yii\helpers\Inflector;
 use yii\helpers\StringHelper;
-use yii\httpclient\Client;
-
 /**
  * BaseClient is a base Auth Client class.
  *
  * @see ClientInterface
  *
- * @property Client $httpClient Internal HTTP client. Note that the type of this property differs in getter
- * and setter. See [[getHttpClient()]] and [[setHttpClient()]] for details.
  * @property string $id Service id.
  * @property string $name Service name.
  * @property array $normalizeUserAttributeMap Normalize user attribute map.
- * @property array $requestOptions HTTP request options. This property is read-only.
- * @property StateStorageInterface $stateStorage Stage storage. Note that the type of this property differs in
- * getter and setter. See [[getStateStorage()]] and [[setStateStorage()]] for details.
  * @property string $title Service title.
  * @property array $userAttributes List of user attributes.
  * @property array $viewOptions View options in format: optionName => optionValue.
@@ -81,30 +72,12 @@ abstract class BaseClient extends Component implements ClientInterface
      */
     private $_viewOptions;
     /**
-     * @var Client|array|string internal HTTP client.
-     * @since 2.1
-     */
-    private $_httpClient = 'yii\httpclient\Client';
-    /**
-     * @var array cURL request options. Option values from this field will overwrite corresponding
-     * values from [[defaultRequestOptions()]].
-     * @since 2.1
-     */
-    private $_requestOptions = [];
-    /**
-     * @var StateStorageInterface|array|string state storage to be used.
-     */
-    private $_stateStorage = 'yii\authclient\SessionStateStorage';
-
-
-    /**
      * @param string $id service id.
      */
     public function setId($id)
     {
         $this->_id = $id;
     }
-
     /**
      * @return string service id
      */
@@ -113,10 +86,8 @@ abstract class BaseClient extends Component implements ClientInterface
         if (empty($this->_id)) {
             $this->_id = $this->getName();
         }
-
         return $this->_id;
     }
-
     /**
      * @param string $name service name.
      */
@@ -124,7 +95,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         $this->_name = $name;
     }
-
     /**
      * @return string service name.
      */
@@ -133,10 +103,8 @@ abstract class BaseClient extends Component implements ClientInterface
         if ($this->_name === null) {
             $this->_name = $this->defaultName();
         }
-
         return $this->_name;
     }
-
     /**
      * @param string $title service title.
      */
@@ -144,7 +112,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         $this->_title = $title;
     }
-
     /**
      * @return string service title.
      */
@@ -153,10 +120,8 @@ abstract class BaseClient extends Component implements ClientInterface
         if ($this->_title === null) {
             $this->_title = $this->defaultTitle();
         }
-
         return $this->_title;
     }
-
     /**
      * @param array $userAttributes list of user attributes
      */
@@ -164,7 +129,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         $this->_userAttributes = $this->normalizeUserAttributes($userAttributes);
     }
-
     /**
      * @return array list of user attributes
      */
@@ -173,10 +137,8 @@ abstract class BaseClient extends Component implements ClientInterface
         if ($this->_userAttributes === null) {
             $this->_userAttributes = $this->normalizeUserAttributes($this->initUserAttributes());
         }
-
         return $this->_userAttributes;
     }
-
     /**
      * @param array $normalizeUserAttributeMap normalize user attribute map.
      */
@@ -184,7 +146,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         $this->_normalizeUserAttributeMap = $normalizeUserAttributeMap;
     }
-
     /**
      * @return array normalize user attribute map.
      */
@@ -193,10 +154,8 @@ abstract class BaseClient extends Component implements ClientInterface
         if ($this->_normalizeUserAttributeMap === null) {
             $this->_normalizeUserAttributeMap = $this->defaultNormalizeUserAttributeMap();
         }
-
         return $this->_normalizeUserAttributeMap;
     }
-
     /**
      * @param array $viewOptions view options in format: optionName => optionValue
      */
@@ -204,7 +163,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         $this->_viewOptions = $viewOptions;
     }
-
     /**
      * @return array view options in format: optionName => optionValue
      */
@@ -213,70 +171,8 @@ abstract class BaseClient extends Component implements ClientInterface
         if ($this->_viewOptions === null) {
             $this->_viewOptions = $this->defaultViewOptions();
         }
-
         return $this->_viewOptions;
     }
-
-    /**
-     * Returns HTTP client.
-     * @return Client internal HTTP client.
-     * @since 2.1
-     */
-    public function getHttpClient()
-    {
-        if (!is_object($this->_httpClient)) {
-            $this->_httpClient = $this->createHttpClient($this->_httpClient);
-        }
-        return $this->_httpClient;
-    }
-
-    /**
-     * Sets HTTP client to be used.
-     * @param array|Client $httpClient internal HTTP client.
-     * @since 2.1
-     */
-    public function setHttpClient($httpClient)
-    {
-        $this->_httpClient = $httpClient;
-    }
-
-    /**
-     * @param array $options HTTP request options.
-     * @since 2.1
-     */
-    public function setRequestOptions(array $options)
-    {
-        $this->_requestOptions = $options;
-    }
-
-    /**
-     * @return array HTTP request options.
-     * @since 2.1
-     */
-    public function getRequestOptions()
-    {
-        return $this->_requestOptions;
-    }
-
-    /**
-     * @return StateStorageInterface stage storage.
-     */
-    public function getStateStorage()
-    {
-        if (!is_object($this->_stateStorage)) {
-            $this->_stateStorage = Yii::createObject($this->_stateStorage);
-        }
-        return $this->_stateStorage;
-    }
-
-    /**
-     * @param StateStorageInterface|array|string $stateStorage stage storage to be used.
-     */
-    public function setStateStorage($stateStorage)
-    {
-        $this->_stateStorage = $stateStorage;
-    }
-
     /**
      * Generates service name.
      * @return string service name.
@@ -285,7 +181,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         return Inflector::camel2id(StringHelper::basename(get_class($this)));
     }
-
     /**
      * Generates service title.
      * @return string service title.
@@ -294,13 +189,14 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         return StringHelper::basename(get_class($this));
     }
-
     /**
      * Initializes authenticated user attributes.
      * @return array auth user attributes.
      */
-    abstract protected function initUserAttributes();
-
+    protected function initUserAttributes()
+    {
+        throw new NotSupportedException('Method "' . get_class($this) . '::' . __FUNCTION__ . '" not implemented.');
+    }
     /**
      * Returns the default [[normalizeUserAttributeMap]] value.
      * Particular client may override this method in order to provide specific default map.
@@ -310,7 +206,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         return [];
     }
-
     /**
      * Returns the default [[viewOptions]] value.
      * Particular client may override this method in order to provide specific default view options.
@@ -320,18 +215,6 @@ abstract class BaseClient extends Component implements ClientInterface
     {
         return [];
     }
-
-    /**
-     * Creates HTTP client instance from reference or configuration.
-     * @param string|array $reference component name or array configuration.
-     * @return Client HTTP client instance.
-     * @since 2.1
-     */
-    protected function createHttpClient($reference)
-    {
-        return Instance::ensure($reference, Client::className());
-    }
-
     /**
      * Normalize given user attributes according to [[normalizeUserAttributeMap]].
      * @param array $attributes raw attributes.
@@ -368,74 +251,6 @@ abstract class BaseClient extends Component implements ClientInterface
                 }
             }
         }
-
         return $attributes;
-    }
-
-    /**
-     * Creates HTTP request instance.
-     * @return \yii\httpclient\Request HTTP request instance.
-     * @since 2.1
-     */
-    public function createRequest()
-    {
-        return $this->getHttpClient()
-            ->createRequest()
-            ->addOptions($this->defaultRequestOptions())
-            ->addOptions($this->getRequestOptions());
-    }
-
-    /**
-     * Returns default HTTP request options.
-     * @return array HTTP request options.
-     * @since 2.1
-     */
-    protected function defaultRequestOptions()
-    {
-        return [
-            'timeout' => 30,
-            'sslVerifyPeer' => false,
-        ];
-    }
-
-    /**
-     * Sets persistent state.
-     * @param string $key state key.
-     * @param mixed $value state value
-     * @return $this the object itself
-     */
-    protected function setState($key, $value)
-    {
-        $this->getStateStorage()->set($this->getStateKeyPrefix() . $key, $value);
-        return $this;
-    }
-
-    /**
-     * Returns persistent state value.
-     * @param string $key state key.
-     * @return mixed state value.
-     */
-    protected function getState($key)
-    {
-        return $this->getStateStorage()->get($this->getStateKeyPrefix() . $key);
-    }
-
-    /**
-     * Removes persistent state value.
-     * @param string $key state key.
-     * @return bool success.
-     */
-    protected function removeState($key)
-    {
-        return $this->getStateStorage()->remove($this->getStateKeyPrefix() . $key);
-    }
-
-    /**
-     * Returns session key prefix, which is used to store internal states.
-     * @return string session key prefix.
-     */
-    protected function getStateKeyPrefix()
-    {
-        return get_class($this) . '_' . $this->getId() . '_';
     }
 }
