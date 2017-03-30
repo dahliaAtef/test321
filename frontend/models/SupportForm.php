@@ -55,11 +55,11 @@ class SupportForm extends Model
      * @return boolean whether the email was sent
      */
     public function sendSupportEmail() {
-            return Yii::$app->mailer->compose()
+        $type = [0 => 'Feedback', 1 => 'Technical', 2 => 'Complaint'];
+            return Yii::$app->mailer->compose(['html' => 'supportMessage-html'], ['oSupport' => $oSupport, 'type' => $type[$this->support]])
             ->setTo(Yii::$app->params['supportEmail'])
             ->setFrom($this->email)
-            ->setSubject('Support Message')
-            ->setTextBody('email : '.$this->email.' body:'.$this->message)
+            ->setSubject('Support Message from '.$this->email)
             ->send();
     }
 

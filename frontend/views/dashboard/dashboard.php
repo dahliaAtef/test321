@@ -13,19 +13,27 @@ use common\models\custom\User;
 use yii\widgets\Pjax;
 
 $this->title = 'Dashboard';
-$sx = $oDashboard->getSocialMediaExistance($insights); 
-//echo '<pre>'; var_dump(json_decode($insights['facebook']['last_insights']->insights_json, true)['page_posts_organic_reach']); echo '</pre>'; die;
-$fb = array_key_exists('facebook', $dashboard_accounts);
-$yt = array_key_exists('youtube', $dashboard_accounts);
-$tw = array_key_exists('twitter', $dashboard_accounts);
-$insta = array_key_exists('instagram', $dashboard_accounts);
-$gp = array_key_exists('google_plus', $dashboard_accounts);
-$in = array_key_exists('linkedin', $dashboard_accounts);
+$result = $oDashboard->getDashboardCompetitorsAccountsAndInsights();
+//echo '<pre>'; var_dump($result['insights']); echo '</pre>'; die;
+$sx = $oDashboard->getSocialMediaExistance($result['insights']); 
+//echo '<pre>'; var_dump(json_decode($result['insights']['facebook']['last_insights']->insights_json, true)['page_posts_organic_reach']); echo '</pre>'; die;
+$fb = array_key_exists('facebook', $result['dashboard_accounts']);
+$fb_insights = array_key_exists('facebook', $result['insights']);
+$yt = array_key_exists('youtube', $result['dashboard_accounts']);
+$yt_insights = array_key_exists('youtube', $result['insights']);
+$tw = array_key_exists('twitter', $result['dashboard_accounts']);
+$tw_insights = array_key_exists('twitter', $result['insights']);
+$insta = array_key_exists('instagram', $result['dashboard_accounts']);
+$insta_insights = array_key_exists('instagram', $result['insights']);
+$gp = array_key_exists('google_plus', $result['dashboard_accounts']);
+$gp_insights = array_key_exists('google_plus', $result['insights']);
+$in = array_key_exists('linkedin', $result['dashboard_accounts']);
+$in_insights = array_key_exists('linkedin', $result['insights']);
 $name = User::findOne(Yii::$app->user->getId())->brand_name;
 ?>
 <div class="page-content inside dashboard">
     <?php
-	if(($fb && (strtotime('+3 days',strtotime($dashboard_accounts['facebook']['authclient']->created)) > time())) || ($tw && (strtotime('+3 days',strtotime($dashboard_accounts['twitter']['authclient']->created)) > time())) || ($insta && (strtotime('+3 days',strtotime($dashboard_accounts['instagram']['authclient']->created)) > time())) || ($yt && (strtotime('+3 days',strtotime($dashboard_accounts['youtube']['authclient']->created)) > time())) || ($gp && (strtotime('+3 days',strtotime($dashboard_accounts['google_plus']['authclient']->created)) > time())) || ($in && (strtotime('+3 days',strtotime($dashboard_accounts['linkedin']['authclient']->created)) > time()))){
+	if(($fb && (strtotime('+3 days',strtotime($result['dashboard_accounts']['facebook']['authclient']->created)) > time())) || ($tw && (strtotime('+3 days',strtotime($result['dashboard_accounts']['twitter']['authclient']->created)) > time())) || ($insta && (strtotime('+3 days',strtotime($result['dashboard_accounts']['instagram']['authclient']->created)) > time())) || ($yt && (strtotime('+3 days',strtotime($result['dashboard_accounts']['youtube']['authclient']->created)) > time())) || ($gp && (strtotime('+3 days',strtotime($result['dashboard_accounts']['google_plus']['authclient']->created)) > time())) || ($in && (strtotime('+3 days',strtotime($result['dashboard_accounts']['linkedin']['authclient']->created)) > time()))){
       ?>
  <div class="warning-msg">
   <i class="glyphicon glyphicon-warning-sign"></i>&nbsp &nbsp Kindly note that HYPE takes up to <b>3 days</b> to analyse your full data
@@ -39,7 +47,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
     <div class="container">
     <div class="inner-page">
       <?php
-      	if($dashboard_accounts){
+      	if($result['dashboard_accounts']){
       ?>
         <div class="row">
             <div class="col-md-12">
@@ -53,12 +61,12 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
 
 
             <?php 
-            if($dashboard_accounts){ 
+            if($result['dashboard_accounts']){ 
                 $kpi_overviews = $oDashboard->getChannelsKpiOverviews();
             ?>
-            <?= $this->render('_socialMediaExistanceChart', ['sx_json_table' => $oDashboard->getSocialMediaExistanceJsonTable($sx),'sx' => $sx, 'name' => $name, 'oCompetitors' => $oCompetitors]); ?>
+            <?= $this->render('_socialMediaExistanceChart', ['sx_json_table' => $oDashboard->getSocialMediaExistanceJsonTable($sx),'sx' => $sx, 'name' => $name, 'oCompetitors' => $result['oCompetitors']]); ?>
             
-            <?= $this->render('_growthPerChannelChart', ['growth_per_channel' => $growth_per_month]); ?>
+            <?= $this->render('_growthPerChannelChart', ['growth_per_channel' => $result['growth_per_month']]); ?>
        
 
         <div class="row">
@@ -132,18 +140,18 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             </div>
 
                 <?php
-                if($fb){
-                    echo $this->render('_fb_age_gender', ['fans_gender_age' => json_decode($insights['facebook']['last_insights']->insights_json, true)['gender_age'], 'followers' => $insights['facebook']['last_insights']->followers]);
+                if($fb && $fb_insights){
+                    echo $this->render('_fb_age_gender', ['fans_gender_age' => json_decode($result['insights']['facebook']['last_insights']->insights_json, true)['gender_age'], 'followers' => $result['insights']['facebook']['last_insights']->followers]);
                 }
-                if($yt){
-                    $fans_gender_age_per = json_decode($insights['youtube']['last_insights']->insights_json, true)['gender_age'];
+                if($yt && $yt_insights){
+                    $fans_gender_age_per = json_decode($result['insights']['youtube']['last_insights']->insights_json, true)['gender_age'];
                     if($fans_gender_age_per){
                         $counter = 0;
                         foreach($fans_gender_age_per as $fans_gender_age){
-                            $fans_gender_age_per[$counter][2] = round((($fans_gender_age[2] * $insights['youtube']['last_insights']->followers)/100), 0);
+                            $fans_gender_age_per[$counter][2] = round((($fans_gender_age[2] * $result['insights']['youtube']['last_insights']->followers)/100), 0);
                             $counter++;
                         }
-                        echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $insights['youtube']['last_insights']->followers]);
+                        echo $this->render('_yt_age_gender', ['fans_gender_age' => $fans_gender_age_per, 'followers' => $result['insights']['youtube']['last_insights']->followers]);
                     }
                 }
 				 ?>
@@ -157,14 +165,14 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                         </div>
                     </div>
                     <?php 
-                    if($fb){
-                        echo $this->render('_fb_device_type', ['devices' => json_decode($insights['facebook']['last_insights']->insights_json, true)['page_views']]);
+                    if($fb && $fb_insights){
+                        echo $this->render('_fb_device_type', ['devices' => json_decode($result['insights']['facebook']['last_insights']->insights_json, true)['page_views']]);
                     }
-                    if($tw){
-                        echo $this->render('_tw_device_type', ['devices' => json_decode($insights['twitter']['last_insights']->insights_json, true)]);
+                    if($tw && $tw_insights){
+                        echo $this->render('_tw_device_type', ['devices' => json_decode($result['insights']['twitter']['last_insights']->insights_json, true)]);
                     }
-                    if($yt){
-                        echo $this->render('_yt_device_type', ['devices' => json_decode($insights['youtube']['last_insights']->insights_json, true)['device']]);
+                    if($yt && $yt_insights){
+                        echo $this->render('_yt_device_type', ['devices' => json_decode($result['insights']['youtube']['last_insights']->insights_json, true)['device']]);
                     }
                     ?>
                     <div class="row">
@@ -176,7 +184,7 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
                         </div>
                     </div>
                     <?php
-                    echo $this->render('_fb_paid_organic_reach', ['reach' => (($fb) ? json_decode($insights['facebook']['last_insights']->insights_json, true)['organic_paid_reach_json_table'] : null)]);
+                    echo $this->render('_fb_paid_organic_reach', ['reach' => (($fb && $fb_insights) ? json_decode($result['insights']['facebook']['last_insights']->insights_json, true)['organic_paid_reach_json_table'] : null)]);
                 ?>
          	<div class="row">
                 <div class="col-md-12">
@@ -189,8 +197,8 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             <div class="row">
                 <div class="col-md-12">
                     <?php
-                        if($yt){
-                            echo $this->render('_yt_views_by_country', ['countries_json_table' => Youtube::getAnalyticsPerLocationsViewsDashboardJsonTable(json_decode($insights['youtube']['last_insights']->insights_json, true)['location'])]);
+                        if($yt && $yt_insights){
+                            echo $this->render('_yt_views_by_country', ['countries_json_table' => Youtube::getAnalyticsPerLocationsViewsDashboardJsonTable(json_decode($result['insights']['youtube']['last_insights']->insights_json, true)['location'])]);
                         } 
                     ?>
                 </div>
@@ -198,8 +206,8 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             <div class="row">
                 <div class="col-md-12">
                     <?php
-                        if($fb){
-                            $top_fifteen_countries = Facebook::getCountryName(json_decode($insights['facebook']['last_insights']->insights_json, true)['reach_by_country']);
+                        if($fb && $fb_insights){
+                            $top_fifteen_countries = Facebook::getCountryName(json_decode($result['insights']['facebook']['last_insights']->insights_json, true)['reach_by_country']);
                             echo $this->render('_fb_views_by_country', ['countries_json_table' => Facebook::getcountriesJsonTable($top_fifteen_countries)]);
                         } 
                     ?>
@@ -220,33 +228,33 @@ $name = User::findOne(Yii::$app->user->getId())->brand_name;
             <?php
             $undefined = ['gender' => '...', 'age' => '...', 'country' => '...', 'language' => '...', 'device' => '...', 'industry' => '...', 'seniority' => '...'];
             $unauthenticated = ['gender' => 'Un-authenticated', 'age' => 'Un-authenticated', 'country' => 'Un-authenticated', 'language' => 'Un-authenticated', 'device' => 'Un-authenticated', 'industry' => 'Un-authenticated', 'seniority' => 'Un-authenticated'];
-            if($fb){
-                $facebook = Facebook::getFansDemographicsDashboard(json_decode($insights['facebook']['last_insights']->insights_json, true));
+            if($fb && $fb_insights){
+                $facebook = Facebook::getFansDemographicsDashboard(json_decode($result['insights']['facebook']['last_insights']->insights_json, true));
             }else{
                 $facebook = $unauthenticated;
             }
-            if($tw){
+            if($tw && $tw_insights){
                 $twitter = $undefined;
             }else{
                 $twitter = $unauthenticated;
             }
-            if($insta){
+            if($insta && $insta_insights){
                 $instagram = $undefined;
             }else{
                 $instagram = $unauthenticated;
             }
-            if($yt){
-                $youtube = Youtube::getFansDemographics(json_decode($insights['youtube']['last_insights']->insights_json, true));
+            if($yt && $yt_insights){
+                $youtube = Youtube::getFansDemographics(json_decode($result['insights']['youtube']['last_insights']->insights_json, true));
             }else{
                 $youtube = $unauthenticated;
             }
-            if($gp){
+            if($gp && $gp_insights){
                 $google_plus = $undefined;
             }else{
                 $google_plus = $unauthenticated;
             }
-            if($in){
-                $linkedin = LinkedIn::getFansDemographics(json_decode($insights['linkedin']['last_insights']->insights_json, true));
+            if($in && $in_insights){
+                $linkedin = LinkedIn::getFansDemographics(json_decode($result['insights']['linkedin']['last_insights']->insights_json, true));
             }else{
                 $linkedin = $unauthenticated;
             }

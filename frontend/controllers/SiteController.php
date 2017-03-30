@@ -318,7 +318,8 @@ class SiteController extends \frontend\components\BaseController {
      * Dashboard page
      */
     public function actionDashboard($username=null) {
-	    $session= Yii::$app->session;
+	/*
+        $session= Yii::$app->session;
         $dashboard = new Dashboard();
         $oCompetitors = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
         $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
@@ -335,6 +336,8 @@ class SiteController extends \frontend\components\BaseController {
         }
         $insights = $dashboard->getDashboardAccountsInsights();
         return $this->render('/dashboard/dashboard', ['insights' => $insights, 'growth_per_month' => $dashboard->getGrowthPerMonth($insights), 'oCompetitors' => $oCompetitors, 'oDashboard' => $dashboard, 'dashboard_accounts' => $session['dashboard_accounts']]);
+        */
+        return $this->render('/dashboard/dashboard', ['oDashboard' => new Dashboard()]);
     }
     
     /**

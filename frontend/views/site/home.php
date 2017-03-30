@@ -19,6 +19,7 @@ $action_id = Yii::$app->controller->action->id;
   <meta charset="UTF-8" />    
   <meta name="keywords" content="Social media analytics tool, free analytics tool, free social media analytics tool, Campaign report, Campaign kpi, social media performance, social media engagement, social media strategy, social media kpi, social media report, social media custom report">
   <meta name="description" content="Hype Insights is a social media analytics tool that helps you measure, track and get valuable insights about all your social media channels in one place. Hype Insights dashboard is designed to give you easy overview of your social media performance KPI's in an easy way. boost your social media strategy with real-time updated data about your social media engagement, content, performance, community growth, and much more. Automated, visualized, and easy to export social media analytics reports with the ability to customize your report to save your time and effort. Hype insights provides the best social media analytics solutions that perfectly fit your needs whether you're a brand, an agency or a freelancer, you will find what suits you. ">
+  <meta property="og:image" content="<?= Url::to('@frontThemeUrl') ?>/images/hype_Sharableimg.jpg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">   
   <link rel="icon" href="<?= Url::to('@frontThemeUrl') ?>/images/favicon.ico" />
 

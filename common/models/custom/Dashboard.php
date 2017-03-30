@@ -444,5 +444,24 @@ class Dashboard extends \common\models\base\Base
         return $competitors_existance_json_table;
 	}
 	
-	
+    public function getDashboardCompetitorsAccountsAndInsights(){
+        $session= Yii::$app->session;
+        $result = [];
+        $result['oCompetitors'] = Competitors::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+        $accounts = Authclient::find()->Where(['user_id' => Yii::$app->user->getId()])->all();
+        if(!$session->has('dashboard_accounts') || (count($accounts) > count($session['dashboard_accounts']))){
+            $result['dashboard_accounts'] = [];
+            foreach($accounts as $account){
+                if($account->model){
+                    $result['dashboard_accounts'][$account['source']]['entity_id'] = $account->model[0]['entity_id'];
+                    $result['dashboard_accounts'][$account['source']]['model_id'] = $account->model[0]['id'];
+                    $result['dashboard_accounts'][$account['source']]['authclient'] = $account;
+                }
+            } 
+            $session->set('dashboard_accounts', $result['dashboard_accounts']);
+        }
+        $result['insights'] = $this->getDashboardAccountsInsights();
+        $result['growth_per_month'] = $this->getGrowthPerMonth($result['insights']);
+        return $result;
+    }
 }// end of class
